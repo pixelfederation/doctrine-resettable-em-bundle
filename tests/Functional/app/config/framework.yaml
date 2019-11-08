@@ -1,0 +1,4 @@
+framework:
+  secret: secret
+  router: { resource: "%kernel.root_dir%/%kernel.test_case%/configs/routing.yaml" }
+  test: ~

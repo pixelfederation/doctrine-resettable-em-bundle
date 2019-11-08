@@ -1,0 +1,14 @@
+imports:
+  - {resource: ../../config/framework.yaml}
+  - {resource: ../../config/doctrine.yaml}
+
+services:
+  _defaults:
+    public: false
+    autowire: true
+    autoconfigure: true
+
+  PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\TestController:
+    public: true
+    arguments:
+      $entityManager: '@doctrine.orm.default_entity_manager'

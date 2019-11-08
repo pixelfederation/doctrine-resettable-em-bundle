@@ -1,0 +1,6 @@
+# Created by .ignore support plugin (hsz.mobi)
+vendor
+.php_cs.cache
+.phpunit.result.cache
+tests/Functional/app/data/*
+!tests/Functional/app/data/.gitkeep

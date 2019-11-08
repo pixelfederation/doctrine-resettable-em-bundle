@@ -1,0 +1,64 @@
+parameters:
+  git_dir: .
+  bin_dir: vendor/bin
+  hooks_dir: bin/grumphp_hooks
+  stop_on_failure: true
+  process_timeout: 600
+  ignore_unstaged_changes: true
+  tasks:
+    phpcs:
+      standard: 'phpcs.ruleset.xml'
+      tab_width: 4
+      whitelist_patterns: []
+      encoding: utf-8
+      ignore_patterns: []
+      sniffs: []
+      triggered_by: [php]
+    phpmd:
+      ruleset: ['phpmd.ruleset.xml']
+    phpcsfixer2:
+      cache_file: '.php_cs.cache'
+      allow_risky: true
+      config: '.php_cs'
+      using_cache: true
+      config_contains_finder: true
+      verbose: false
+      diff: true
+      triggered_by: ['php']
+    phpparser:
+      ignore_patterns:
+        - DependencyInjection/
+        - Tests/
+      kind: php7
+      visitors:
+        declare_strict_types: ~
+        no_exit_statements: ~
+        never_use_else: ~
+        forbidden_function_calls:
+          blacklist:
+            - 'var_dump'
+        forbidden_static_method_calls:
+          blacklist:
+            - 'Dumper::dump'
+      triggered_by: [php]
+    phplint: ~
+    phpunit: ~
+    phpversion: ~
+    shell: ~
+    phpstan:
+      autoload_file: ~
+      configuration: 'phpstan.neon'
+      level: 7
+      ignore_patterns:
+        - Tests/
+        - DependencyInjection/Configuration.php
+      triggered_by: ['php']
+    psalm:
+      config: psalm.xml
+      ignore_patterns:
+        - src/DependencyInjection/Configuration.php
+        - src/DependencyInjection/PixelFederationCommandBusExtension.php
+      no_cache: false
+      report: ~
+      triggered_by: ['php']
+      show_info: true

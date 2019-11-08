@@ -1,0 +1,11 @@
+version: '3.3'
+
+services:
+  # PHP
+  php7-doctrine-resettable-em-bundle:
+    container_name: php7-doctrine-resettable-em-bundle
+    build: ./docker/php
+    volumes:
+      - .:/srv/www:delegated
+    environment:
+      - XDEBUG_CONFIG=idekey=PHPSTORM

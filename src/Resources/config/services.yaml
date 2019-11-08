@@ -1,0 +1,27 @@
+services:
+  _defaults:
+    public: false
+    autowire: false
+    autoconfigure: false
+
+  PixelFederation\DoctrineResettableEmBundle\DBAL\ConnectionsHandler:
+    arguments:
+      $doctrineRegistry: '@doctrine'
+    tags:
+      - {name: pixelfederation_doctrine_resettable_em_bundle.app_initializer}
+
+  PixelFederation\DoctrineResettableEmBundle\ORM\EntityManagersHandler:
+    arguments:
+      $entityManagers: ~
+    tags:
+      - {name: pixelfederation_doctrine_resettable_em_bundle.app_terminator}
+
+  PixelFederation\DoctrineResettableEmBundle\RequestCycle\Initializers:
+    arguments: [!tagged 'pixelfederation_doctrine_resettable_em_bundle.app_initializer']
+    tags:
+      - {name: kernel.event_listener, event: kernel.request, method: initialize, priority: 1000000}
+
+  PixelFederation\DoctrineResettableEmBundle\RequestCycle\Terminators:
+    arguments: [!tagged 'pixelfederation_doctrine_resettable_em_bundle.app_terminator']
+    tags:
+      - {name: kernel.event_listener, event: kernel.terminate, method: terminate, priority: -1000000}
