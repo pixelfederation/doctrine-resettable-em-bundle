@@ -28,7 +28,7 @@ final class EntityManagerDecoratorPass implements CompilerPassInterface
 
         foreach ($entityManagers as $name => $id) {
             $emDefinition = $container->findDefinition($id);
-            $newId = $id . '_swoole';
+            $newId = $id . '_wrapped';
             $configArg = $emDefinition->getArgument(1);
 
             $decoratorDef = new Definition(ResettableEntityManager::class, [
