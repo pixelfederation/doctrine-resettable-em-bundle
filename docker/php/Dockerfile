@@ -15,3 +15,5 @@ RUN echo "xdebug.remote_host=docker.for.mac.host.internal" >> /usr/local/etc/php
         echo "xdebug.max_nesting_level=10000" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
         echo "xdebug.remote_handler=dbgp" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
         echo "xdebug.remote_mode=req" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+
+WORKDIR /srv/www
