@@ -6,12 +6,12 @@ declare(strict_types=1);
 
 namespace PixelFederation\DoctrineResettableEmBundle\ORM;
 
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Decorator\EntityManagerDecorator;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Repository\RepositoryFactory;
 use Exception;
-use Symfony\Bridge\Doctrine\RegistryInterface;
 use UnexpectedValueException;
 
 /**
@@ -25,7 +25,7 @@ class ResettableEntityManager extends EntityManagerDecorator
     private $repositoryFactory;
 
     /**
-     * @var RegistryInterface
+     * @var ManagerRegistry
      */
     private $doctrineRegistry;
 
@@ -37,13 +37,13 @@ class ResettableEntityManager extends EntityManagerDecorator
     /**
      * @param Configuration          $configuration
      * @param EntityManagerInterface $wrapped
-     * @param RegistryInterface      $doctrineRegistry
+     * @param ManagerRegistry        $doctrineRegistry
      * @param string                 $decoratedName
      */
     public function __construct(
         Configuration $configuration,
         EntityManagerInterface $wrapped,
-        RegistryInterface $doctrineRegistry,
+        ManagerRegistry $doctrineRegistry,
         string $decoratedName
     ) {
         $this->repositoryFactory = $configuration->getRepositoryFactory();
