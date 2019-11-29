@@ -23,7 +23,7 @@ final class ConnectionsHandler implements InitializerInterface
     private $doctrineRegistry;
 
     /**
-     * @var Connection[]|null
+     * @var array<string,Connection>|null
      */
     private $connections = null;
 
@@ -51,24 +51,45 @@ final class ConnectionsHandler implements InitializerInterface
     }
 
     /**
-     * @return Connection[]
+     * @return array<string,Connection>
      */
     private function getConnections(): array
     {
-        if (!$this->connections) {
-            $this->connections = array_map(
-                static function (EntityManagerInterface $entityManager) {
-                    return $entityManager->getConnection();
-                },
-                array_filter(
-                    $this->doctrineRegistry->getManagers(),
-                    static function (ObjectManager $objectManager) {
-                        return $objectManager instanceof EntityManagerInterface;
-                    }
-                )
-            );
+        if ($this->connections !== null) {
+            return $this->connections;
         }
 
-        return $this->connections;
+        return $this->connections =
+            array_reduce(
+                array_map(
+                    static function (EntityManagerInterface $entityManager): Connection {
+                        return $entityManager->getConnection();
+                    },
+                    array_filter(
+                        $this->doctrineRegistry->getManagers(),
+                        static function (ObjectManager $objectManager): bool {
+                            return $objectManager instanceof EntityManagerInterface;
+                        }
+                    )
+                ),
+                /**
+                 * @param array      $connections
+                 * @param Connection $connection
+                 *
+                 * @return array<string,Connection>
+                 * @psalm-suppress MixedReturnTypeCoercion
+                 */
+                static function (array $connections, Connection $connection): array {
+                    $hash = spl_object_hash($connection);
+
+                    if (!isset($connections[$hash])) {
+                        $connections[$hash] = $connection;
+                    }
+
+                    /** @psalm-suppress MixedReturnTypeCoercion */
+                    return $connections;
+                },
+                []
+            );
     }
 }
