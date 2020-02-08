@@ -15,6 +15,7 @@ services:
       $entityManagers: ~
     tags:
       - {name: pixelfederation_doctrine_resettable_em_bundle.app_terminator}
+      - {name: pixelfederation_doctrine_resettable_em_bundle.app_initializer}
 
   PixelFederation\DoctrineResettableEmBundle\RequestCycle\Initializers:
     arguments: [!tagged 'pixelfederation_doctrine_resettable_em_bundle.app_initializer']
