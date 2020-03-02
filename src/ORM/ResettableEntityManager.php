@@ -82,4 +82,9 @@ class ResettableEntityManager extends EntityManagerDecorator
 
         $this->wrapped = $newEntityManager;
     }
+
+    public function clearOrReset(): void
+    {
+        $this->clearOrResetIfNeeded();
+    }
 }
