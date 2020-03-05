@@ -18,6 +18,14 @@ final class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        return new TreeBuilder('pixel_federation_doctrine_resettable_em');
+        $treeBuilder = new TreeBuilder('pixel_federation_doctrine_resettable_em');
+        $rootNode = $treeBuilder->getRootNode();
+        $rootNode->children()
+                ->scalarNode('ping_interval')
+                    ->defaultFalse()
+                ->end()
+            ->end();
+
+        return $treeBuilder;
     }
 }

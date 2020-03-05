@@ -9,6 +9,7 @@ namespace PixelFederation\DoctrineResettableEmBundle\Tests\Unit\DBAL;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use PixelFederation\DoctrineResettableEmBundle\DBAL\ConnectionsHandler;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Prophecy\ObjectProphecy;
@@ -38,6 +39,7 @@ class ConnectionsHandlerTest extends TestCase
 
     /**
      *
+     * @throws Exception
      */
     protected function setUp(): void
     {
@@ -88,5 +90,18 @@ class ConnectionsHandlerTest extends TestCase
     private function setUpEntityManagerConnection(): void
     {
         $this->entityManagerProphecy->getConnection()->willReturn($this->connectionProphecy->reveal());
+    }
+
+    /**
+     *
+     * @throws Exception
+     */
+    public function testHandleReconnectEachXSeconds(): void
+    {
+        $this->connectionsHandler->setPingIntervalInSeconds(1);
+        $this->connectionProphecy->ping()->willReturn(true)->shouldBeCalledOnce();
+        $this->connectionsHandler->initialize();
+        sleep(2);
+        $this->connectionsHandler->initialize();
     }
 }
