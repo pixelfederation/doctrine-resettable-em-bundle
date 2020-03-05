@@ -28,7 +28,7 @@ final class PixelFederationDoctrineResettableEmExtension extends ConfigurableExt
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yaml');
 
-        if (isset($mergedConfig['ping_interval']) && gettype($mergedConfig['ping_interval']) === 'integer') {
+        if (isset($mergedConfig['ping_interval']) && is_int($mergedConfig['ping_interval'])) {
             $connectionsHandler = $container->getDefinition(ConnectionsHandler::class);
             $connectionsHandler->setArgument('$pingIntervalInSeconds', $mergedConfig['ping_interval']);
         }
