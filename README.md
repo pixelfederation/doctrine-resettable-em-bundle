@@ -26,3 +26,10 @@ won't get closed after some period of time.
 PixelFederation\CommandProcessingBundle\PixelFederationDoctrineResettableEmBundle::class => ['all' => true]
 //...
 ```
+
+```yaml
+pixel_federation_doctrine_resettable_em:
+  # default 0 - if set, the connection ping operation will be executed each X seconds 
+  # (instead of at the beginning of each request) 
+  ping_interval: 10 
+```

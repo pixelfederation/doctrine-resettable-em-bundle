@@ -6,8 +6,6 @@ declare(strict_types=1);
 
 namespace PixelFederation\DoctrineResettableEmBundle\Tests\Functional;
 
-use Doctrine\Common\EventManager;
-use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use PixelFederation\DoctrineResettableEmBundle\ORM\ResettableEntityManager;
