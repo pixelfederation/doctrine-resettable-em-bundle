@@ -10,6 +10,7 @@ use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use PixelFederation\DoctrineResettableEmBundle\RequestCycle\InitializerInterface;
 
 /**
@@ -28,18 +29,51 @@ final class ConnectionsHandler implements InitializerInterface
     private $connections = null;
 
     /**
-     * @param Registry $doctrineRegistry
+     * @var int
      */
-    public function __construct(Registry $doctrineRegistry)
+    private $lastPingAt;
+
+    /**
+     * @var int
+     */
+    private $pingIntervalInSeconds;
+
+    /**
+     * @const int
+     */
+    private const DEFAULT_PING_INTERVAL = 0;
+
+    /**
+     * @param Registry $doctrineRegistry
+     * @param int      $pingIntervalInSeconds
+     *
+     * @throws Exception
+     */
+    public function __construct(Registry $doctrineRegistry, int $pingIntervalInSeconds = self::DEFAULT_PING_INTERVAL)
     {
         $this->doctrineRegistry = $doctrineRegistry;
+        $this->lastPingAt = time();
+        $this->pingIntervalInSeconds = $pingIntervalInSeconds;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPingIntervalInSeconds(): int
+    {
+        return $this->pingIntervalInSeconds;
     }
 
     /**
      * @return void
+     * @throws Exception
      */
     public function initialize(): void
     {
+        if (!$this->isPingNeeded()) {
+            return;
+        }
+
         foreach ($this->getConnections() as $connection) {
             if ($connection->ping()) {
                 continue;
@@ -48,6 +82,18 @@ final class ConnectionsHandler implements InitializerInterface
             $connection->close();
             $connection->connect();
         }
+    }
+
+    /**
+     * @return bool
+     * @throws Exception
+     */
+    private function isPingNeeded(): bool
+    {
+        $lastPingAt = $this->lastPingAt;
+        $now = $this->lastPingAt = time();
+
+        return $now - $lastPingAt >= $this->pingIntervalInSeconds;
     }
 
     /**
