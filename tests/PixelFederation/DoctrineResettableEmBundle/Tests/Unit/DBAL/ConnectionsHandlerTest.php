@@ -13,6 +13,7 @@ use Exception;
 use PixelFederation\DoctrineResettableEmBundle\DBAL\ConnectionsHandler;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Prophecy\ObjectProphecy;
+use Symfony\Bridge\PhpUnit\ClockMock;
 
 class ConnectionsHandlerTest extends TestCase
 {
@@ -39,9 +40,11 @@ class ConnectionsHandlerTest extends TestCase
 
     /**
      *
+     * @param int $pingInterval
+     *
      * @throws Exception
      */
-    protected function setUp(): void
+    protected function setUpWithPingInterval(int $pingInterval = 0): void
     {
         $this->entityManagerProphecy = $this->prophesize(EntityManagerInterface::class);
         $this->doctrineRegistryProphecy = $this->prophesize(Registry::class);
@@ -52,23 +55,27 @@ class ConnectionsHandlerTest extends TestCase
 
         $this->setUpRegistryEnityManagers();
         $this->setUpEntityManagerConnection();
-        $this->connectionsHandler = new ConnectionsHandler($doctrineRegistryMock);
+        $this->connectionsHandler = new ConnectionsHandler($doctrineRegistryMock, $pingInterval);
     }
 
     /**
      *
+     * @throws Exception
      */
     public function testHandleNoReconnectOnAppInitialize(): void
     {
+        $this->setUpWithPingInterval();
         $this->connectionProphecy->ping()->willReturn(true)->shouldBeCalled();
         $this->connectionsHandler->initialize();
     }
 
     /**
      *
+     * @throws Exception
      */
     public function testHandleWithReconnectOnAppInitialize(): void
     {
+        $this->setUpWithPingInterval();
         $this->connectionProphecy->ping()->willReturn(false)->shouldBeCalled();
         $this->connectionProphecy->close()->shouldBeCalled();
         $this->connectionProphecy->connect()->willReturn(true)->shouldBeCalled();
@@ -93,12 +100,13 @@ class ConnectionsHandlerTest extends TestCase
     }
 
     /**
-     *
+     * @group time-sensitive
      * @throws Exception
      */
     public function testHandleReconnectEachXSeconds(): void
     {
-        $this->connectionsHandler->setPingIntervalInSeconds(1);
+        ClockMock::register(ConnectionsHandler::class);
+        $this->setUpWithPingInterval(1);
         $this->connectionProphecy->ping()->willReturn(true)->shouldBeCalledOnce();
         $this->connectionsHandler->initialize();
         sleep(2);

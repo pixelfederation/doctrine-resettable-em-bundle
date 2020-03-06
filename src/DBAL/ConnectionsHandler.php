@@ -6,7 +6,6 @@ declare(strict_types=1);
 
 namespace PixelFederation\DoctrineResettableEmBundle\DBAL;
 
-use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\DBAL\Connection;
@@ -30,7 +29,7 @@ final class ConnectionsHandler implements InitializerInterface
     private $connections = null;
 
     /**
-     * @var DateTimeImmutable
+     * @var int
      */
     private $lastPingAt;
 
@@ -53,15 +52,7 @@ final class ConnectionsHandler implements InitializerInterface
     public function __construct(Registry $doctrineRegistry, int $pingIntervalInSeconds = self::DEFAULT_PING_INTERVAL)
     {
         $this->doctrineRegistry = $doctrineRegistry;
-        $this->lastPingAt = new DateTimeImmutable();
-        $this->pingIntervalInSeconds = $pingIntervalInSeconds;
-    }
-
-    /**
-     * @param int $pingIntervalInSeconds
-     */
-    public function setPingIntervalInSeconds(int $pingIntervalInSeconds): void
-    {
+        $this->lastPingAt = time();
         $this->pingIntervalInSeconds = $pingIntervalInSeconds;
     }
 
@@ -100,9 +91,9 @@ final class ConnectionsHandler implements InitializerInterface
     private function isPingNeeded(): bool
     {
         $lastPingAt = $this->lastPingAt;
-        $now = $this->lastPingAt = new DateTimeImmutable();
+        $now = $this->lastPingAt = time();
 
-        return $now->getTimestamp() - $lastPingAt->getTimestamp() >= $this->pingIntervalInSeconds;
+        return $now - $lastPingAt >= $this->pingIntervalInSeconds;
     }
 
     /**
