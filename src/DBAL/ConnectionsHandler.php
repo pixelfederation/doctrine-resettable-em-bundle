@@ -6,12 +6,11 @@ declare(strict_types=1);
 
 namespace PixelFederation\DoctrineResettableEmBundle\DBAL;
 
-use Doctrine\Bundle\DoctrineBundle\Registry;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Common\Persistence\ConnectionRegistry;
 use Doctrine\DBAL\Connection;
-use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use PixelFederation\DoctrineResettableEmBundle\RequestCycle\InitializerInterface;
+use Webmozart\Assert\Assert;
 
 /**
  *
@@ -19,12 +18,12 @@ use PixelFederation\DoctrineResettableEmBundle\RequestCycle\InitializerInterface
 final class ConnectionsHandler implements InitializerInterface
 {
     /**
-     * @var Registry
+     * @var ConnectionRegistry
      */
-    private $doctrineRegistry;
+    private $connectionRegistry;
 
     /**
-     * @var array<string,Connection>|null
+     * @var Connection[]|null
      */
     private $connections = null;
 
@@ -44,14 +43,15 @@ final class ConnectionsHandler implements InitializerInterface
     private const DEFAULT_PING_INTERVAL = 0;
 
     /**
-     * @param Registry $doctrineRegistry
-     * @param int      $pingIntervalInSeconds
+     * @param ConnectionRegistry $connectionRegistry
+     * @param int                $pingIntervalInSeconds
      *
-     * @throws Exception
      */
-    public function __construct(Registry $doctrineRegistry, int $pingIntervalInSeconds = self::DEFAULT_PING_INTERVAL)
-    {
-        $this->doctrineRegistry = $doctrineRegistry;
+    public function __construct(
+        ConnectionRegistry $connectionRegistry,
+        int $pingIntervalInSeconds = self::DEFAULT_PING_INTERVAL
+    ) {
+        $this->connectionRegistry = $connectionRegistry;
         $this->lastPingAt = time();
         $this->pingIntervalInSeconds = $pingIntervalInSeconds;
     }
@@ -97,7 +97,9 @@ final class ConnectionsHandler implements InitializerInterface
     }
 
     /**
-     * @return array<string,Connection>
+     * @return Connection[]
+     * @SuppressWarnings(PHPMD.StaticAccess)
+     * @psalm-suppress MoreSpecificReturnType
      */
     private function getConnections(): array
     {
@@ -105,37 +107,13 @@ final class ConnectionsHandler implements InitializerInterface
             return $this->connections;
         }
 
-        return $this->connections =
-            array_reduce(
-                array_map(
-                    static function (EntityManagerInterface $entityManager): Connection {
-                        return $entityManager->getConnection();
-                    },
-                    array_filter(
-                        $this->doctrineRegistry->getManagers(),
-                        static function (ObjectManager $objectManager): bool {
-                            return $objectManager instanceof EntityManagerInterface;
-                        }
-                    )
-                ),
-                /**
-                 * @param array      $connections
-                 * @param Connection $connection
-                 *
-                 * @return array<string,Connection>
-                 * @psalm-suppress MixedReturnTypeCoercion
-                 */
-                static function (array $connections, Connection $connection): array {
-                    $hash = spl_object_hash($connection);
+        $connections = $this->connectionRegistry->getConnections();
+        Assert::allIsInstanceOf($connections, Connection::class);
 
-                    if (!isset($connections[$hash])) {
-                        $connections[$hash] = $connection;
-                    }
-
-                    /** @psalm-suppress MixedReturnTypeCoercion */
-                    return $connections;
-                },
-                []
-            );
+        /**
+         * @psalm-suppress LessSpecificReturnStatement
+         *@psalm-suppress PropertyTypeCoercion
+         */
+        return $this->connections = $connections;
     }
 }

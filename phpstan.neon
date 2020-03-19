@@ -1,6 +1,10 @@
 parameters:
     ignoreErrors:
-        #- '#Call to an undefined method BetterSerializer\\DataBind\\MetaData\\Type\\TypeInterface::getNestedType\(\)#'
+        -
+          message: '/Method PixelFederation\\DoctrineResettableEmBundle\\DBAL\\ConnectionsHandler::getConnections\(\) should return array<Doctrine\\DBAL\\Connection> but returns array<object>./'
+          path: src/DBAL/ConnectionsHandler.php
+        - message: '/Property PixelFederation\\DoctrineResettableEmBundle\\DBAL\\ConnectionsHandler::\$connections \(array<Doctrine\\DBAL\\Connection>|null\) does not accept array<object>./'
+          path: src/DBAL/ConnectionsHandler.php
 
     excludes_analyse:
         - %rootDir%/../../../tests/*
