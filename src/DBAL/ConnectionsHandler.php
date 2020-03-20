@@ -10,7 +10,6 @@ use Doctrine\Common\Persistence\ConnectionRegistry;
 use Doctrine\DBAL\Connection;
 use Exception;
 use PixelFederation\DoctrineResettableEmBundle\RequestCycle\InitializerInterface;
-use Webmozart\Assert\Assert;
 
 /**
  *
@@ -21,11 +20,6 @@ final class ConnectionsHandler implements InitializerInterface
      * @var ConnectionRegistry
      */
     private $connectionRegistry;
-
-    /**
-     * @var Connection[]|null
-     */
-    private $connections = null;
 
     /**
      * @var int
@@ -74,7 +68,8 @@ final class ConnectionsHandler implements InitializerInterface
             return;
         }
 
-        foreach ($this->getConnections() as $connection) {
+        /** @var Connection $connection */
+        foreach ($this->connectionRegistry->getConnections() as $connection) {
             if ($connection->ping()) {
                 continue;
             }
@@ -94,26 +89,5 @@ final class ConnectionsHandler implements InitializerInterface
         $now = $this->lastPingAt = time();
 
         return $now - $lastPingAt >= $this->pingIntervalInSeconds;
-    }
-
-    /**
-     * @return Connection[]
-     * @SuppressWarnings(PHPMD.StaticAccess)
-     * @psalm-suppress MoreSpecificReturnType
-     */
-    private function getConnections(): array
-    {
-        if ($this->connections !== null) {
-            return $this->connections;
-        }
-
-        $connections = $this->connectionRegistry->getConnections();
-        Assert::allIsInstanceOf($connections, Connection::class);
-
-        /**
-         * @psalm-suppress LessSpecificReturnStatement
-         *@psalm-suppress PropertyTypeCoercion
-         */
-        return $this->connections = $connections;
     }
 }
