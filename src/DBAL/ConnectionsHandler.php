@@ -6,7 +6,7 @@ declare(strict_types=1);
 
 namespace PixelFederation\DoctrineResettableEmBundle\DBAL;
 
-use Doctrine\Common\Persistence\ConnectionRegistry;
+use Doctrine\Persistence\ConnectionRegistry;
 use Doctrine\DBAL\Connection;
 use Exception;
 use PixelFederation\DoctrineResettableEmBundle\RequestCycle\InitializerInterface;
