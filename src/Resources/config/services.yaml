@@ -6,7 +6,7 @@ services:
 
   PixelFederation\DoctrineResettableEmBundle\DBAL\ConnectionsHandler:
     arguments:
-      $doctrineRegistry: '@doctrine'
+      $connectionRegistry: '@doctrine'
     tags:
       - {name: pixelfederation_doctrine_resettable_em_bundle.app_initializer}
 

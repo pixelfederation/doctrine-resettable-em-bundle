@@ -1,9 +1,11 @@
 FROM php:7.3-fpm
 
-RUN apt-get update && apt-get install -y git-core
+RUN apt-get update && apt-get install -y git-core zlib1g-dev libzip-dev
+RUN docker-php-ext-install zip pdo_mysql
 
 RUN pecl install xdebug && \
     docker-php-ext-enable xdebug
+
 
 RUN echo "xdebug.remote_host=docker.for.mac.host.internal" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
         echo 'xdebug.file_link_format="phpstorm://open?url=file://%%f&line=%%l"' >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \

@@ -53,8 +53,7 @@ class ConnectionsHandlerTest extends TestCase
         /** @var Registry $doctrineRegistryMock */
         $doctrineRegistryMock = $this->doctrineRegistryProphecy->reveal();
 
-        $this->setUpRegistryEnityManagers();
-        $this->setUpEntityManagerConnection();
+        $this->setUpRegistryConnections();
         $this->connectionsHandler = new ConnectionsHandler($doctrineRegistryMock, $pingInterval);
     }
 
@@ -86,17 +85,9 @@ class ConnectionsHandlerTest extends TestCase
     /**
      *
      */
-    private function setUpRegistryEnityManagers(): void
+    private function setUpRegistryConnections(): void
     {
-        $this->doctrineRegistryProphecy->getManagers()->willReturn([$this->entityManagerProphecy->reveal()]);
-    }
-
-    /**
-     *
-     */
-    private function setUpEntityManagerConnection(): void
-    {
-        $this->entityManagerProphecy->getConnection()->willReturn($this->connectionProphecy->reveal());
+        $this->doctrineRegistryProphecy->getConnections()->willReturn([$this->connectionProphecy->reveal()]);
     }
 
     /**
