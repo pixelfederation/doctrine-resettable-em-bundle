@@ -1,6 +1,4 @@
-parameters:
-  git_dir: .
-  bin_dir: vendor/bin
+grumphp:
   hooks_dir: bin/grumphp_hooks
   stop_on_failure: true
   process_timeout: 600

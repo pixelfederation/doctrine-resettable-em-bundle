@@ -5,7 +5,7 @@ doctrine:
       default:
         driver: pdo_sqlite
         charset: utf8
-        path: '%kernel.root_dir%/data/sqlite_default.db'
+        path: '%kernel.project_dir%/data/sqlite_default.db'
         logging: true
   orm:
     default_entity_manager: default
@@ -17,6 +17,6 @@ doctrine:
           Entity:
             is_bundle: false
             type: annotation
-            dir: '%kernel.root_dir%/HttpRequestLifecycleTest/Entity'
+            dir: '%kernel.project_dir%/HttpRequestLifecycleTest/Entity'
             prefix: 'PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\Entity'
             alias: Entity

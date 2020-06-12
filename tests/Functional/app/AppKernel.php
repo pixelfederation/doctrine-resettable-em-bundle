@@ -63,15 +63,11 @@ final class AppKernel extends Kernel
     }
 
     /**
-     * {@inheritdoc}
+     * @return string
      */
-    public function getName(): string
+    public function getProjectDir():string
     {
-        if (null === $this->name) {
-            $this->name = parent::getName() . substr(md5($this->rootConfig), -16);
-        }
-
-        return $this->name;
+        return __DIR__;
     }
 
     /**
