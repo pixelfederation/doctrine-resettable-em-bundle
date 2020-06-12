@@ -1,9 +1,9 @@
 pixel_federation_persist_test:
   methods: ['GET']
   path: /
-  defaults: { _controller: PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\TestController:persistTestAction }
+  controller: PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\TestController::persistTestAction
 
 pixel_federation_do_nothing:
   methods: ['GET']
   path: /dummy
-  defaults: { _controller: PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\TestController:doNothingAction }
+  controller: PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\TestController::doNothingAction

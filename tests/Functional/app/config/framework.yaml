@@ -1,4 +1,10 @@
 framework:
   secret: secret
-  router: { resource: "%kernel.root_dir%/%kernel.test_case%/configs/routing.yaml" }
+  router:
+    resource: "%kernel.project_dir%/%kernel.test_case%/configs/routing.yaml"
+    utf8: true
   test: ~
+
+sensio_framework_extra:
+  router:
+    annotations: false

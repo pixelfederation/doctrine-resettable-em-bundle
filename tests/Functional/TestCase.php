@@ -11,6 +11,7 @@ use InvalidArgumentException;
 use PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\AppKernel;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Filesystem\Exception\IOException;
@@ -103,9 +104,9 @@ abstract class TestCase extends KernelTestCase
      *
      * @param array $server An array of server parameters
      *
-     * @return Client
+     * @return KernelBrowser
      */
-    protected static function createClient(array $server = []): Client
+    protected static function createClient(array $server = []): KernelBrowser
     {
         static::bootTestKernel();
 
