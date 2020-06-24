@@ -1,0 +1,23 @@
+imports:
+  - {resource: ../../config/framework.yaml}
+  - {resource: ../../config/doctrine.yaml}
+
+doctrine:
+  dbal:
+    default_connection: default
+    connections:
+      default:
+        wrapper_class: PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\FailoverAwareTest\ConnectionMock
+
+pixel_federation_doctrine_resettable_em:
+  failover_connections:
+    default: writer
+
+services:
+  _defaults:
+    public: false
+    autowire: true
+    autoconfigure: true
+
+  PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\FailoverAwareTest\TestController:
+    public: true

@@ -2,4 +2,5 @@ parameters:
     ignoreErrors:
 
     excludes_analyse:
-        - %rootDir%/../../../tests/*
+        - %rootDir%/DependencyInjection/*
+        - %rootDir%/tests/*

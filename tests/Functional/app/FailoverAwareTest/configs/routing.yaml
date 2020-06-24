@@ -1,0 +1,4 @@
+pixel_federation_do_nothing:
+  methods: ['GET']
+  path: /dummy
+  controller: PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\FailoverAwareTest\TestController::doNothingAction
