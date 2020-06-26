@@ -7,7 +7,7 @@ declare(strict_types=1);
 namespace PixelFederation\DoctrineResettableEmBundle\Tests\Functional;
 
 use Exception;
-use PixelFederation\DoctrineResettableEmBundle\DBAL\ConnectionsHandler;
+use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\OptimizedAliveKeeper;
 
 /**
  */
@@ -35,8 +35,8 @@ final class PingIntervalInjectionTest extends TestCase
      */
     public function testPingIntervalInjectionFromConfiguration(): void
     {
-        /* @var $handler ConnectionsHandler */
-        $handler = self::$container->get(ConnectionsHandler::class);
+        /* @var $handler OptimizedAliveKeeper */
+        $handler = self::$container->get(OptimizedAliveKeeper::class);
 
         self::assertSame(10, $handler->getPingIntervalInSeconds());
     }

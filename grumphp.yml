@@ -48,14 +48,14 @@ grumphp:
       configuration: 'phpstan.neon'
       level: 7
       ignore_patterns:
-        - Tests/
-        - DependencyInjection/Configuration.php
+        - tests/
+        - DependencyInjection
       triggered_by: ['php']
     psalm:
       config: psalm.xml
       ignore_patterns:
-        - src/DependencyInjection/Configuration.php
-        - src/DependencyInjection/PixelFederationCommandBusExtension.php
+        - src/DependencyInjection
+        - tests
       no_cache: false
       report: ~
       triggered_by: ['php']

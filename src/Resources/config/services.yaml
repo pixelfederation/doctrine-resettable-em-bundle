@@ -4,11 +4,33 @@ services:
     autowire: false
     autoconfigure: false
 
+  PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\AliveKeeper: '@PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\AggregatedAliveKeeper'
+
   PixelFederation\DoctrineResettableEmBundle\DBAL\ConnectionsHandler:
     arguments:
-      $connectionRegistry: '@doctrine'
+      $aliveKeeper: '@PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\AliveKeeper'
     tags:
       - {name: pixelfederation_doctrine_resettable_em_bundle.app_initializer}
+
+  PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\AggregatedAliveKeeper:
+    arguments:
+      $aliveKeepers: ~ # will be provided by the extension
+
+  PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\OptimizedAliveKeeper:
+    arguments:
+      $decorated: '@PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\AggregatedAliveKeeper'
+
+  PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\SimpleAliveKeeper:
+    abstract: true
+    arguments:
+      $connection: ~ #will be provided by the extension
+
+  PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\FailoverAware\FailoverAwareAliveKeeper:
+    abstract: true
+    arguments:
+      $logger: '@logger'
+      $connection: ~ #will be provided by the extension
+      $connectionName: ~ #will be provided by the extension
 
   PixelFederation\DoctrineResettableEmBundle\ORM\EntityManagersHandler:
     arguments:
