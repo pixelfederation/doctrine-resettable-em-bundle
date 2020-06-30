@@ -11,7 +11,7 @@
     }
   ],
   "require": {
-    "php": ">=7.2 <7.4",
+    "php": ">=7.2",
     "doctrine/orm": "^2.7",
     "sensio/framework-extra-bundle": "^5.2",
     "symfony/config": "^4.1|^5.0",
@@ -26,7 +26,7 @@
   },
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^2.15",
-    "jakub-onderka/php-parallel-lint": "^1.0",
+    "php-parallel-lint/php-parallel-lint": "^1.2",
     "nikic/php-parser": "^4.2",
     "phpcompatibility/php-compatibility": "^9.1",
     "phpmd/phpmd": "^2.6",
