@@ -34,9 +34,9 @@ final class FailoverAwareAliveKeeper implements AliveKeeper
     private $conntectionName;
 
     /**
-     * @var bool
+     * @var ConnectionType
      */
-    private $isWriter;
+    private $connectionType;
 
     /**
      * @param LoggerInterface $logger
@@ -53,7 +53,7 @@ final class FailoverAwareAliveKeeper implements AliveKeeper
         $this->logger = $logger;
         $this->connection = $connection;
         $this->conntectionName = $connectionName;
-        $this->isWriter = $connectionType === ConnectionType::WRITER;
+        $this->connectionType = ConnectionType::create($connectionType);
     }
 
     /**
@@ -94,7 +94,8 @@ final class FailoverAwareAliveKeeper implements AliveKeeper
     private function isProperConnection(): bool
     {
         $stmt = $this->connection->query('SELECT @@global.innodb_read_only;');
+        $currentConnectionIsWriter = ((bool)$stmt->fetchColumn(0)) === false;
 
-        return $this->isWriter !== (bool) $stmt->fetchColumn(0);
+        return $this->connectionType->isWriter() === $currentConnectionIsWriter;
     }
 }

@@ -20,15 +20,18 @@ use Symfony\Component\DependencyInjection\Reference;
  */
 final class AliveKeeperPass implements CompilerPassInterface
 {
+    public const FAILOVER_CONNECTIONS_PARAM_NAME = 'pixelfederation_doctrine_resettable_em_bundle.failover_connections';
+
     /**
      * @param ContainerBuilder $container
      */
     public function process(ContainerBuilder $container)
     {
+        if (!$container->hasParameter(self::FAILOVER_CONNECTIONS_PARAM_NAME)) {
+            return;
+        }
         $connections = $container->getParameter('doctrine.connections');
-        $failoverConnections = $container->getParameter(
-            'pixelfederation_doctrine_resettable_em_bundle.failover_connections'
-        );
+        $failoverConnections = $container->getParameter(self::FAILOVER_CONNECTIONS_PARAM_NAME);
         $aliveKeepers = [];
 
         foreach ($connections as $connectionName => $connectionSvcId) {

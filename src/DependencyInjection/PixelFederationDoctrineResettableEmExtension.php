@@ -9,6 +9,7 @@ namespace PixelFederation\DoctrineResettableEmBundle\DependencyInjection;
 use Exception;
 use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\AliveKeeper;
 use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\OptimizedAliveKeeper;
+use PixelFederation\DoctrineResettableEmBundle\DependencyInjection\CompilerPass\AliveKeeperPass;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -60,7 +61,7 @@ final class PixelFederationDoctrineResettableEmExtension extends ConfigurableExt
         }
 
         $container->setParameter(
-            'pixelfederation_doctrine_resettable_em_bundle.failover_connections',
+            AliveKeeperPass::FAILOVER_CONNECTIONS_PARAM_NAME,
             $config['failover_connections']
         );
     }
