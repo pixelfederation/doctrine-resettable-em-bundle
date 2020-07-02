@@ -68,7 +68,12 @@ final class FailoverAwareAliveKeeper implements AliveKeeper
                 $this->reconnect();
             }
         } catch (DBALException $e) {
-            $this->logger->critical(sprintf('Exceptional reconnect for connection \'%s\'', $this->conntectionName));
+            $this->logger->info(
+                sprintf('Exceptional reconnect for connection \'%s\'', $this->conntectionName),
+                [
+                    'exception' => $e,
+                ]
+            );
             $this->reconnect();
         }
     }
@@ -85,9 +90,7 @@ final class FailoverAwareAliveKeeper implements AliveKeeper
     /**
      * returns true if the connection is expected to be writable and innodb_read_only is set to 0
      * or if the connection is not expected to be writable and innodb_read_only is set to 1
-     *
      * these flags were only tested on AWS Aurora RDS
-     *
      * @return bool
      * @throws DBALException
      */
