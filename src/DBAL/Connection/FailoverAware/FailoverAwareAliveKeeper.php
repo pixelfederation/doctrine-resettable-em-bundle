@@ -34,9 +34,9 @@ final class FailoverAwareAliveKeeper implements AliveKeeper
     private $conntectionName;
 
     /**
-     * @var bool
+     * @var ConnectionType
      */
-    private $isWriter;
+    private $connectionType;
 
     /**
      * @param LoggerInterface $logger
@@ -53,7 +53,7 @@ final class FailoverAwareAliveKeeper implements AliveKeeper
         $this->logger = $logger;
         $this->connection = $connection;
         $this->conntectionName = $connectionName;
-        $this->isWriter = $connectionType === ConnectionType::WRITER;
+        $this->connectionType = ConnectionType::create($connectionType);
     }
 
     /**
@@ -68,7 +68,12 @@ final class FailoverAwareAliveKeeper implements AliveKeeper
                 $this->reconnect();
             }
         } catch (DBALException $e) {
-            $this->logger->critical(sprintf('Exceptional reconnect for connection \'%s\'', $this->conntectionName));
+            $this->logger->info(
+                sprintf('Exceptional reconnect for connection \'%s\'', $this->conntectionName),
+                [
+                    'exception' => $e,
+                ]
+            );
             $this->reconnect();
         }
     }
@@ -85,16 +90,15 @@ final class FailoverAwareAliveKeeper implements AliveKeeper
     /**
      * returns true if the connection is expected to be writable and innodb_read_only is set to 0
      * or if the connection is not expected to be writable and innodb_read_only is set to 1
-     *
      * these flags were only tested on AWS Aurora RDS
-     *
      * @return bool
      * @throws DBALException
      */
     private function isProperConnection(): bool
     {
         $stmt = $this->connection->query('SELECT @@global.innodb_read_only;');
+        $currentConnectionIsWriter = ((bool)$stmt->fetchColumn(0)) === false;
 
-        return $this->isWriter !== (bool) $stmt->fetchColumn(0);
+        return $this->connectionType->isWriter() === $currentConnectionIsWriter;
     }
 }

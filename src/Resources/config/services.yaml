@@ -14,7 +14,7 @@ services:
 
   PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\AggregatedAliveKeeper:
     arguments:
-      $aliveKeepers: ~ # will be provided by the extension
+      $aliveKeepers: [] # will be provided by the extension
 
   PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\OptimizedAliveKeeper:
     arguments:
