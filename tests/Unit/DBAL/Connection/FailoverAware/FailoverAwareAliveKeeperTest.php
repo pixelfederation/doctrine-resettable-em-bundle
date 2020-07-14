@@ -98,7 +98,7 @@ class FailoverAwareAliveKeeperTest extends TestCase
     public function testKeepAliveReaderWithReconnectOnFailover(): void
     {
         $loggerProphecy = $this->prophesize(LoggerInterface::class);
-        $loggerProphecy->alert(Argument::any())->shouldBeCalled();
+        $loggerProphecy->warning(Argument::any())->shouldBeCalled();
         $statementProphecy = $this->prophesize(Statement::class);
         $statementProphecy->fetchColumn(0)->willReturn('0')->shouldBeCalled();
 
@@ -123,7 +123,7 @@ class FailoverAwareAliveKeeperTest extends TestCase
     public function testKeepAliveWithReconnectConnectionError(): void
     {
         $loggerProphecy = $this->prophesize(LoggerInterface::class);
-        $loggerProphecy->critical(Argument::any())->shouldBeCalled();
+        $loggerProphecy->info(Argument::any(), Argument::any())->shouldBeCalled();
         $statementProphecy = $this->prophesize(Statement::class);
         $statementProphecy->fetchColumn(0)->willThrow(DBALException::class)->shouldBeCalled();
 
