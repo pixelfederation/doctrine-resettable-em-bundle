@@ -13,6 +13,7 @@ use Doctrine\DBAL\DBALException;
 use Exception;
 use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\AliveKeeper;
 use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 
 /**
  */
@@ -43,6 +44,7 @@ final class FailoverAwareAliveKeeper implements AliveKeeper
      * @param Connection      $connection
      * @param string          $connectionName
      * @param string          $connectionType
+     * @SuppressWarnings(PHPMD.StaticAccess)
      */
     public function __construct(
         LoggerInterface $logger,
@@ -64,7 +66,11 @@ final class FailoverAwareAliveKeeper implements AliveKeeper
     {
         try {
             if (!$this->isProperConnection()) {
-                $this->logger->alert(sprintf('Failover reconnect for connection \'%s\'', $this->conntectionName));
+                $logLevel = $this->connectionType->isWriter() ? LogLevel::ALERT : LogLevel::WARNING;
+                $this->logger->log(
+                    $logLevel,
+                    sprintf('Failover reconnect for connection \'%s\'', $this->conntectionName)
+                );
                 $this->reconnect();
             }
         } catch (DBALException $e) {
@@ -74,7 +80,6 @@ final class FailoverAwareAliveKeeper implements AliveKeeper
                     'exception' => $e,
                 ]
             );
-            $this->reconnect();
         }
     }
 

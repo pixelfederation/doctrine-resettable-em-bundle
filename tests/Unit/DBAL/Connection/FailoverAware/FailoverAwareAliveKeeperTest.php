@@ -18,6 +18,7 @@ use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 
 class FailoverAwareAliveKeeperTest extends TestCase
 {
@@ -74,7 +75,7 @@ class FailoverAwareAliveKeeperTest extends TestCase
     public function testKeepAliveWriterWithReconnectOnFailover(): void
     {
         $loggerProphecy = $this->prophesize(LoggerInterface::class);
-        $loggerProphecy->alert(Argument::any())->shouldBeCalled();
+        $loggerProphecy->log(LogLevel::ALERT, Argument::any())->shouldBeCalled();
         $statementProphecy = $this->prophesize(Statement::class);
         $statementProphecy->fetchColumn(0)->willReturn('1')->shouldBeCalled();
 
@@ -98,7 +99,7 @@ class FailoverAwareAliveKeeperTest extends TestCase
     public function testKeepAliveReaderWithReconnectOnFailover(): void
     {
         $loggerProphecy = $this->prophesize(LoggerInterface::class);
-        $loggerProphecy->alert(Argument::any())->shouldBeCalled();
+        $loggerProphecy->log(LogLevel::WARNING, Argument::any())->shouldBeCalled();
         $statementProphecy = $this->prophesize(Statement::class);
         $statementProphecy->fetchColumn(0)->willReturn('0')->shouldBeCalled();
 
@@ -123,15 +124,15 @@ class FailoverAwareAliveKeeperTest extends TestCase
     public function testKeepAliveWithReconnectConnectionError(): void
     {
         $loggerProphecy = $this->prophesize(LoggerInterface::class);
-        $loggerProphecy->critical(Argument::any())->shouldBeCalled();
+        $loggerProphecy->info(Argument::any(), Argument::any())->shouldBeCalled();
         $statementProphecy = $this->prophesize(Statement::class);
         $statementProphecy->fetchColumn(0)->willThrow(DBALException::class)->shouldBeCalled();
 
         /** @var $connectionProphecy Connection|ObjectProphecy */
         $connectionProphecy = $this->prophesize(Connection::class);
         $connectionProphecy->query(Argument::any())->willReturn($statementProphecy->reveal())->shouldBeCalled();
-        $connectionProphecy->close()->shouldBeCalled();
-        $connectionProphecy->connect()->shouldBeCalled();
+        $connectionProphecy->close()->shouldBeCalledTimes(0);
+        $connectionProphecy->connect()->shouldBeCalledTimes(0);
 
         $aliveKeeper = new FailoverAwareAliveKeeper(
             $loggerProphecy->reveal(),
