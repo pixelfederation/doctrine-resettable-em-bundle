@@ -2,5 +2,6 @@
 vendor
 .php_cs.cache
 .phpunit.result.cache
+docker-compose.override.yml
 tests/Functional/app/data/*
 !tests/Functional/app/data/.gitkeep
