@@ -80,6 +80,12 @@ final class FailoverAwareAliveKeeper implements AliveKeeper
                     'exception' => $e,
                 ]
             );
+
+            try {
+                $this->reconnect();
+            } catch (DBALException $e) {
+                // this is usual reconnect
+            }
         }
     }
 

@@ -131,8 +131,8 @@ class FailoverAwareAliveKeeperTest extends TestCase
         /** @var $connectionProphecy Connection|ObjectProphecy */
         $connectionProphecy = $this->prophesize(Connection::class);
         $connectionProphecy->query(Argument::any())->willReturn($statementProphecy->reveal())->shouldBeCalled();
-        $connectionProphecy->close()->shouldBeCalledTimes(0);
-        $connectionProphecy->connect()->shouldBeCalledTimes(0);
+        $connectionProphecy->close()->shouldBeCalled();
+        $connectionProphecy->connect()->shouldBeCalled();
 
         $aliveKeeper = new FailoverAwareAliveKeeper(
             $loggerProphecy->reveal(),
