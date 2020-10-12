@@ -6,7 +6,7 @@ declare(strict_types=1);
 
 namespace PixelFederation\DoctrineResettableEmBundle\ORM;
 
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Decorator\EntityManagerDecorator;
 use Doctrine\ORM\EntityManagerInterface;
