@@ -10,8 +10,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\FailoverAwareTest\ConnectionMock;
 
-/**
- */
 final class FailoverAwareTest extends TestCase
 {
     /**
@@ -27,17 +25,11 @@ final class FailoverAwareTest extends TestCase
         self::runCommand('doctrine:schema:create --em default');
     }
 
-    /**
-     * @return string
-     */
     protected static function getTestCase(): string
     {
         return 'FailoverAwareTest';
     }
 
-    /**
-     *
-     */
     public function testFailoverAliveKeeperOnRequestStart(): void
     {
         $client = self::createClient();

@@ -6,13 +6,7 @@ declare(strict_types=1);
 
 namespace PixelFederation\DoctrineResettableEmBundle\RequestCycle;
 
-/**
- *
- */
 interface TerminatorInterface
 {
-    /**
-     *
-     */
     public function terminate(): void;
 }

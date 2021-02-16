@@ -11,23 +11,20 @@ use Doctrine\Bundle\DoctrineBundle\Registry;
 use PixelFederation\DoctrineResettableEmBundle\ORM\EntityManagersHandler;
 use PHPUnit\Framework\TestCase;
 use PixelFederation\DoctrineResettableEmBundle\ORM\ResettableEntityManager;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 
 class EntityManagersHandlerTest extends TestCase
 {
-    /**
-     * @var EntityManagersHandler
-     */
-    private $emHandler;
+    use ProphecyTrait;
+
+    private EntityManagersHandler $emHandler;
 
     /**
      * @var ResettableEntityManager|ObjectProphecy
      */
     private $entityManagerProphecy;
 
-    /**
-     *
-     */
     protected function setUp(): void
     {
         $this->entityManagerProphecy = $this->prophesize(ResettableEntityManager::class);
@@ -35,9 +32,6 @@ class EntityManagersHandlerTest extends TestCase
         $this->emHandler = new EntityManagersHandler([$this->entityManagerProphecy->reveal()]);
     }
 
-    /**
-     *
-     */
     public function testHandleEntityManagerClearingOnAppTerminate(): void
     {
         $this->entityManagerProphecy->clearOrResetIfNeeded()->shouldBeCalled();

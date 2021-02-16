@@ -10,18 +10,21 @@ namespace PixelFederation\DoctrineResettableEmBundle\Tests\Unit\DBAL\Connection\
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
-use Doctrine\DBAL\Driver\Statement;
+use Doctrine\DBAL\Statement;
 use Exception;
 use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\FailoverAware\ConnectionType;
 use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\FailoverAware\FailoverAwareAliveKeeper;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 
 class FailoverAwareAliveKeeperTest extends TestCase
 {
+    use ProphecyTrait;
+
     /**
      * @throws Exception
      */
@@ -29,11 +32,11 @@ class FailoverAwareAliveKeeperTest extends TestCase
     {
         $loggerProphecy = $this->prophesize(LoggerInterface::class);
         $statementProphecy = $this->prophesize(Statement::class);
-        $statementProphecy->fetchColumn(0)->willReturn('0')->shouldBeCalled();
+        $statementProphecy->fetchOne()->willReturn('0')->shouldBeCalled();
 
         /** @var $connectionProphecy Connection|ObjectProphecy */
         $connectionProphecy = $this->prophesize(Connection::class);
-        $connectionProphecy->query(Argument::any())->willReturn($statementProphecy->reveal())->shouldBeCalled();
+        $connectionProphecy->executeQuery(Argument::any())->willReturn($statementProphecy->reveal())->shouldBeCalled();
         $connectionProphecy->close()->shouldNotBeCalled();
         $connectionProphecy->connect()->shouldNotBeCalled();
 
@@ -52,11 +55,11 @@ class FailoverAwareAliveKeeperTest extends TestCase
     {
         $loggerProphecy = $this->prophesize(LoggerInterface::class);
         $statementProphecy = $this->prophesize(Statement::class);
-        $statementProphecy->fetchColumn(0)->willReturn('1')->shouldBeCalled();
+        $statementProphecy->fetchOne()->willReturn('1')->shouldBeCalled();
 
         /** @var $connectionProphecy Connection|ObjectProphecy */
         $connectionProphecy = $this->prophesize(Connection::class);
-        $connectionProphecy->query(Argument::any())->willReturn($statementProphecy->reveal())->shouldBeCalled();
+        $connectionProphecy->executeQuery(Argument::any())->willReturn($statementProphecy->reveal())->shouldBeCalled();
         $connectionProphecy->close()->shouldNotBeCalled();
         $connectionProphecy->connect()->shouldNotBeCalled();
 
@@ -77,11 +80,11 @@ class FailoverAwareAliveKeeperTest extends TestCase
         $loggerProphecy = $this->prophesize(LoggerInterface::class);
         $loggerProphecy->log(LogLevel::ALERT, Argument::any())->shouldBeCalled();
         $statementProphecy = $this->prophesize(Statement::class);
-        $statementProphecy->fetchColumn(0)->willReturn('1')->shouldBeCalled();
+        $statementProphecy->fetchOne()->willReturn('1')->shouldBeCalled();
 
         /** @var $connectionProphecy Connection|ObjectProphecy */
         $connectionProphecy = $this->prophesize(Connection::class);
-        $connectionProphecy->query(Argument::any())->willReturn($statementProphecy->reveal())->shouldBeCalled();
+        $connectionProphecy->executeQuery(Argument::any())->willReturn($statementProphecy->reveal())->shouldBeCalled();
         $connectionProphecy->close()->shouldBeCalled();
         $connectionProphecy->connect()->shouldBeCalled();
 
@@ -101,11 +104,11 @@ class FailoverAwareAliveKeeperTest extends TestCase
         $loggerProphecy = $this->prophesize(LoggerInterface::class);
         $loggerProphecy->log(LogLevel::WARNING, Argument::any())->shouldBeCalled();
         $statementProphecy = $this->prophesize(Statement::class);
-        $statementProphecy->fetchColumn(0)->willReturn('0')->shouldBeCalled();
+        $statementProphecy->fetchOne()->willReturn('0')->shouldBeCalled();
 
         /** @var $connectionProphecy Connection|ObjectProphecy */
         $connectionProphecy = $this->prophesize(Connection::class);
-        $connectionProphecy->query(Argument::any())->willReturn($statementProphecy->reveal())->shouldBeCalled();
+        $connectionProphecy->executeQuery(Argument::any())->willReturn($statementProphecy->reveal())->shouldBeCalled();
         $connectionProphecy->close()->shouldBeCalled();
         $connectionProphecy->connect()->shouldBeCalled();
 
@@ -126,11 +129,11 @@ class FailoverAwareAliveKeeperTest extends TestCase
         $loggerProphecy = $this->prophesize(LoggerInterface::class);
         $loggerProphecy->info(Argument::any(), Argument::any())->shouldBeCalled();
         $statementProphecy = $this->prophesize(Statement::class);
-        $statementProphecy->fetchColumn(0)->willThrow(DBALException::class)->shouldBeCalled();
+        $statementProphecy->fetchOne()->willThrow(DBALException::class)->shouldBeCalled();
 
         /** @var $connectionProphecy Connection|ObjectProphecy */
         $connectionProphecy = $this->prophesize(Connection::class);
-        $connectionProphecy->query(Argument::any())->willReturn($statementProphecy->reveal())->shouldBeCalled();
+        $connectionProphecy->executeQuery(Argument::any())->willReturn($statementProphecy->reveal())->shouldBeCalled();
         $connectionProphecy->close()->shouldBeCalled();
         $connectionProphecy->connect()->shouldBeCalled();
 

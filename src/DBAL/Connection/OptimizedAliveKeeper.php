@@ -8,34 +8,19 @@ namespace PixelFederation\DoctrineResettableEmBundle\DBAL\Connection;
 
 use Exception;
 
-/**
- */
 final class OptimizedAliveKeeper implements AliveKeeper
 {
-    /**
-     * @var AliveKeeper
-     */
-    private $decorated;
+    private AliveKeeper $decorated;
 
-    /**
-     * @var int
-     */
-    private $pingIntervalInSeconds;
+    private int $pingIntervalInSeconds;
 
-    /**
-     * @var int
-     */
-    private $lastPingAt;
+    private int $lastPingAt;
 
     /**
      * @const int
      */
     private const DEFAULT_PING_INTERVAL = 0;
 
-    /**
-     * @param AliveKeeper $decorated
-     * @param int         $pingIntervalInSeconds
-     */
     public function __construct(AliveKeeper $decorated, int $pingIntervalInSeconds = self::DEFAULT_PING_INTERVAL)
     {
         $this->decorated = $decorated;
@@ -43,16 +28,12 @@ final class OptimizedAliveKeeper implements AliveKeeper
         $this->lastPingAt = time();
     }
 
-    /**
-     * @return int
-     */
     public function getPingIntervalInSeconds(): int
     {
         return $this->pingIntervalInSeconds;
     }
 
     /**
-     * @return void
      * @throws Exception
      */
     public function keepAlive(): void
@@ -65,7 +46,6 @@ final class OptimizedAliveKeeper implements AliveKeeper
     }
 
     /**
-     * @return bool
      * @throws Exception
      */
     private function isPingNeeded(): bool

@@ -6,27 +6,21 @@ declare(strict_types=1);
 
 namespace PixelFederation\DoctrineResettableEmBundle\RequestCycle;
 
-/**
- *
- */
 final class Terminators
 {
     /**
      * @var TerminatorInterface[]
      */
-    private $terminators;
+    private iterable $terminators;
 
     /**
      * @param TerminatorInterface[] $terminators
      */
-    public function __construct($terminators)
+    public function __construct(iterable $terminators)
     {
         $this->terminators = $terminators;
     }
 
-    /**
-     *
-     */
     public function terminate(): void
     {
         foreach ($this->terminators as $terminator) {

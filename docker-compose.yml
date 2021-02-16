@@ -7,5 +7,6 @@ services:
     build: ./docker/php
     volumes:
       - .:/srv/www:delegated
+      - ~/.composer:/root/.composer:delegated
     environment:
       - XDEBUG_CONFIG=idekey=PHPSTORM

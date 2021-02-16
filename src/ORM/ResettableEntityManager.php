@@ -14,32 +14,14 @@ use Doctrine\ORM\Repository\RepositoryFactory;
 use Exception;
 use UnexpectedValueException;
 
-/**
- *
- */
 class ResettableEntityManager extends EntityManagerDecorator
 {
-    /**
-     * @var RepositoryFactory
-     */
-    private $repositoryFactory;
+    private RepositoryFactory $repositoryFactory;
 
-    /**
-     * @var ManagerRegistry
-     */
-    private $doctrineRegistry;
+    private ManagerRegistry $doctrineRegistry;
 
-    /**
-     * @var string
-     */
-    private $decoratedName;
+    private string $decoratedName;
 
-    /**
-     * @param Configuration          $configuration
-     * @param EntityManagerInterface $wrapped
-     * @param ManagerRegistry        $doctrineRegistry
-     * @param string                 $decoratedName
-     */
     public function __construct(
         Configuration $configuration,
         EntityManagerInterface $wrapped,
@@ -55,15 +37,14 @@ class ResettableEntityManager extends EntityManagerDecorator
     /**
      * @inheritDoc
      * @throws Exception
+     * @psalm-suppress MixedReturnTypeCoercion
      */
     public function getRepository($className)
     {
+        /** @psalm-suppress MixedReturnTypeCoercion */
         return $this->repositoryFactory->getRepository($this, $className);
     }
 
-    /**
-     * @return void
-     */
     public function clearOrResetIfNeeded(): void
     {
         if ($this->wrapped->isOpen()) {

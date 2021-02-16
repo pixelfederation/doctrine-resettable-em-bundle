@@ -13,35 +13,16 @@ use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\Kernel;
 
-/**
- */
 final class AppKernel extends Kernel
 {
+    private string $varDir;
+    private string $testCase;
+    private string $rootConfig;
 
     /**
-     * @var string
-     */
-    private $varDir;
-
-    /**
-     * @var string
-     */
-    private $testCase;
-
-    /**
-     * @var string
-     */
-    private $rootConfig;
-
-    /**
-     * @param $varDir
-     * @param $testCase
-     * @param $rootConfig
-     * @param $environment
-     * @param $debug
      * @throws InvalidArgumentException
      */
-    public function __construct($varDir, $testCase, $rootConfig, $environment, $debug)
+    public function __construct(string $varDir, string $testCase, string $rootConfig, string $environment, bool $debug)
     {
         if (!is_dir(__DIR__ . '/' . $testCase)) {
             throw new InvalidArgumentException(sprintf('The test case "%s" does not exist.', $testCase));
@@ -62,9 +43,6 @@ final class AppKernel extends Kernel
         parent::__construct($environment, $debug);
     }
 
-    /**
-     * @return string
-     */
     public function getProjectDir():string
     {
         return __DIR__;
@@ -83,32 +61,22 @@ final class AppKernel extends Kernel
         return include $filename;
     }
 
-    /**
-     * @return string
-     */
     public function getRootDir(): string
     {
         return __DIR__;
     }
 
-    /**
-     * @return string
-     */
     public function getCacheDir(): string
     {
         return sys_get_temp_dir() . '/' . $this->varDir . '/' . $this->testCase . '/cache/' . $this->environment;
     }
 
-    /**
-     * @return string
-     */
     public function getLogDir(): string
     {
         return sys_get_temp_dir() . '/' . $this->varDir . '/' . $this->testCase . '/logs';
     }
 
     /**
-     * @param LoaderInterface $loader
      * @throws Exception
      */
     public function registerContainerConfiguration(LoaderInterface $loader): void
@@ -116,9 +84,6 @@ final class AppKernel extends Kernel
         $loader->load($this->rootConfig);
     }
 
-    /**
-     * @return string
-     */
     public function serialize(): string
     {
         return serialize([
@@ -131,7 +96,6 @@ final class AppKernel extends Kernel
     }
 
     /**
-     * @param $str
      * @throws InvalidArgumentException
      */
     public function unserialize($str): void
@@ -140,9 +104,6 @@ final class AppKernel extends Kernel
         $this->__construct($data[0], $data[1], $data[2], $data[3], $data[4]);
     }
 
-    /**
-     * @return array
-     */
     protected function getKernelParameters(): array
     {
         $parameters = parent::getKernelParameters();

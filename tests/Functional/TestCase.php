@@ -9,7 +9,6 @@ namespace PixelFederation\DoctrineResettableEmBundle\Tests\Functional;
 use Exception;
 use InvalidArgumentException;
 use PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\AppKernel;
-use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -17,15 +16,11 @@ use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
 
-/**
- *
- */
 abstract class TestCase extends KernelTestCase
 {
-    private static $application;
+    private static ?Application $application = null;
 
     /**
-     *
      * @throws IOException
      */
     public static function setUpBeforeClass(): void
@@ -34,7 +29,6 @@ abstract class TestCase extends KernelTestCase
     }
 
     /**
-     *
      * @throws IOException
      */
     public static function tearDownAfterClass(): void
@@ -55,7 +49,6 @@ abstract class TestCase extends KernelTestCase
     }
 
     /**
-     *
      * @throws IOException
      */
     protected static function deleteTmpDir(): void
@@ -103,8 +96,6 @@ abstract class TestCase extends KernelTestCase
      * Creates a Client.
      *
      * @param array $server An array of server parameters
-     *
-     * @return KernelBrowser
      */
     protected static function createClient(array $server = []): KernelBrowser
     {
@@ -117,8 +108,6 @@ abstract class TestCase extends KernelTestCase
     }
 
     /**
-     * @param string $command
-     *
      * @throws Exception
      */
     protected static function runCommand(string $command): void
@@ -127,22 +116,13 @@ abstract class TestCase extends KernelTestCase
         self::getApplication()->run(new StringInput($command));
     }
 
-    /**
-     * @return void
-     */
     protected static function bootTestKernel(): void
     {
         self::bootKernel(['test_case' => static::getTestCase(), 'root_config' => 'configs/config.yaml']);
     }
 
-    /**
-     * @return string
-     */
     abstract protected static function getTestCase(): string;
 
-    /**
-     * @return Application
-     */
     protected static function getApplication(): Application
     {
         if (self::$application === null) {
@@ -153,9 +133,6 @@ abstract class TestCase extends KernelTestCase
         return self::$application;
     }
 
-    /**
-     * @return string
-     */
     protected static function getVarDir(): string
     {
         return 'PFCBB' . substr(strrchr(static::class, '\\'), 1);

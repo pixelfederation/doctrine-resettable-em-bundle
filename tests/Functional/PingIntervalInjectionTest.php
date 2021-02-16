@@ -9,8 +9,6 @@ namespace PixelFederation\DoctrineResettableEmBundle\Tests\Functional;
 use Exception;
 use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\OptimizedAliveKeeper;
 
-/**
- */
 final class PingIntervalInjectionTest extends TestCase
 {
     /**
@@ -22,17 +20,11 @@ final class PingIntervalInjectionTest extends TestCase
         self::bootTestKernel();
     }
 
-    /**
-     * @return string
-     */
     protected static function getTestCase(): string
     {
         return 'PingIntervalInjectionTest';
     }
 
-    /**
-     *
-     */
     public function testPingIntervalInjectionFromConfiguration(): void
     {
         /* @var $handler OptimizedAliveKeeper */

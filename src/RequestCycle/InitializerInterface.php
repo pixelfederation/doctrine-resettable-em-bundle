@@ -7,13 +7,7 @@ declare(strict_types=1);
 
 namespace PixelFederation\DoctrineResettableEmBundle\RequestCycle;
 
-/**
- *
- */
 interface InitializerInterface
 {
-    /**
-     *
-     */
     public function initialize(): void;
 }

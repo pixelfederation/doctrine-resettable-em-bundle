@@ -16,14 +16,10 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
 
-/**
- */
 final class PixelFederationDoctrineResettableEmExtension extends ConfigurableExtension
 {
     /**
-     * @param array            $mergedConfig
-     * @param ContainerBuilder $container
-     *
+     * @param array $mergedConfig
      * @throws Exception
      */
     protected function loadInternal(array $mergedConfig, ContainerBuilder $container)
@@ -35,8 +31,7 @@ final class PixelFederationDoctrineResettableEmExtension extends ConfigurableExt
     }
 
     /**
-     * @param ContainerBuilder $container
-     * @param array            $config
+     * @param array $config
      */
     private function tryToOptimizeAliveKeeper(ContainerBuilder $container, array $config): void
     {
@@ -51,8 +46,7 @@ final class PixelFederationDoctrineResettableEmExtension extends ConfigurableExt
     }
 
     /**
-     * @param ContainerBuilder $container
-     * @param array            $config
+     * @param array $config
      */
     private function registerReaderWriterConnections(ContainerBuilder $container, array $config): void
     {

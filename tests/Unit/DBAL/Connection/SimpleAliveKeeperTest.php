@@ -12,10 +12,13 @@ use Doctrine\DBAL\Connection;
 use Exception;
 use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\SimpleAliveKeeper;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 
 class SimpleAliveKeeperTest extends TestCase
 {
+    use ProphecyTrait;
+
     /**
      * @throws Exception
      */
