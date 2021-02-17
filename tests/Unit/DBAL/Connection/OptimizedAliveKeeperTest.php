@@ -12,10 +12,13 @@ use Exception;
 use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\AliveKeeper;
 use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\OptimizedAliveKeeper;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Symfony\Bridge\PhpUnit\ClockMock;
 
 class OptimizedAliveKeeperTest extends TestCase
 {
+    use ProphecyTrait;
+
     /**
      * @throws Exception
      * @group time-sensitive

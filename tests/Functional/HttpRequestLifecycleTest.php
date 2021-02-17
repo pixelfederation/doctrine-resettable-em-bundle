@@ -10,8 +10,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use PixelFederation\DoctrineResettableEmBundle\ORM\ResettableEntityManager;
 
-/**
- */
 final class HttpRequestLifecycleTest extends TestCase
 {
     /**
@@ -27,17 +25,11 @@ final class HttpRequestLifecycleTest extends TestCase
         self::runCommand('doctrine:schema:create --em default');
     }
 
-    /**
-     * @return string
-     */
     protected static function getTestCase(): string
     {
         return 'HttpRequestLifecycleTest';
     }
 
-    /**
-     *
-     */
     public function testPingEmConnectionsOnRequestStart(): void
     {
         $client = self::createClient();

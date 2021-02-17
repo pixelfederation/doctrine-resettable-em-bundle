@@ -10,14 +10,12 @@ namespace PixelFederation\DoctrineResettableEmBundle\DBAL\Connection;
 
 use Exception;
 
-/**
- */
 final class AggregatedAliveKeeper implements AliveKeeper
 {
     /**
      * @var AliveKeeper[]
      */
-    private $aliveKeepers;
+    private array $aliveKeepers;
 
     /**
      * @param AliveKeeper[] $aliveKeepers
@@ -28,7 +26,6 @@ final class AggregatedAliveKeeper implements AliveKeeper
     }
 
     /**
-     * @return void
      * @throws Exception
      */
     public function keepAlive(): void

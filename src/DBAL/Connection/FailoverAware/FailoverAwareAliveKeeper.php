@@ -10,40 +10,23 @@ namespace PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\FailoverAwa
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Statement;
 use Exception;
 use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\AliveKeeper;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 
-/**
- */
 final class FailoverAwareAliveKeeper implements AliveKeeper
 {
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
+
+    private Connection $connection;
+
+    private string $conntectionName;
+
+    private ConnectionType $connectionType;
 
     /**
-     * @var Connection
-     */
-    private $connection;
-
-    /**
-     * @var string
-     */
-    private $conntectionName;
-
-    /**
-     * @var ConnectionType
-     */
-    private $connectionType;
-
-    /**
-     * @param LoggerInterface $logger
-     * @param Connection      $connection
-     * @param string          $connectionName
-     * @param string          $connectionType
      * @SuppressWarnings(PHPMD.StaticAccess)
      */
     public function __construct(
@@ -59,7 +42,6 @@ final class FailoverAwareAliveKeeper implements AliveKeeper
     }
 
     /**
-     * @return void
      * @throws Exception
      */
     public function keepAlive(): void
@@ -102,13 +84,16 @@ final class FailoverAwareAliveKeeper implements AliveKeeper
      * returns true if the connection is expected to be writable and innodb_read_only is set to 0
      * or if the connection is not expected to be writable and innodb_read_only is set to 1
      * these flags were only tested on AWS Aurora RDS
-     * @return bool
      * @throws DBALException
      */
     private function isProperConnection(): bool
     {
-        $stmt = $this->connection->query('SELECT @@global.innodb_read_only;');
-        $currentConnectionIsWriter = ((bool)$stmt->fetchColumn(0)) === false;
+        /**
+         * @psalm-suppress TooManyTemplateParams
+         * @phpstan-var Statement<int> $stmt
+         */
+        $stmt = $this->connection->executeQuery('SELECT @@global.innodb_read_only;');
+        $currentConnectionIsWriter = ((bool)$stmt->fetchOne()) === false;
 
         return $this->connectionType->isWriter() === $currentConnectionIsWriter;
     }

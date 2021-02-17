@@ -15,13 +15,15 @@ use PixelFederation\DoctrineResettableEmBundle\ORM\ResettableEntityManager;
 use PHPUnit\Framework\TestCase;
 use PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\Entity\TestEntity;
 use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
-use Doctrine\Common\Persistence\ManagerRegistry as RegistryInterface;
+use Doctrine\Persistence\ManagerRegistry as RegistryInterface;
 
 class ResettableEntityManagerTest extends TestCase
 {
+    use ProphecyTrait;
+
     /**
-     * @return void
      * @throws Exception
      */
     public function testGetRepository(): void
@@ -49,13 +51,11 @@ class ResettableEntityManagerTest extends TestCase
         $em->getRepository(TestEntity::class);
     }
 
-    /**
-     * @return void
-     */
     public function testClearOrResetIfNeededShouldClearWhenWrappedIsOpen(): void
     {
         /* @var $configurationMock Configuration|ObjectProphecy */
         $configurationMock = $this->prophesize(Configuration::class);
+        $configurationMock->getRepositoryFactory()->willReturn($this->prophesize(RepositoryFactory::class));
         /* @var $emMock EntityManagerInterface */
         $emMock = $this->prophesize(EntityManagerInterface::class);
         $emMock->isOpen()->willReturn(true);
@@ -73,14 +73,12 @@ class ResettableEntityManagerTest extends TestCase
         $em->clearOrResetIfNeeded();
     }
 
-    /**
-     * @return void
-     */
     public function testClearOrResetIfNeededShouldResetWhenWrappedIsClosed(): void
     {
         $decoratedName = 'default';
         /* @var $configurationMock Configuration|ObjectProphecy */
-        $configurationMock = $this->prophesize(Configuration::class)->reveal();
+        $configurationMock = $this->prophesize(Configuration::class);
+        $configurationMock->getRepositoryFactory()->willReturn($this->prophesize(RepositoryFactory::class));
         /* @var $emMock EntityManagerInterface */
         $emMock = $this->prophesize(EntityManagerInterface::class);
         $emMock->isOpen()->willReturn(false);
@@ -92,7 +90,7 @@ class ResettableEntityManagerTest extends TestCase
         $registryMock = $registryMock->reveal();
 
         $em = new ResettableEntityManager(
-            $configurationMock,
+            $configurationMock->reveal(),
             $emMock,
             $registryMock,
             $decoratedName

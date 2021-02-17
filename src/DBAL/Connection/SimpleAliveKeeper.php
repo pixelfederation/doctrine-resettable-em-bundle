@@ -11,29 +11,21 @@ namespace PixelFederation\DoctrineResettableEmBundle\DBAL\Connection;
 use Doctrine\DBAL\Connection;
 use Exception;
 
-/**
- */
 final class SimpleAliveKeeper implements AliveKeeper
 {
-    /**
-     * @var Connection
-     */
-    private $connection;
+    private Connection $connection;
 
-    /**
-     * @param Connection $connection
-     */
     public function __construct(Connection $connection)
     {
         $this->connection = $connection;
     }
 
     /**
-     * @return void
      * @throws Exception
      */
     public function keepAlive(): void
     {
+        /** @psalm-suppress DeprecatedMethod */
         if ($this->connection->ping()) {
             return;
         }

@@ -11,8 +11,6 @@ use PixelFederation\DoctrineResettableEmBundle\DependencyInjection\CompilerPass\
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-/**
- */
 final class PixelFederationDoctrineResettableEmBundle extends Bundle
 {
     /**

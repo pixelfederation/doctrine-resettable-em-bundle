@@ -24,6 +24,7 @@
     <rule ref="rulesets/naming.xml">
         <exclude name="ShortVariable" />
         <exclude name="LongVariable" />
+        <exclude name="LongClassName" />
     </rule>
 
     <!-- https://github.com/phpmd/phpmd/blob/master/src/main/resources/rulesets/ -->
@@ -51,6 +52,15 @@
         <properties>
             <property name="maximum" description="The variable length reporting threshold" value="25"/>
         </properties>
+    </rule>
+
+    <rule name="rulesets/naming.xml/LongClassName"
+          class="PHPMD\Rule\Naming\LongClassName">
+      <priority>3</priority>
+      <properties>
+        <property name="maximum" value="50"/>
+        <property name="subtract-suffixes" value="Pass"/>
+      </properties>
     </rule>
 
     <rule ref="rulesets/unusedcode.xml" />

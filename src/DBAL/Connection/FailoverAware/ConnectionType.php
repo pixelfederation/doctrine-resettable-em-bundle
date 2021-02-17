@@ -10,8 +10,6 @@ namespace PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\FailoverAwa
 
 use InvalidArgumentException;
 
-/**
- */
 final class ConnectionType
 {
     public const WRITER = 'writer';
@@ -22,10 +20,7 @@ final class ConnectionType
         self::READER,
     ];
 
-    /**
-     * @var string
-     */
-    private $type;
+    private string $type;
 
     /**
      * @param string $type

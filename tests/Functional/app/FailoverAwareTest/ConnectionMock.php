@@ -8,19 +8,16 @@ declare(strict_types=1);
 
 namespace PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\FailoverAwareTest;
 
+use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Statement;
+use PDO;
 
-/**
- */
 final class ConnectionMock extends Connection
 {
-    /**
-     * @var string
-     */
-    private $query;
+    private string $query;
 
-    public function query()
+    public function executeQuery($sql, array $params = [], $types = [], ?QueryCacheProfile $qcp = null)
     {
         $args = func_get_args();
         $this->query = $args[0];
@@ -30,16 +27,18 @@ final class ConnectionMock extends Connection
             {
             }
 
-            public function fetchColumn($columnIndex = 0)
+            public function fetchOne()
             {
                 return '1';
+            }
+
+            public function fetch($fetchMode = null, $cursorOrientation = PDO::FETCH_ORI_NEXT, $cursorOffset = 0)
+            {
+                return 1;
             }
         };
     }
 
-    /**
-     * @return string
-     */
     public function getQuery(): string
     {
         return $this->query;

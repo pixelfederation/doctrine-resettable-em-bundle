@@ -16,15 +16,10 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 
-/**
- */
 final class AliveKeeperPass implements CompilerPassInterface
 {
     public const FAILOVER_CONNECTIONS_PARAM_NAME = 'pixelfederation_doctrine_resettable_em_bundle.failover_connections';
 
-    /**
-     * @param ContainerBuilder $container
-     */
     public function process(ContainerBuilder $container)
     {
         if (!$container->hasParameter(self::FAILOVER_CONNECTIONS_PARAM_NAME)) {
@@ -48,12 +43,6 @@ final class AliveKeeperPass implements CompilerPassInterface
         $aggregatedAliveKeeper->setArgument('$aliveKeepers', $aliveKeepers);
     }
 
-    /**
-     * @param string $connectionName
-     * @param array  $failoverConnections
-     *
-     * @return ChildDefinition
-     */
     private function getAliveKeeperDefinition(string $connectionName, array $failoverConnections): ChildDefinition
     {
         if (!isset($failoverConnections[$connectionName])) {

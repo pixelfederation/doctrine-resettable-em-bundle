@@ -8,12 +8,7 @@ declare(strict_types=1);
 
 namespace PixelFederation\DoctrineResettableEmBundle\DBAL\Connection;
 
-/**
- */
 interface AliveKeeper
 {
-    /**
-     * @return void
-     */
     public function keepAlive(): void;
 }
