@@ -22,9 +22,11 @@ won't get closed after some period of time.
 
 ```php
 // config/bundles.php
-//...
-PixelFederation\CommandProcessingBundle\PixelFederationDoctrineResettableEmBundle::class => ['all' => true]
-//...
+return [
+    //...
+    \PixelFederation\DoctrineResettableEmBundle\PixelFederationDoctrineResettableEmBundle::class => ['all' => true]
+    //...
+];
 ```
 
 ```yaml

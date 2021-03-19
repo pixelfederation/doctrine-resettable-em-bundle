@@ -2,11 +2,10 @@ version: '3.5'
 
 services:
   # PHP
-  php7-doctrine-resettable-em-bundle:
-    container_name: php7-doctrine-resettable-em-bundle
+  doctrine-resettable-em-bundle-php7:
+    container_name: doctrine-resettable-em-bundle-php7
     build: ./docker/php
     volumes:
       - .:/srv/www:delegated
-      - ~/.composer:/root/.composer:delegated
     environment:
       - XDEBUG_CONFIG=idekey=PHPSTORM

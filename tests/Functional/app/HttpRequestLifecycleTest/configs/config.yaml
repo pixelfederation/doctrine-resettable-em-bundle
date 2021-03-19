@@ -12,3 +12,8 @@ services:
     public: true
     arguments:
       $entityManager: '@doctrine.orm.default_entity_manager'
+
+  PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\EntityManagerChecker:
+    public: true
+    arguments:
+      $entityManager: '@doctrine.orm.default_entity_manager'
