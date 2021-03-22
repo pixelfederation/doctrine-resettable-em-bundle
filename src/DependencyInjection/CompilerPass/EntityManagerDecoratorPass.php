@@ -6,7 +6,6 @@ declare(strict_types=1);
 
 namespace PixelFederation\DoctrineResettableEmBundle\DependencyInjection\CompilerPass;
 
-use PixelFederation\DoctrineResettableEmBundle\ORM\EntityManagersHandler;
 use PixelFederation\DoctrineResettableEmBundle\ORM\ResettableEntityManager;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -35,6 +34,7 @@ final class EntityManagerDecoratorPass implements CompilerPassInterface
                 '$decoratedName' => $name,
             ]);
             $decoratorDef->setPublic(true);
+            $decoratorDef->addTag('kernel.reset', ['method' => 'clearOrResetIfNeeded']);
 
             $entityManagers[$name] = $newId;
             $resettableEntityManagers[$name] = new Reference($id);
@@ -43,7 +43,5 @@ final class EntityManagerDecoratorPass implements CompilerPassInterface
         }
 
         $container->setParameter('doctrine.entity_managers', $entityManagers);
-        $emHandlerDef = $container->findDefinition(EntityManagersHandler::class);
-        $emHandlerDef->setArgument('$entityManagers', $resettableEntityManagers);
     }
 }

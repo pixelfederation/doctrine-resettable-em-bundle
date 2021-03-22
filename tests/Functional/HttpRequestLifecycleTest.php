@@ -9,6 +9,7 @@ namespace PixelFederation\DoctrineResettableEmBundle\Tests\Functional;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use PixelFederation\DoctrineResettableEmBundle\ORM\ResettableEntityManager;
+use PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\EntityManagerChecker;
 
 final class HttpRequestLifecycleTest extends TestCase
 {
@@ -46,14 +47,23 @@ final class HttpRequestLifecycleTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testEmWillBeResetOnRequestEnd(): void
+    public function testEmWillBeResetWithServicesResetter(): void
     {
-        $client = self::createClient();
-        $client->request('GET', '/');
         /* @var $em EntityManagerInterface */
         $em = self::$container->get('doctrine.orm.default_entity_manager');
-        $uow = $em->getUnitOfWork();
         self::assertInstanceOf(ResettableEntityManager::class, $em);
-        self::assertEmpty($uow->getIdentityMap());
+
+        $client = self::createClient();
+        $checker = $client->getContainer()->get(EntityManagerChecker::class);
+        $client->disableReboot();
+        $client->request('GET', '/');
+
+        self::assertSame(1, $checker->getNumberOfChecks());
+        self::assertTrue($checker->wasEmptyOnLastCheck());
+
+        $client->request('GET', '/');
+
+        self::assertSame(2, $checker->getNumberOfChecks());
+        self::assertTrue($checker->wasEmptyOnLastCheck());
     }
 }

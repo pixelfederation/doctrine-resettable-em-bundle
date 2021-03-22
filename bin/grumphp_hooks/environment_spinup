@@ -1,0 +1,13 @@
+#!/bin/bash
+
+export PATH="/usr/local/bin:$PATH"
+
+#
+# Run the hook command.
+# Note: this will be replaced by the real command during copy.
+#
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+if [[ -z `docker-compose ps -q doctrine-resettable-em-bundle-php7` ]] || [[ -z `docker ps -q --no-trunc | grep $(docker-compose ps -q doctrine-resettable-em-bundle-php7)` ]]; then
+  docker-compose up -d
+fi

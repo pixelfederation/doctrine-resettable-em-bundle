@@ -1,6 +1,6 @@
 FROM php:7.4-fpm
 
-RUN apt-get update && apt-get install -y git-core zlib1g-dev libzip-dev
+RUN apt-get update && apt-get install -y git-core zlib1g-dev libzip-dev zip unzip
 RUN docker-php-ext-install zip pdo_mysql
 
 RUN pecl install xdebug && \
