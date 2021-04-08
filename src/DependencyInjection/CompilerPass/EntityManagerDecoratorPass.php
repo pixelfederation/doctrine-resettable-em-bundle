@@ -6,6 +6,7 @@ declare(strict_types=1);
 
 namespace PixelFederation\DoctrineResettableEmBundle\DependencyInjection\CompilerPass;
 
+use PixelFederation\DoctrineResettableEmBundle\DependencyInjection\Parameters;
 use PixelFederation\DoctrineResettableEmBundle\ORM\ResettableEntityManager;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -20,9 +21,14 @@ final class EntityManagerDecoratorPass implements CompilerPassInterface
     public function process(ContainerBuilder $container)
     {
         $entityManagers = $container->getParameter('doctrine.entity_managers');
+        $excluded = $container->getParameter(Parameters::EXCLUDED_FROM_RESETTING);
         $resettableEntityManagers = [];
 
         foreach ($entityManagers as $name => $id) {
+            if (in_array($name, $excluded, true)) {
+                continue;
+            }
+
             $emDefinition = $container->findDefinition($id);
             $newId = $id . '_wrapped';
             $configArg = $emDefinition->getArgument(1);
@@ -30,11 +36,8 @@ final class EntityManagerDecoratorPass implements CompilerPassInterface
             $decoratorDef = new Definition(ResettableEntityManager::class, [
                 '$configuration' => $configArg,
                 '$wrapped' => new Reference($newId),
-                '$doctrineRegistry' => new Reference('doctrine'),
-                '$decoratedName' => $name,
             ]);
             $decoratorDef->setPublic(true);
-            $decoratorDef->addTag('kernel.reset', ['method' => 'clearOrResetIfNeeded']);
 
             $entityManagers[$name] = $newId;
             $resettableEntityManagers[$name] = new Reference($id);

@@ -9,11 +9,11 @@ namespace PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRe
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
-use PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\Entity\TestEntity;
-use PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\Entity\TestEntity2;
+use PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\ExcludedEntity\ExcludedTestEntity;
+use PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\ExcludedEntity\ExcludedTestEntity2;
 use Symfony\Component\HttpFoundation\Response;
 
-final class TestController
+final class ExcludedTestController
 {
     private EntityManagerInterface $entityManager;
     private EntityRepository $repository;
@@ -21,7 +21,7 @@ final class TestController
     public function __construct(EntityManagerInterface $entityManager)
     {
         $this->entityManager = $entityManager;
-        $this->repository = $entityManager->getRepository(TestEntity2::class);
+        $this->repository = $entityManager->getRepository(ExcludedTestEntity2::class);
     }
 
     public function doNothingAction(): Response
@@ -31,7 +31,7 @@ final class TestController
 
     public function persistTestAction(): Response
     {
-        $this->entityManager->persist(new TestEntity());
+        $this->entityManager->persist(new ExcludedTestEntity());
         $this->entityManager->flush();
 
         return new Response();
@@ -40,7 +40,7 @@ final class TestController
     public function persistErrorTestAction(): Response
     {
         try {
-            $this->entityManager->persist(new TestEntity2(10));
+            $this->entityManager->persist(new ExcludedTestEntity2(10));
             $this->entityManager->flush();
         } catch (UniqueConstraintViolationException $e) {}
 

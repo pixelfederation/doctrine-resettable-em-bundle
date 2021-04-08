@@ -31,6 +31,9 @@ return [
 
 ```yaml
 pixel_federation_doctrine_resettable_em:
+  # these entity managers won't be wrapped by the resettable entity manager:
+  exclude_from_resetting:
+    - readonly
   # default 0 - if set, the connection ping operation will be executed each X seconds 
   # (instead of at the beginning of each request) 
   ping_interval: 10 

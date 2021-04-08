@@ -10,15 +10,18 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="test")
+ * @ORM\Table(name="test2")
  */
-class TestEntity
+class TestEntity2
 {
     /**
-     * @var int
      * @ORM\Id
      * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue
      */
     private int $id;
+
+    public function __construct(int $id)
+    {
+        $this->id = $id;
+    }
 }
