@@ -26,8 +26,14 @@ final class PixelFederationDoctrineResettableEmExtension extends ConfigurableExt
     {
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yaml');
+        $this->registerNotResettableEntityManagers($container, $mergedConfig);
         $this->tryToOptimizeAliveKeeper($container, $mergedConfig);
         $this->registerReaderWriterConnections($container, $mergedConfig);
+    }
+
+    private function registerNotResettableEntityManagers(ContainerBuilder $container, array $config): void
+    {
+        $container->setParameter(Parameters::EXCLUDED_FROM_RESETTING, $config['exclude_from_resetting']);
     }
 
     /**

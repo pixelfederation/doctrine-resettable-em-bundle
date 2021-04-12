@@ -16,6 +16,22 @@ final class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder('pixel_federation_doctrine_resettable_em');
         $rootNode = $treeBuilder->getRootNode();
         $rootNode->children()
+                ->variableNode('exclude_from_resetting')
+                    ->info('Entity manager names excluded from resetting.')
+                    ->defaultValue([])
+                    ->validate()
+                    ->always(function ($emNames) {
+                        $validEmNames = [];
+
+                        foreach ((array) $emNames as $emName) {
+                            $emName = trim((string) $emName);
+                            $validEmNames[] = $emName;
+                        }
+
+                        return $validEmNames;
+                    })
+                    ->end()
+                ->end()
                 ->scalarNode('ping_interval')
                     ->defaultFalse()
                 ->end()

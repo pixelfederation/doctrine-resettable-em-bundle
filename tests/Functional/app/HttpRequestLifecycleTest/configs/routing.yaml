@@ -3,7 +3,32 @@ pixel_federation_persist_test:
   path: /
   controller: PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\TestController::persistTestAction
 
+pixel_federation_persist_error_test:
+  methods: ['GET']
+  path: /persist-error
+  controller: PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\TestController::persistErrorTestAction
+
+pixel_federation_remove_all_test:
+  methods: ['GET']
+  path: /remove-all
+  controller: PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\TestController::removeAllPersistedAction
+
 pixel_federation_do_nothing:
   methods: ['GET']
   path: /dummy
   controller: PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\TestController::doNothingAction
+
+pixel_federation_excluded_persist_test:
+  methods: ['GET']
+  path: /persist-excluded
+  controller: PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\ExcludedTestController::persistTestAction
+
+pixel_federation_excluded_persist_error_test:
+  methods: ['GET']
+  path: /persist-error-excluded
+  controller: PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\ExcludedTestController::persistErrorTestAction
+
+pixel_federation_excluded_remove_all_test:
+  methods: ['GET']
+  path: /remove-all-excluded
+  controller: PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\ExcludedTestController::removeAllPersistedAction

@@ -2,6 +2,10 @@ imports:
   - {resource: ../../config/framework.yaml}
   - {resource: ../../config/doctrine.yaml}
 
+pixel_federation_doctrine_resettable_em:
+  exclude_from_resetting:
+    - excluded
+
 services:
   _defaults:
     public: false
@@ -13,7 +17,19 @@ services:
     arguments:
       $entityManager: '@doctrine.orm.default_entity_manager'
 
-  PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\EntityManagerChecker:
+  PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\EntityManagerChecker.default:
     public: true
+    class: PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\EntityManagerChecker
     arguments:
       $entityManager: '@doctrine.orm.default_entity_manager'
+
+  PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\ExcludedTestController:
+    public: true
+    arguments:
+      $entityManager: '@doctrine.orm.excluded_entity_manager'
+
+  PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\EntityManagerChecker.excluded:
+    public: true
+    class: PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\EntityManagerChecker
+    arguments:
+      $entityManager: '@doctrine.orm.excluded_entity_manager'

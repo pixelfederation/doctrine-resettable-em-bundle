@@ -1,0 +1,13 @@
+sync:
+  defaults:
+    ignore:
+      vcs: false
+      paths:
+        - .DS_Store # macOS files
+        - .idea
+    permissions:
+      defaultFileMode: 644
+      defaultDirectoryMode: 755
+  resettableembundle:
+    alpha: "."
+    beta: "docker://root@doctrine-resettable-em-bundle-php7/srv/www"

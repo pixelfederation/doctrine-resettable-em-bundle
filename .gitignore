@@ -7,3 +7,4 @@ tests/Functional/app/data/*
 !tests/Functional/app/data/.gitkeep
 .cache
 !.cache/.gitkeep
+mutagen.yml.lock

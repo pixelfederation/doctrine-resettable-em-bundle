@@ -7,6 +7,11 @@ doctrine:
         charset: utf8
         path: '%kernel.project_dir%/data/sqlite_default.db'
         logging: true
+      excluded:
+        driver: pdo_sqlite
+        charset: utf8
+        path: '%kernel.project_dir%/data/sqlite_excluded.db'
+        logging: true
   orm:
     default_entity_manager: default
     entity_managers:
@@ -19,4 +24,13 @@ doctrine:
             type: annotation
             dir: '%kernel.project_dir%/HttpRequestLifecycleTest/Entity'
             prefix: 'PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\Entity'
+            alias: Entity
+      excluded:
+        connection: excluded
+        mappings:
+          ExcludedEntity:
+            is_bundle: false
+            type: annotation
+            dir: '%kernel.project_dir%/HttpRequestLifecycleTest/ExcludedEntity'
+            prefix: 'PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\ExcludedEntity'
             alias: Entity
