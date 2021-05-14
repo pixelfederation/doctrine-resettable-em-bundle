@@ -41,4 +41,8 @@ pixel_federation_doctrine_resettable_em:
   # app to reconnect after db failover. currently only AWS Aurora is supported.
   failover_connections:  
     default: writer
+  # redis clusters which need to be failed over should be registered here
+  # it's really important to set default timeouts to a low value, e.g. 2 seconds, so the app won't block for too long
+  redis_cluster_connections:
+    default: 'RedisCluster' # connection name (can be literally anything) => redis cluster service id
 ```

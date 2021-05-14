@@ -6,11 +6,11 @@ declare(strict_types=1);
  * @license    Internal use only
  */
 
-namespace PixelFederation\DoctrineResettableEmBundle\Tests\Unit\DBAL\Connection;
+namespace PixelFederation\DoctrineResettableEmBundle\Tests\Unit\Connection\AliveKeeper;
 
 use Exception;
-use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\AliveKeeper;
-use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\OptimizedAliveKeeper;
+use PixelFederation\DoctrineResettableEmBundle\Connection\AliveKeeper\AliveKeeper;
+use PixelFederation\DoctrineResettableEmBundle\Connection\AliveKeeper\OptimizedAliveKeeper;
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Symfony\Bridge\PhpUnit\ClockMock;

@@ -27,7 +27,7 @@ grumphp:
     phpparser:
       ignore_patterns:
         - DependencyInjection/
-        - Tests/
+        - tests/
       kind: php7
       visitors:
         declare_strict_types: ~

@@ -4,26 +4,36 @@ services:
     autowire: false
     autoconfigure: false
 
-  PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\AliveKeeper: '@PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\AggregatedAliveKeeper'
+  PixelFederation\DoctrineResettableEmBundle\Connection\AliveKeeper\AliveKeeper: '@PixelFederation\DoctrineResettableEmBundle\Connection\AliveKeeper\AggregatedAliveKeeper'
 
-  PixelFederation\DoctrineResettableEmBundle\DBAL\ConnectionsHandler:
+  PixelFederation\DoctrineResettableEmBundle\Connection\ConnectionsHandler:
     arguments:
-      $aliveKeeper: '@PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\AliveKeeper'
+      $aliveKeeper: '@PixelFederation\DoctrineResettableEmBundle\Connection\AliveKeeper\AliveKeeper'
     tags:
       - {name: pixelfederation_doctrine_resettable_em_bundle.app_initializer}
 
-  PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\AggregatedAliveKeeper:
+  PixelFederation\DoctrineResettableEmBundle\Connection\AliveKeeper\AggregatedAliveKeeper:
     arguments:
       $aliveKeepers: [] # will be provided by the extension
 
-  PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\OptimizedAliveKeeper:
+  PixelFederation\DoctrineResettableEmBundle\Connection\AliveKeeper\OptimizedAliveKeeper:
     arguments:
-      $decorated: '@PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\AggregatedAliveKeeper'
+      $decorated: '@PixelFederation\DoctrineResettableEmBundle\Connection\AliveKeeper\AggregatedAliveKeeper'
 
-  PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\SimpleAliveKeeper:
+  PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\DBALAliveKeeper:
     abstract: true
     arguments:
       $connection: ~ #will be provided by the extension
+
+  PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection\RedisClusterAliveKeeper:
+    abstract: true
+    arguments:
+      $connectionName: ~ #will be provided by the extension
+      $redis: ~ #will be provided by the extension
+      $constructorArguments: ~ #will be provided by the extension
+      $logger: '@logger' #will be provided by the extension
+    tags:
+      - { name: monolog.logger, channel: doctrine-resettable-em-bundle }
 
   PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\FailoverAware\FailoverAwareAliveKeeper:
     abstract: true
@@ -31,6 +41,8 @@ services:
       $logger: '@logger'
       $connection: ~ #will be provided by the extension
       $connectionName: ~ #will be provided by the extension
+    tags:
+      - { name: monolog.logger, channel: doctrine-resettable-em-bundle }
 
   PixelFederation\DoctrineResettableEmBundle\RequestCycle\Initializers:
     arguments: [!tagged 'pixelfederation_doctrine_resettable_em_bundle.app_initializer']

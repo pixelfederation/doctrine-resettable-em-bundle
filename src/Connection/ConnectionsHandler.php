@@ -4,10 +4,10 @@ declare(strict_types=1);
  * @author mfris
  */
 
-namespace PixelFederation\DoctrineResettableEmBundle\DBAL;
+namespace PixelFederation\DoctrineResettableEmBundle\Connection;
 
 use Exception;
-use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\AliveKeeper;
+use PixelFederation\DoctrineResettableEmBundle\Connection\AliveKeeper\AliveKeeper;
 use PixelFederation\DoctrineResettableEmBundle\RequestCycle\InitializerInterface;
 
 final class ConnectionsHandler implements InitializerInterface

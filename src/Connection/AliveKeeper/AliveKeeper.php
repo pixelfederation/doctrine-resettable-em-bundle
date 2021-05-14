@@ -6,7 +6,7 @@ declare(strict_types=1);
  * @license    Internal use only
  */
 
-namespace PixelFederation\DoctrineResettableEmBundle\DBAL\Connection;
+namespace PixelFederation\DoctrineResettableEmBundle\Connection\AliveKeeper;
 
 interface AliveKeeper
 {

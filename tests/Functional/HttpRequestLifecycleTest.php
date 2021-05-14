@@ -11,6 +11,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use PixelFederation\DoctrineResettableEmBundle\ORM\ResettableEntityManager;
 use PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\EntityManagerChecker;
+use RedisCluster;
 use ReflectionClass;
 
 final class HttpRequestLifecycleTest extends TestCase
@@ -35,17 +36,24 @@ final class HttpRequestLifecycleTest extends TestCase
         return 'HttpRequestLifecycleTest';
     }
 
-    public function testPingEmConnectionsOnRequestStart(): void
+    public function testPingConnectionsOnRequestStart(): void
     {
         $client = self::createClient();
 
         /* @var $em EntityManagerInterface */
         $em = self::$container->get('doctrine.orm.default_entity_manager');
         $connection = $em->getConnection();
+        $redisCluster = self::$container->get(RedisCluster::class);
 
         self::assertFalse($connection->isConnected());
+        self::assertFalse($redisCluster->wasConstructorCalled());
         $client->request('GET', '/dummy'); // this action does nothing with the database
         self::assertTrue($connection->isConnected());
+        self::assertTrue($redisCluster->wasConstructorCalled());
+        self::assertSame(
+            $redisCluster->getConstructorParametersFirst(), 
+            $redisCluster->getConstructorParametersSecond()
+        );
     }
 
     /**
