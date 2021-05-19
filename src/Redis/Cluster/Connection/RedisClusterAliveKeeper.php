@@ -65,8 +65,8 @@ final class RedisClusterAliveKeeper implements AliveKeeper
         try {
             $msg = 'hello';
 
-            if ($msg === $this->redis->ping($msg)) {
-                return;
+            if ($msg !== $this->redis->ping($msg)) {
+                $this->logger->warning('Unexpected state ocurred while pinging Redis cluster.');
             }
         } catch (RedisClusterException $e) {
             $this->logger->info(
