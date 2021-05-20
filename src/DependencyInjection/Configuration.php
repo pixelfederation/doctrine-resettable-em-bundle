@@ -53,6 +53,26 @@ final class Configuration implements ConfigurationInterface
                     })
                     ->end()
                 ->end() // end failover_connections
+                ->variableNode('redis_cluster_connections')
+                    ->info('Redis cluster connections for alive keeping.')
+                    ->defaultValue([])
+                    ->validate()
+                    ->always(function (array $connections) {
+                        $validConnections = [];
+
+                        foreach ($connections as $connectionName => $connectionValue) {
+                            $connectionName = trim((string) $connectionName);
+                            $connectionValue = trim((string) $connectionValue);
+
+                            if ($connectionName !== '' && $connectionValue !== '') {
+                                $validConnections[$connectionName] = $connectionValue;
+                            }
+                        }
+
+                        return $validConnections;
+                    })
+                    ->end()
+                ->end()
             ->end();
 
         return $treeBuilder;

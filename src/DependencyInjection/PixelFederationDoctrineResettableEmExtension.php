@@ -7,8 +7,8 @@ declare(strict_types=1);
 namespace PixelFederation\DoctrineResettableEmBundle\DependencyInjection;
 
 use Exception;
-use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\AliveKeeper;
-use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\OptimizedAliveKeeper;
+use PixelFederation\DoctrineResettableEmBundle\Connection\AliveKeeper\AliveKeeper;
+use PixelFederation\DoctrineResettableEmBundle\Connection\AliveKeeper\OptimizedAliveKeeper;
 use PixelFederation\DoctrineResettableEmBundle\DependencyInjection\CompilerPass\AliveKeeperPass;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Alias;
@@ -29,6 +29,7 @@ final class PixelFederationDoctrineResettableEmExtension extends ConfigurableExt
         $this->registerNotResettableEntityManagers($container, $mergedConfig);
         $this->tryToOptimizeAliveKeeper($container, $mergedConfig);
         $this->registerReaderWriterConnections($container, $mergedConfig);
+        $this->registerRedisClusterConnections($container, $mergedConfig);
     }
 
     private function registerNotResettableEntityManagers(ContainerBuilder $container, array $config): void
@@ -63,6 +64,18 @@ final class PixelFederationDoctrineResettableEmExtension extends ConfigurableExt
         $container->setParameter(
             AliveKeeperPass::FAILOVER_CONNECTIONS_PARAM_NAME,
             $config['failover_connections']
+        );
+    }
+
+    private function registerRedisClusterConnections(ContainerBuilder $container, array $config): void
+    {
+        if (!isset($config['redis_cluster_connections']) || !is_array($config['redis_cluster_connections'])) {
+            return;
+        }
+
+        $container->setParameter(
+            AliveKeeperPass::REDIS_CLUSTER_CONNECTIONS_PARAM_NAME,
+            $config['redis_cluster_connections']
         );
     }
 }

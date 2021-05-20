@@ -10,8 +10,9 @@ namespace PixelFederation\DoctrineResettableEmBundle\DBAL\Connection;
 
 use Doctrine\DBAL\Connection;
 use Exception;
+use PixelFederation\DoctrineResettableEmBundle\Connection\AliveKeeper\AliveKeeper;
 
-final class SimpleAliveKeeper implements AliveKeeper
+final class DBALAliveKeeper implements AliveKeeper
 {
     private Connection $connection;
 

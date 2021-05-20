@@ -4,7 +4,7 @@ declare(strict_types=1);
  * @author mfris
  */
 
-namespace PixelFederation\DoctrineResettableEmBundle\DBAL\Connection;
+namespace PixelFederation\DoctrineResettableEmBundle\Connection\AliveKeeper;
 
 use Exception;
 

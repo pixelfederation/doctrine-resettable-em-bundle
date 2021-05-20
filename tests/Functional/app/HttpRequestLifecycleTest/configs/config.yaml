@@ -5,6 +5,8 @@ imports:
 pixel_federation_doctrine_resettable_em:
   exclude_from_resetting:
     - excluded
+  redis_cluster_connections:
+    default: 'RedisCluster'
 
 services:
   _defaults:
@@ -33,3 +35,12 @@ services:
     class: PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\EntityManagerChecker
     arguments:
       $entityManager: '@doctrine.orm.excluded_entity_manager'
+
+  RedisCluster:
+    class: PixelFederation\DoctrineResettableEmBundle\Tests\Redis\Cluster\Connection\RedisClusterSpy
+    public: true
+    arguments:
+      $name: 'default'
+      $seeds: ['localhost:6379']
+      $timeout: 2
+      $readTimeout: 2

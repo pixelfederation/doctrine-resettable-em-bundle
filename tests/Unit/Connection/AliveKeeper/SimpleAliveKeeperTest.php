@@ -6,11 +6,11 @@ declare(strict_types=1);
  * @license    Internal use only
  */
 
-namespace PixelFederation\DoctrineResettableEmBundle\Tests\Unit\DBAL\Connection;
+namespace PixelFederation\DoctrineResettableEmBundle\Tests\Unit\Connection\AliveKeeper;
 
 use Doctrine\DBAL\Connection;
 use Exception;
-use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\SimpleAliveKeeper;
+use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\DBALAliveKeeper;
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
@@ -30,7 +30,7 @@ class SimpleAliveKeeperTest extends TestCase
         $connectionProphecy->close()->shouldNotBeCalled();
         $connectionProphecy->connect()->shouldNotBeCalled();
 
-        $aliveKeeper = new SimpleAliveKeeper($connectionProphecy->reveal());
+        $aliveKeeper = new DBALAliveKeeper($connectionProphecy->reveal());
         $aliveKeeper->keepAlive();
     }
 
@@ -45,7 +45,7 @@ class SimpleAliveKeeperTest extends TestCase
         $connectionProphecy->close()->shouldBeCalled();
         $connectionProphecy->connect()->willReturn(true)->shouldBeCalled();
 
-        $aliveKeeper = new SimpleAliveKeeper($connectionProphecy->reveal());
+        $aliveKeeper = new DBALAliveKeeper($connectionProphecy->reveal());
         $aliveKeeper->keepAlive();
     }
 }
