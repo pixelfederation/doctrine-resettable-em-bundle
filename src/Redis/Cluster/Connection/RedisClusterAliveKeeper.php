@@ -63,11 +63,7 @@ final class RedisClusterAliveKeeper implements AliveKeeper
     public function keepAlive(): void
     {
         try {
-            $msg = 'hello';
-
-            if ($msg !== $this->redis->ping($msg)) {
-                $this->logger->warning('Unexpected state ocurred while pinging Redis cluster.');
-            }
+            $this->redis->ping('hello');
         } catch (RedisClusterException $e) {
             $this->logger->info(
                 sprintf("Exceptional reconnect for redis cluster connection '%s'", $this->connectionName),
