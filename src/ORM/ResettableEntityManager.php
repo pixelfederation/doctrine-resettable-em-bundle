@@ -14,15 +14,27 @@ use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Decorator\EntityManagerDecorator;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Repository\RepositoryFactory;
+use Doctrine\Persistence\ManagerRegistry;
 use Exception;
+use UnexpectedValueException;
 
 class ResettableEntityManager extends EntityManagerDecorator
 {
     private RepositoryFactory $repositoryFactory;
 
-    public function __construct(Configuration $configuration, EntityManagerInterface $wrapped)
-    {
+    private ManagerRegistry $doctrineRegistry;
+
+    private string $decoratedName;
+
+    public function __construct(
+        Configuration $configuration,
+        EntityManagerInterface $wrapped,
+        ManagerRegistry $doctrineRegistry,
+        string $decoratedName
+    ) {
         $this->repositoryFactory = $configuration->getRepositoryFactory();
+        $this->doctrineRegistry = $doctrineRegistry;
+        $this->decoratedName = $decoratedName;
         parent::__construct($wrapped);
     }
 
@@ -70,5 +82,22 @@ class ResettableEntityManager extends EntityManagerDecorator
     public function createQueryBuilder()
     {
         return new QueryBuilder($this);
+    }
+
+    public function clearOrResetIfNeeded(): void
+    {
+        if ($this->wrapped->isOpen()) {
+            $this->clear();
+
+            return;
+        }
+
+        $newEntityManager = $this->doctrineRegistry->resetManager($this->decoratedName);
+
+        if (!$newEntityManager instanceof EntityManagerInterface) {
+            throw new UnexpectedValueException(
+                sprintf('Invalid entity manager class - %s', get_class($newEntityManager))
+            );
+        }
     }
 }

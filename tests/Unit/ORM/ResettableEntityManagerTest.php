@@ -40,11 +40,63 @@ class ResettableEntityManagerTest extends TestCase
         /* @var $emMock EntityManagerInterface */
         $emMock = $this->prophesize(EntityManagerInterface::class)->reveal();
         /* @var $registryMock RegistryInterface */
+        $registryMock = $this->prophesize(RegistryInterface::class)->reveal();
+
         $em = new ResettableEntityManager(
             $configurationMock->reveal(),
             $emMock,
+            $registryMock,
+            'default'
         );
         /* @var $repository EntityRepository */
         $em->getRepository(TestEntity::class);
+    }
+
+    public function testClearOrResetIfNeededShouldClearWhenWrappedIsOpen(): void
+    {
+        /* @var $configurationMock Configuration|ObjectProphecy */
+        $configurationMock = $this->prophesize(Configuration::class);
+        $configurationMock->getRepositoryFactory()->willReturn($this->prophesize(RepositoryFactory::class));
+        /* @var $emMock EntityManagerInterface */
+        $emMock = $this->prophesize(EntityManagerInterface::class);
+        $emMock->isOpen()->willReturn(true);
+        $emMock->clear(Argument::is(null))->shouldBeCalled();
+        /* @var $registryMock RegistryInterface */
+        $registryMock = $this->prophesize(RegistryInterface::class)->reveal();
+
+        $em = new ResettableEntityManager(
+            $configurationMock->reveal(),
+            $emMock->reveal(),
+            $registryMock,
+            'default'
+        );
+
+        $em->clearOrResetIfNeeded();
+    }
+
+    public function testClearOrResetIfNeededShouldResetWhenWrappedIsClosed(): void
+    {
+        $decoratedName = 'default';
+        /* @var $configurationMock Configuration|ObjectProphecy */
+        $configurationMock = $this->prophesize(Configuration::class);
+        $configurationMock->getRepositoryFactory()->willReturn($this->prophesize(RepositoryFactory::class));
+        /* @var $emMock EntityManagerInterface */
+        $emMock = $this->prophesize(EntityManagerInterface::class);
+        $emMock->isOpen()->willReturn(false);
+        $emMock = $emMock->reveal();
+        /* @var $registryMock RegistryInterface */
+        $registryMock = $this->prophesize(RegistryInterface::class);
+        $registryMock->resetManager(Argument::is($decoratedName))
+            ->shouldBeCalled()->willReturn($this->createMock(ResettableEntityManager::class));
+        $registryMock = $registryMock->reveal();
+
+        $em = new ResettableEntityManager(
+            $configurationMock->reveal(),
+            $emMock,
+            $registryMock,
+            $decoratedName
+        );
+
+        $em->clearOrResetIfNeeded();
     }
 }
