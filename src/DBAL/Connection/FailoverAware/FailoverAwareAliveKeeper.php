@@ -9,8 +9,6 @@ declare(strict_types=1);
 namespace PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\FailoverAware;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\DBALException;
-use Doctrine\DBAL\Statement;
 use Exception;
 use PixelFederation\DoctrineResettableEmBundle\Connection\AliveKeeper\AliveKeeper;
 use Psr\Log\LoggerInterface;
@@ -55,7 +53,7 @@ final class FailoverAwareAliveKeeper implements AliveKeeper
                 );
                 $this->reconnect();
             }
-        } catch (DBALException $e) {
+        } catch (\Doctrine\DBAL\Exception $e) {
             $this->logger->info(
                 sprintf("Exceptional reconnect for DBAL connection '%s'", $this->connectionName),
                 [
@@ -65,7 +63,7 @@ final class FailoverAwareAliveKeeper implements AliveKeeper
 
             try {
                 $this->reconnect();
-            } catch (DBALException $e) {
+            } catch (\Doctrine\DBAL\Exception $e) {
                 // this is usual reconnect
             }
         }
@@ -84,14 +82,10 @@ final class FailoverAwareAliveKeeper implements AliveKeeper
      * returns true if the connection is expected to be writable and innodb_read_only is set to 0
      * or if the connection is not expected to be writable and innodb_read_only is set to 1
      * these flags were only tested on AWS Aurora RDS
-     * @throws DBALException
+     * @throws \Doctrine\DBAL\Exception
      */
     private function isProperConnection(): bool
     {
-        /**
-         * @psalm-suppress TooManyTemplateParams
-         * @phpstan-var Statement<int> $stmt
-         */
         $stmt = $this->connection->executeQuery('SELECT @@global.innodb_read_only;');
         $currentConnectionIsWriter = ((bool)$stmt->fetchOne()) === false;
 

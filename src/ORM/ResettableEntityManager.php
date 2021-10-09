@@ -35,17 +35,18 @@ class ResettableEntityManager extends EntityManagerDecorator
         $this->repositoryFactory = $configuration->getRepositoryFactory();
         $this->doctrineRegistry = $doctrineRegistry;
         $this->decoratedName = $decoratedName;
+        /** @psalm-suppress NonInvariantDocblockPropertyType */
         parent::__construct($wrapped);
     }
 
     /**
      * @inheritDoc
      * @throws Exception
-     * @psalm-suppress MixedReturnTypeCoercion
+     * @psalm-suppress MoreSpecificReturnType
      */
     public function getRepository($className)
     {
-        /** @psalm-suppress MixedReturnTypeCoercion */
+        /** @psalm-suppress LessSpecificReturnStatement */
         return $this->repositoryFactory->getRepository($this, $className);
     }
 

@@ -29,9 +29,7 @@ final class DBALAliveKeeper implements AliveKeeper
     {
         $query = $this->connection->getDatabasePlatform()->getDummySelectSQL();
         try {
-            // in addition to the error, PHP 7.3 will generate a warning that needs to be
-            // suppressed in order to not let PHPUnit handle it before the actual error
-            @$this->connection->executeQuery($query);
+            $this->connection->executeQuery($query);
         } catch (ConnectionLost $e) {
             $this->connection->close();
             $this->connection->connect();
