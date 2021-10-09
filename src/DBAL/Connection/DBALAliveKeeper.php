@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace PixelFederation\DoctrineResettableEmBundle\DBAL\Connection;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception\ConnectionLost;
 use Exception;
 use PixelFederation\DoctrineResettableEmBundle\Connection\AliveKeeper\AliveKeeper;
 
