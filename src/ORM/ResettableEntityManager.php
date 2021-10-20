@@ -42,11 +42,15 @@ class ResettableEntityManager extends EntityManagerDecorator
     /**
      * @inheritDoc
      * @throws Exception
+     * @psalm-suppress MixedReturnTypeCoercion
      * @psalm-suppress MoreSpecificReturnType
      */
     public function getRepository($className)
     {
-        /** @psalm-suppress LessSpecificReturnStatement */
+        /**
+         * @psalm-suppress MixedReturnTypeCoercion
+         * @psalm-suppress LessSpecificReturnStatement
+         */
         return $this->repositoryFactory->getRepository($this, $className);
     }
 

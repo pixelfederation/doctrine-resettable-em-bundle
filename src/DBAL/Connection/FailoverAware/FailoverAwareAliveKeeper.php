@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\FailoverAware;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Statement;
 use Exception;
 use PixelFederation\DoctrineResettableEmBundle\Connection\AliveKeeper\AliveKeeper;
 use Psr\Log\LoggerInterface;
@@ -86,8 +87,9 @@ final class FailoverAwareAliveKeeper implements AliveKeeper
      */
     private function isProperConnection(): bool
     {
+        /** @var Statement $stmt */
         $stmt = $this->connection->executeQuery('SELECT @@global.innodb_read_only;');
-        $currentConnectionIsWriter = ((bool)$stmt->fetchOne()) === false;
+        $currentConnectionIsWriter = ((bool) $stmt->fetchOne()) === false;
 
         return $this->connectionType->isWriter() === $currentConnectionIsWriter;
     }
