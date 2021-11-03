@@ -10,19 +10,23 @@ namespace PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\Failov
 
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Statement;
+use Doctrine\DBAL\Result;
 use PDO;
 
 final class ConnectionMock extends Connection
 {
     private string $query;
 
-    public function executeQuery($sql, array $params = [], $types = [], ?QueryCacheProfile $qcp = null)
-    {
+    public function executeQuery(
+        string $sql,
+        array $params = [],
+               $types = [],
+        ?QueryCacheProfile $qcp = null
+    ): Result {
         $args = func_get_args();
         $this->query = $args[0];
 
-        return new class extends Statement {
+        return new class extends Result {
             public function __construct()
             {
             }

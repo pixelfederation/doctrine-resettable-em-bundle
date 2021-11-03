@@ -4,7 +4,7 @@ RUN apt-get update && apt-get install -y git-core zlib1g-dev libzip-dev zip unzi
 RUN docker-php-ext-install zip pdo_mysql
 
 RUN pecl install xdebug redis && \
-    docker-php-ext-enable xdebug redis
+    docker-php-ext-enable redis
 
 RUN echo 'xdebug.file_link_format="phpstorm://open?url=file://%%f&line=%%l"' >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
         echo "xdebug.mode=develop" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
