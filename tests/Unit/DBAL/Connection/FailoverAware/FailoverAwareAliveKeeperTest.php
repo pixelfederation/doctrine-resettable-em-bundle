@@ -9,8 +9,8 @@ declare(strict_types=1);
 namespace PixelFederation\DoctrineResettableEmBundle\Tests\Unit\DBAL\Connection\FailoverAware;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\DBALException;
-use Doctrine\DBAL\Statement;
+use Doctrine\DBAL\Exception\DriverException;
+use Doctrine\DBAL\Result;
 use Exception;
 use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\FailoverAware\ConnectionType;
 use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\FailoverAware\FailoverAwareAliveKeeper;
@@ -31,7 +31,7 @@ class FailoverAwareAliveKeeperTest extends TestCase
     public function testKeepAliveWriterWithoutReconnect(): void
     {
         $loggerProphecy = $this->prophesize(LoggerInterface::class);
-        $statementProphecy = $this->prophesize(Statement::class);
+        $statementProphecy = $this->prophesize(Result::class);
         $statementProphecy->fetchOne()->willReturn('0')->shouldBeCalled();
 
         /** @var $connectionProphecy Connection|ObjectProphecy */
@@ -54,7 +54,7 @@ class FailoverAwareAliveKeeperTest extends TestCase
     public function testKeepAliveReaderWithoutReconnect(): void
     {
         $loggerProphecy = $this->prophesize(LoggerInterface::class);
-        $statementProphecy = $this->prophesize(Statement::class);
+        $statementProphecy = $this->prophesize(Result::class);
         $statementProphecy->fetchOne()->willReturn('1')->shouldBeCalled();
 
         /** @var $connectionProphecy Connection|ObjectProphecy */
@@ -79,7 +79,7 @@ class FailoverAwareAliveKeeperTest extends TestCase
     {
         $loggerProphecy = $this->prophesize(LoggerInterface::class);
         $loggerProphecy->log(LogLevel::ALERT, Argument::any())->shouldBeCalled();
-        $statementProphecy = $this->prophesize(Statement::class);
+        $statementProphecy = $this->prophesize(Result::class);
         $statementProphecy->fetchOne()->willReturn('1')->shouldBeCalled();
 
         /** @var $connectionProphecy Connection|ObjectProphecy */
@@ -103,7 +103,7 @@ class FailoverAwareAliveKeeperTest extends TestCase
     {
         $loggerProphecy = $this->prophesize(LoggerInterface::class);
         $loggerProphecy->log(LogLevel::WARNING, Argument::any())->shouldBeCalled();
-        $statementProphecy = $this->prophesize(Statement::class);
+        $statementProphecy = $this->prophesize(Result::class);
         $statementProphecy->fetchOne()->willReturn('0')->shouldBeCalled();
 
         /** @var $connectionProphecy Connection|ObjectProphecy */
@@ -128,8 +128,8 @@ class FailoverAwareAliveKeeperTest extends TestCase
     {
         $loggerProphecy = $this->prophesize(LoggerInterface::class);
         $loggerProphecy->info(Argument::any(), Argument::any())->shouldBeCalled();
-        $statementProphecy = $this->prophesize(Statement::class);
-        $statementProphecy->fetchOne()->willThrow(DBALException::class)->shouldBeCalled();
+        $statementProphecy = $this->prophesize(Result::class);
+        $statementProphecy->fetchOne()->willThrow(DriverException::class)->shouldBeCalled();
 
         /** @var $connectionProphecy Connection|ObjectProphecy */
         $connectionProphecy = $this->prophesize(Connection::class);

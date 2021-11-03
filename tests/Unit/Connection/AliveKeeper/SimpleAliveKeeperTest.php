@@ -9,6 +9,8 @@ declare(strict_types=1);
 namespace PixelFederation\DoctrineResettableEmBundle\Tests\Unit\Connection\AliveKeeper;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception\ConnectionLost;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Exception;
 use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\DBALAliveKeeper;
 use PHPUnit\Framework\TestCase;
@@ -24,9 +26,16 @@ class SimpleAliveKeeperTest extends TestCase
      */
     public function testKeepAliveWithoutReconnect(): void
     {
+        $query = 'SELECT 1';
+        /** @var $platformProphecy AbstractPlatform|ObjectProphecy */
+        $platformProphecy = $this->prophesize(AbstractPlatform::class);
+        $platformProphecy->getDummySelectSQL()->willReturn($query)->shouldBeCalled();
         /** @var $connectionProphecy Connection|ObjectProphecy */
         $connectionProphecy = $this->prophesize(Connection::class);
-        $connectionProphecy->ping()->willReturn(true)->shouldBeCalled();
+        $connectionProphecy->getDatabasePlatform()
+            ->willReturn($platformProphecy->reveal())
+            ->shouldBeCalled();
+        $connectionProphecy->executeQuery($query)->shouldBeCalled();
         $connectionProphecy->close()->shouldNotBeCalled();
         $connectionProphecy->connect()->shouldNotBeCalled();
 
@@ -39,9 +48,16 @@ class SimpleAliveKeeperTest extends TestCase
      */
     public function testKeepAliveWithReconnectOnFailedPing(): void
     {
+        $query = 'SELECT 1';
+        /** @var $platformProphecy AbstractPlatform|ObjectProphecy */
+        $platformProphecy = $this->prophesize(AbstractPlatform::class);
+        $platformProphecy->getDummySelectSQL()->willReturn($query)->shouldBeCalled();
         /** @var $connectionProphecy Connection|ObjectProphecy */
         $connectionProphecy = $this->prophesize(Connection::class);
-        $connectionProphecy->ping()->willReturn(false)->shouldBeCalled();
+        $connectionProphecy->getDatabasePlatform()
+            ->willReturn($platformProphecy->reveal())
+            ->shouldBeCalled();
+        $connectionProphecy->executeQuery($query)->willThrow(ConnectionLost::class);
         $connectionProphecy->close()->shouldBeCalled();
         $connectionProphecy->connect()->willReturn(true)->shouldBeCalled();
 

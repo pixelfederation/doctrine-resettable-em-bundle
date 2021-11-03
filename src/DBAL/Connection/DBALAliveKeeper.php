@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace PixelFederation\DoctrineResettableEmBundle\DBAL\Connection;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception\ConnectionLost;
 use Exception;
 use PixelFederation\DoctrineResettableEmBundle\Connection\AliveKeeper\AliveKeeper;
 
@@ -26,12 +27,12 @@ final class DBALAliveKeeper implements AliveKeeper
      */
     public function keepAlive(): void
     {
-        /** @psalm-suppress DeprecatedMethod */
-        if ($this->connection->ping()) {
-            return;
+        $query = $this->connection->getDatabasePlatform()->getDummySelectSQL();
+        try {
+            $this->connection->executeQuery($query);
+        } catch (ConnectionLost $e) {
+            $this->connection->close();
+            $this->connection->connect();
         }
-
-        $this->connection->close();
-        $this->connection->connect();
     }
 }
