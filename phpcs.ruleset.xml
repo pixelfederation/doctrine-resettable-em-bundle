@@ -1,11 +1,22 @@
 <?xml version="1.0"?>
-<ruleset name="Pixel">
+<ruleset name="PixelFederation">
 
-  <description>Custom rule set.</description>
-  <exclude-pattern>tests/</exclude-pattern>
-  <config name="installed_paths" value="vendor/phpcompatibility/php-compatibility"/>
+  <description>PixelFederation rule set.</description>
 
-  <rule ref="PSR2"/>
-  <rule ref="PHPCompatibility"/>
+  <config name="testVersion" value="7.4"/>
+  <rule ref="vendor/pixelfederation/coding-standards/phpcs.ruleset.xml">
+    <exclude name="SlevomatCodingStandard.ControlStructures.DisallowEmpty"/>
+    <exclude name="SlevomatCodingStandard.Operators.DisallowIncrementAndDecrementOperators"/>
+    <exclude name="SlevomatCodingStandard.Files.FunctionLength.FunctionLength"/>
+    <exclude name="SlevomatCodingStandard.Namespaces.UseSpacing.IncorrectLinesCountBetweenDifferentTypeOfUse"/>
+  </rule>
+
+  <rule ref="SlevomatCodingStandard.Files.TypeNameMatchesFileName">
+    <properties>
+      <property name="rootNamespaces" type="array">
+        <element key="src" value="PixelFederation\DoctrineResettableEmBundle"/>
+      </property>
+    </properties>
+  </rule>
 
 </ruleset>

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /*
@@ -10,12 +11,12 @@ namespace PixelFederation\DoctrineResettableEmBundle\RequestCycle;
 final class Initializers
 {
     /**
-     * @var InitializerInterface[]
+     * @var iterable<Initializer>
      */
     private iterable $initializers;
 
     /**
-     * @param InitializerInterface[] $initializers
+     * @param iterable<Initializer> $initializers
      */
     public function __construct(iterable $initializers)
     {

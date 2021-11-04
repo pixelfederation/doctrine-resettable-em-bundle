@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 /*
  * @author     mfris
  * @copyright  PIXELFEDERATION s.r.o.
@@ -13,12 +15,12 @@ use Exception;
 final class AggregatedAliveKeeper implements AliveKeeper
 {
     /**
-     * @var AliveKeeper[]
+     * @var array<AliveKeeper>
      */
     private array $aliveKeepers;
 
     /**
-     * @param AliveKeeper[] $aliveKeepers
+     * @param array<AliveKeeper> $aliveKeepers
      */
     public function __construct(array $aliveKeepers)
     {

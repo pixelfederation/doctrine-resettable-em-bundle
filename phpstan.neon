@@ -2,6 +2,6 @@ parameters:
   level: max
   ignoreErrors:
 
-  excludes_analyse:
-    - %rootDir%/DependencyInjection/*
-    - %rootDir%/tests/*
+  excludePaths:
+    - src/DependencyInjection/*
+    - tests/*

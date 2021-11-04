@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 /*
  * @author mfris
  */
@@ -19,10 +21,13 @@ use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
 final class PixelFederationDoctrineResettableEmExtension extends ConfigurableExtension
 {
     /**
-     * @param array $mergedConfig
+     * @param array{
+     *     exclude_from_resetting: array<string>,
+     *     redis_cluster_connections?: array<string, string>
+     * } $mergedConfig
      * @throws Exception
      */
-    protected function loadInternal(array $mergedConfig, ContainerBuilder $container)
+    protected function loadInternal(array $mergedConfig, ContainerBuilder $container): void
     {
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yaml');
@@ -32,13 +37,16 @@ final class PixelFederationDoctrineResettableEmExtension extends ConfigurableExt
         $this->registerRedisClusterConnections($container, $mergedConfig);
     }
 
+    /**
+     * @param array{exclude_from_resetting: array<string>} $config
+     */
     private function registerNotResettableEntityManagers(ContainerBuilder $container, array $config): void
     {
         $container->setParameter(Parameters::EXCLUDED_FROM_RESETTING, $config['exclude_from_resetting']);
     }
 
     /**
-     * @param array $config
+     * @param array{ping_interval?: int|false} $config
      */
     private function tryToOptimizeAliveKeeper(ContainerBuilder $container, array $config): void
     {
@@ -53,23 +61,23 @@ final class PixelFederationDoctrineResettableEmExtension extends ConfigurableExt
     }
 
     /**
-     * @param array $config
+     * @param array{failover_connections?: array<string, string>} $config
      */
     private function registerReaderWriterConnections(ContainerBuilder $container, array $config): void
     {
-        if (!isset($config['failover_connections']) || !is_array($config['failover_connections'])) {
+        if (!isset($config['failover_connections'])) {
             return;
         }
 
-        $container->setParameter(
-            AliveKeeperPass::FAILOVER_CONNECTIONS_PARAM_NAME,
-            $config['failover_connections']
-        );
+        $container->setParameter(AliveKeeperPass::FAILOVER_CONNECTIONS_PARAM_NAME, $config['failover_connections']);
     }
 
+    /**
+     * @param array{redis_cluster_connections?: array<string, string>} $config
+     */
     private function registerRedisClusterConnections(ContainerBuilder $container, array $config): void
     {
-        if (!isset($config['redis_cluster_connections']) || !is_array($config['redis_cluster_connections'])) {
+        if (!isset($config['redis_cluster_connections'])) {
             return;
         }
 

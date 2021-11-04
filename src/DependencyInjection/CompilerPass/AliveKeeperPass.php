@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 /*
  * @author     mfris
  * @copyright  PIXELFEDERATION s.r.o.
@@ -9,22 +11,21 @@ declare(strict_types=1);
 namespace PixelFederation\DoctrineResettableEmBundle\DependencyInjection\CompilerPass;
 
 use PixelFederation\DoctrineResettableEmBundle\Connection\AliveKeeper\AggregatedAliveKeeper;
-use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\FailoverAware\FailoverAwareAliveKeeper;
 use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\DBALAliveKeeper;
+use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\FailoverAware\FailoverAwareAliveKeeper;
 use PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection\RedisClusterAliveKeeper;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
-use UnexpectedValueException;
 
 final class AliveKeeperPass implements CompilerPassInterface
 {
     public const FAILOVER_CONNECTIONS_PARAM_NAME = 'pixelfederation_doctrine_resettable_em_bundle.failover_connections';
-    const REDIS_CLUSTER_CONNECTIONS_PARAM_NAME =
+    public const REDIS_CLUSTER_CONNECTIONS_PARAM_NAME =
         'pixelfederation_doctrine_resettable_em_bundle.redis_cluster_connections';
 
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
         if (!$container->hasParameter(self::FAILOVER_CONNECTIONS_PARAM_NAME)) {
             return;
@@ -36,6 +37,9 @@ final class AliveKeeperPass implements CompilerPassInterface
         $aggregatedAliveKeeper->setArgument('$aliveKeepers', $aliveKeepers);
     }
 
+    /**
+     * @return array<ChildDefinition|Reference>
+     */
     private function createAliveKeepers(ContainerBuilder $container): array
     {
         return array_merge(
@@ -44,9 +48,14 @@ final class AliveKeeperPass implements CompilerPassInterface
         );
     }
 
+    /**
+     * @return array<Reference>
+     */
     private function createDoctrineAliveKeepers(ContainerBuilder $container): array
     {
+        /** @var array<string, string> $connections */
         $connections = $container->getParameter('doctrine.connections');
+        /** @var array<string, string> $failoverConnections */
         $failoverConnections = $container->getParameter(self::FAILOVER_CONNECTIONS_PARAM_NAME);
         $aliveKeepers = [];
 
@@ -63,6 +72,9 @@ final class AliveKeeperPass implements CompilerPassInterface
         return $aliveKeepers;
     }
 
+    /**
+     * @param array<string, string> $failoverConnections
+     */
     private function getAliveKeeperDefinition(string $connectionName, array $failoverConnections): ChildDefinition
     {
         if (!isset($failoverConnections[$connectionName])) {
@@ -76,20 +88,17 @@ final class AliveKeeperPass implements CompilerPassInterface
         return $aliveKeeper;
     }
 
+    /**
+     * @return array<ChildDefinition>
+     */
     private function createRedisClusterAliveKeepers(ContainerBuilder $container): array
     {
+        /** @var array<string, string> $clusterConnections */
         $clusterConnections = $container->getParameter(self::REDIS_CLUSTER_CONNECTIONS_PARAM_NAME);
         $aliveKeepers = [];
 
         foreach ($clusterConnections as $connectionName => $clusterSvcId) {
             $clusterDef = $container->findDefinition($clusterSvcId);
-
-            if ($clusterDef === null) {
-                throw new UnexpectedValueException(
-                    sprintf('Unable to find redis cluster service - %s', $clusterSvcId)
-                );
-            }
-
             $aliveKeeper = new ChildDefinition(RedisClusterAliveKeeper::class);
             $aliveKeeper->setArgument('$connectionName', $connectionName);
             $aliveKeeper->setArgument('$redis', new Reference($clusterSvcId));
