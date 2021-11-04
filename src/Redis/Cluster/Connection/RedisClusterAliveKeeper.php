@@ -24,7 +24,7 @@ final class RedisClusterAliveKeeper implements AliveKeeper
     /**
      * @var array{
      *   0: string|null,
-     *   1: array,
+     *   1: array<string>,
      *   2: float,
      *   3: float,
      *   4: bool,
@@ -36,17 +36,14 @@ final class RedisClusterAliveKeeper implements AliveKeeper
     private LoggerInterface $logger;
 
     /**
-     * @param RedisCluster    $redis
      * @param array{
      *   0: string|null,
-     *   1: array,
+     *   1: array<string>,
      *   2: float,
      *   3: float,
      *   4: bool,
      *   5: string|null
      * } $constructorArguments
-     * @param LoggerInterface $logger
-     * @param string          $connectionName
      */
     public function __construct(
         string $connectionName,

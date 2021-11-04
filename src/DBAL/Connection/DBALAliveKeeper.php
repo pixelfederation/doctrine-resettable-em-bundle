@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 /*
  * @author     mfris
  * @copyright  PIXELFEDERATION s.r.o.

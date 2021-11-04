@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 /*
  * @author     mfris
  * @copyright  PIXELFEDERATION s.r.o.
@@ -22,9 +24,6 @@ final class ConnectionType
 
     private string $type;
 
-    /**
-     * @param string $type
-     */
     private function __construct(string $type)
     {
         $this->type = $type;

@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 /*
  * @author     mfris
  * @copyright  PIXELFEDERATION s.r.o.
@@ -70,9 +72,6 @@ final class FailoverAwareAliveKeeper implements AliveKeeper
         }
     }
 
-    /**
-     *
-     */
     private function reconnect(): void
     {
         $this->connection->close();
@@ -83,12 +82,13 @@ final class FailoverAwareAliveKeeper implements AliveKeeper
      * returns true if the connection is expected to be writable and innodb_read_only is set to 0
      * or if the connection is not expected to be writable and innodb_read_only is set to 1
      * these flags were only tested on AWS Aurora RDS
+     *
      * @throws DriverException
      */
     private function isProperConnection(): bool
     {
         $stmt = $this->connection->executeQuery('SELECT @@global.innodb_read_only;');
-        $currentConnectionIsWriter = ((bool)$stmt->fetchOne()) === false;
+        $currentConnectionIsWriter = (bool)$stmt->fetchOne() === false;
 
         return $this->connectionType->isWriter() === $currentConnectionIsWriter;
     }

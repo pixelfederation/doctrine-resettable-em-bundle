@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 /*
  * @author mfris
  */
@@ -8,9 +10,9 @@ namespace PixelFederation\DoctrineResettableEmBundle\Connection;
 
 use Exception;
 use PixelFederation\DoctrineResettableEmBundle\Connection\AliveKeeper\AliveKeeper;
-use PixelFederation\DoctrineResettableEmBundle\RequestCycle\InitializerInterface;
+use PixelFederation\DoctrineResettableEmBundle\RequestCycle\Initializer;
 
-final class ConnectionsHandler implements InitializerInterface
+final class ConnectionsHandler implements Initializer
 {
     private AliveKeeper $aliveKeeper;
 

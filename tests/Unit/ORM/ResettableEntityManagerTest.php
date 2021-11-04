@@ -10,6 +10,7 @@ use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Repository\RepositoryFactory;
+use Doctrine\Persistence\ObjectRepository;
 use Exception;
 use PixelFederation\DoctrineResettableEmBundle\ORM\ResettableEntityManager;
 use PHPUnit\Framework\TestCase;
@@ -28,10 +29,13 @@ class ResettableEntityManagerTest extends TestCase
      */
     public function testGetRepository(): void
     {
+        /* @var $repositoryMock ObjectRepository|ObjectProphecy */
+        $repositoryMock = $this->prophesize(ObjectRepository::class);
         /* @var $repositoryFactoryMock RepositoryFactory|ObjectProphecy */
         $repositoryFactoryMock = $this->prophesize(RepositoryFactory::class);
         $repositoryFactoryMock->getRepository(Argument::type(ResettableEntityManager::class), Argument::cetera())
-            ->shouldBeCalledTimes(1);
+            ->shouldBeCalledTimes(1)
+            ->willReturn($repositoryMock->reveal());
         /* @var $configurationMock Configuration|ObjectProphecy */
         $configurationMock = $this->prophesize(Configuration::class);
         $configurationMock->getRepositoryFactory()
@@ -48,7 +52,7 @@ class ResettableEntityManagerTest extends TestCase
             $registryMock,
             'default'
         );
-        /* @var $repository EntityRepository */
+
         $em->getRepository(TestEntity::class);
     }
 

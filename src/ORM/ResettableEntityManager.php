@@ -1,20 +1,23 @@
 <?php
+
 declare(strict_types=1);
+
 /*
  * @author mfris
  */
 
 namespace PixelFederation\DoctrineResettableEmBundle\ORM;
 
+use Doctrine\ORM\Configuration;
+use Doctrine\ORM\Decorator\EntityManagerDecorator;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NativeQuery;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\QueryBuilder;
-use Doctrine\ORM\Configuration;
-use Doctrine\ORM\Decorator\EntityManagerDecorator;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Repository\RepositoryFactory;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ObjectRepository;
 use Exception;
 use UnexpectedValueException;
 
@@ -35,15 +38,19 @@ class ResettableEntityManager extends EntityManagerDecorator
         $this->repositoryFactory = $configuration->getRepositoryFactory();
         $this->doctrineRegistry = $doctrineRegistry;
         $this->decoratedName = $decoratedName;
+
         parent::__construct($wrapped);
     }
 
     /**
-     * @inheritDoc
+     * @template T as object
+     * @param class-string<T> $className
+     * @return ObjectRepository<T>
      * @throws Exception
+     * @psalm-suppress LessSpecificImplementedReturnType
      * @psalm-suppress MixedReturnTypeCoercion
      */
-    public function getRepository($className)
+    public function getRepository($className): ObjectRepository
     {
         /** @psalm-suppress MixedReturnTypeCoercion */
         return $this->repositoryFactory->getRepository($this, $className);

@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 /*
  * @author mfris
  */
@@ -15,12 +17,11 @@ use Symfony\Component\DependencyInjection\Reference;
 
 final class EntityManagerDecoratorPass implements CompilerPassInterface
 {
-    /**
-     * @inheritDoc
-     */
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
+        /** @var array<string, string> $entityManagers */
         $entityManagers = $container->getParameter('doctrine.entity_managers');
+        /** @var array<string> $excluded */
         $excluded = $container->getParameter(Parameters::EXCLUDED_FROM_RESETTING);
         $resettableEntityManagers = [];
 
