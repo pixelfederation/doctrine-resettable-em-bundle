@@ -17,9 +17,13 @@
     <ignoreFiles>
       <directory name="src/DependencyInjection"/>
       <directory name="tests"/>
+      <directory name="vendor"/>
     </ignoreFiles>
   </projectFiles>
   <ignoreExceptions/>
   <plugins/>
-  <issueHandlers/>
+  <issueHandlers>
+    <PossiblyUnusedMethod errorLevel="suppress"/>
+    <UnusedClass errorLevel="suppress"/>
+  </issueHandlers>
 </psalm>

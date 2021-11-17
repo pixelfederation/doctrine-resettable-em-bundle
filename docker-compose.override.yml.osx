@@ -13,3 +13,7 @@ services:
   doctrine-resettable-em-bundle-php7:
     volumes:
       - php_volume:/srv/www
+
+  doctrine-resettable-em-bundle-php8:
+    volumes:
+      - php_volume:/srv/www

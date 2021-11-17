@@ -4,6 +4,30 @@ grumphp:
   stop_on_failure: true
   process_timeout: 600
   ignore_unstaged_changes: true
+  testsuites:
+    php7.4:
+      tasks:
+        - phpcs
+        - phpmd
+        - phpcsfixer2
+        - phpparser
+        - phplint
+        - phpunit
+        - phpversion
+        - shell
+        - phpstan
+        - psalm
+    php8.0:
+      tasks:
+        - phpmd
+        - phpcsfixer2
+        - phpparser
+        - phplint
+        - phpunit
+        - phpversion
+        - shell
+        - phpstan
+        - psalm
   tasks:
     phpcs:
       standard: 'phpcs.ruleset.xml'
