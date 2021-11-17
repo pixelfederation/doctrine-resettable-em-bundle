@@ -9,3 +9,11 @@ services:
       - .:/srv/www:delegated
     environment:
       - XDEBUG_CONFIG=idekey=PHPSTORM
+
+  doctrine-resettable-em-bundle-php8:
+    container_name: doctrine-resettable-em-bundle-php8
+    build: ./docker/php8
+    volumes:
+      - .:/srv/www:delegated
+    environment:
+      - XDEBUG_CONFIG=idekey=PHPSTORM
