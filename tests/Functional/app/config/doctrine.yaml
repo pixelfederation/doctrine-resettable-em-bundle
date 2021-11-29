@@ -11,7 +11,8 @@ doctrine:
         driver: pdo_sqlite
         charset: utf8
         path: '%kernel.project_dir%/data/sqlite_excluded.db'
-        logging: true
+        logging: false
+        profiling: false
   orm:
     default_entity_manager: default
     entity_managers:

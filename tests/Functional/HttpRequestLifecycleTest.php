@@ -1,16 +1,21 @@
 <?php
+
 declare(strict_types=1);
+
 /*
- * @author     mfris
+ * @author mfris
  */
 
 namespace PixelFederation\DoctrineResettableEmBundle\Tests\Functional;
 
+use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use PixelFederation\DoctrineResettableEmBundle\DBAL\Logging\ResettableDebugStack;
 use PixelFederation\DoctrineResettableEmBundle\ORM\ResettableEntityManager;
 use PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\EntityManagerChecker;
+use PixelFederation\DoctrineResettableEmBundle\Tests\Redis\Cluster\Connection\RedisClusterSpy;
 use RedisCluster;
 use ReflectionClass;
 
@@ -40,10 +45,12 @@ final class HttpRequestLifecycleTest extends TestCase
     {
         $client = self::createClient();
 
-        /* @var $em EntityManagerInterface */
-        $em = self::$container->get('doctrine.orm.default_entity_manager');
+        /* @var EntityManagerInterface $em */
+        $em = static::getContainer()->get('doctrine.orm.default_entity_manager');
+        /** @var Connection $connection */
         $connection = $em->getConnection();
-        $redisCluster = self::$container->get(RedisCluster::class);
+        /** @var RedisClusterSpy $redisCluster */
+        $redisCluster = static::getContainer()->get(RedisCluster::class);
 
         self::assertFalse($connection->isConnected());
         self::assertFalse($redisCluster->wasConstructorCalled());
@@ -51,7 +58,7 @@ final class HttpRequestLifecycleTest extends TestCase
         self::assertTrue($connection->isConnected());
         self::assertTrue($redisCluster->wasConstructorCalled());
         self::assertSame(
-            $redisCluster->getConstructorParametersFirst(), 
+            $redisCluster->getConstructorParametersFirst(),
             $redisCluster->getConstructorParametersSecond()
         );
     }
@@ -61,11 +68,12 @@ final class HttpRequestLifecycleTest extends TestCase
      */
     public function testEmWillBeResetWithServicesResetter(): void
     {
-        /* @var $em EntityManagerInterface */
-        $em = self::$container->get('doctrine.orm.default_entity_manager');
+        /* @var EntityManagerInterface $em */
+        $em = static::getContainer()->get('doctrine.orm.default_entity_manager');
         self::assertInstanceOf(ResettableEntityManager::class, $em);
 
         $client = self::createClient();
+        /** @var EntityManagerChecker $checker */
         $checker = $client->getContainer()->get(EntityManagerChecker::class . '.default');
         $client->disableReboot();
         $client->request('GET', '/');
@@ -84,15 +92,17 @@ final class HttpRequestLifecycleTest extends TestCase
      */
     public function testEmWillBeResetOnErrorWithServicesResetter(): void
     {
-        /* @var $em EntityManagerInterface */
-        $em = self::$container->get('doctrine.orm.default_entity_manager');
+        /* @var EntityManagerInterface $em */
+        $em = static::getContainer()->get('doctrine.orm.default_entity_manager');
         self::assertInstanceOf(ResettableEntityManager::class, $em);
         $refl = new ReflectionClass(ResettableEntityManager::class);
         $wrappedProperty = $refl->getProperty('wrapped');
         $wrappedProperty->setAccessible(true);
+        /** @var EntityManagerInterface $wrapped */
         $wrapped = $wrappedProperty->getValue($em);
 
         $client = self::createClient();
+        /** @var EntityManagerChecker $checker */
         $checker = $client->getContainer()->get(EntityManagerChecker::class . '.default');
         $client->disableReboot();
         $client->request('GET', '/persist-error');
@@ -127,11 +137,12 @@ final class HttpRequestLifecycleTest extends TestCase
      */
     public function testExcludedEmWillBeResetOnErrorWithServicesResetterButRepositoryWontBeResetted(): void
     {
-        /* @var $em EntityManagerInterface */
-        $em = self::$container->get('doctrine.orm.excluded_entity_manager');
+        /* @var EntityManagerInterface $em */
+        $em = static::getContainer()->get('doctrine.orm.excluded_entity_manager');
         self::assertNotInstanceOf(ResettableEntityManager::class, $em);
 
         $client = self::createClient();
+        /** @var EntityManagerChecker $checker */
         $checker = $client->getContainer()->get(EntityManagerChecker::class . '.excluded');
         $client->disableReboot();
         $client->request('GET', '/persist-error-excluded');
@@ -159,11 +170,12 @@ final class HttpRequestLifecycleTest extends TestCase
      */
     public function testExcludedEmWontBeWrappedAndWillBeResetWithDefaultDoctrineServicesResetter(): void
     {
-        /* @var $em EntityManagerInterface */
-        $em = self::$container->get('doctrine.orm.excluded_entity_manager');
+        /* @var EntityManagerInterface $em */
+        $em = static::getContainer()->get('doctrine.orm.excluded_entity_manager');
         self::assertInstanceOf(EntityManager::class, $em);
 
         $client = self::createClient();
+        /** @var EntityManagerChecker $checker */
         $checker = $client->getContainer()->get(EntityManagerChecker::class . '.excluded');
         $client->disableReboot();
         $client->request('GET', '/persist-excluded');
@@ -175,5 +187,33 @@ final class HttpRequestLifecycleTest extends TestCase
 
         self::assertSame(2, $checker->getNumberOfChecks());
         self::assertTrue($checker->wasEmptyOnLastCheck());
+    }
+
+    public function testDoctrineConnectionLoggerIsResetOnRequestStart(): void
+    {
+        $client = self::createClient();
+
+        /* @var ResettableDebugStack $logger */
+        $logger = static::getContainer()->get('doctrine.dbal.logger.profiling.default');
+
+        self::assertFalse(static::getContainer()->has('doctrine.dbal.logger.profiling.excluded'));
+
+        self::assertEmpty($logger->queries);
+        self::assertEquals(0, $logger->currentQuery);
+        self::assertNull($logger->start);
+
+        $client->request('GET', '/'); // this action persists an entity
+
+        // logger is not reset yet
+        self::assertCount(4, $logger->queries);
+        self::assertEquals(4, $logger->currentQuery);
+        self::assertNotNull($logger->start);
+
+        $client->request('GET', '/'); // this action persists an entity
+
+        // logger contains same data quantity as before, so the logger was reset at the beginning of 2nd request
+        self::assertCount(4, $logger->queries);
+        self::assertEquals(4, $logger->currentQuery);
+        self::assertNotNull($logger->start);
     }
 }

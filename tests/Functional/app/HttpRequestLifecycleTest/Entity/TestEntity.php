@@ -1,7 +1,9 @@
 <?php
+
 declare(strict_types=1);
+
 /*
- * @author     mfris
+ * @author mfris
  */
 
 namespace PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\Entity;
