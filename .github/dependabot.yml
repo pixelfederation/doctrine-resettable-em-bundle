@@ -9,4 +9,6 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
-    open-pull-requests-limit: 0 # this disables version updates, only security updates are enabled
+    ignore:
+      - dependency-name: "*"
+        update-types: [ "version-update:semver-major" ]
