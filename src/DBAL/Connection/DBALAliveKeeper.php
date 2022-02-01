@@ -34,6 +34,7 @@ final class DBALAliveKeeper implements AliveKeeper
             $this->connection->executeQuery($query);
         } catch (ConnectionLost $e) {
             $this->connection->close();
+            /** @psalm-suppress InternalMethod */
             $this->connection->connect();
         }
     }
