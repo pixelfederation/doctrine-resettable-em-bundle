@@ -75,6 +75,7 @@ final class FailoverAwareAliveKeeper implements AliveKeeper
     private function reconnect(): void
     {
         $this->connection->close();
+        /** @psalm-suppress InternalMethod */
         $this->connection->connect();
     }
 
