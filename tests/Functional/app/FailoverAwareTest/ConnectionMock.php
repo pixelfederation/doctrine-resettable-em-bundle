@@ -31,11 +31,17 @@ final class ConnectionMock extends Connection
             {
             }
 
+            /**
+             * @return mixed
+             */
             public function fetchOne()
             {
                 return '1';
             }
 
+            /**
+             * @return mixed
+             */
             public function fetch($fetchMode = null, $cursorOrientation = PDO::FETCH_ORI_NEXT, $cursorOffset = 0)
             {
                 return 1;

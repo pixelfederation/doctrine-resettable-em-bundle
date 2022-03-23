@@ -41,9 +41,9 @@ final class HttpRequestLifecycleTest extends TestCase
         $client = self::createClient();
 
         /* @var $em EntityManagerInterface */
-        $em = self::$container->get('doctrine.orm.default_entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.default_entity_manager');
         $connection = $em->getConnection();
-        $redisCluster = self::$container->get(RedisCluster::class);
+        $redisCluster = self::getContainer()->get(RedisCluster::class);
 
         self::assertFalse($connection->isConnected());
         self::assertFalse($redisCluster->wasConstructorCalled());
@@ -51,7 +51,7 @@ final class HttpRequestLifecycleTest extends TestCase
         self::assertTrue($connection->isConnected());
         self::assertTrue($redisCluster->wasConstructorCalled());
         self::assertSame(
-            $redisCluster->getConstructorParametersFirst(), 
+            $redisCluster->getConstructorParametersFirst(),
             $redisCluster->getConstructorParametersSecond()
         );
     }
@@ -62,7 +62,7 @@ final class HttpRequestLifecycleTest extends TestCase
     public function testEmWillBeResetWithServicesResetter(): void
     {
         /* @var $em EntityManagerInterface */
-        $em = self::$container->get('doctrine.orm.default_entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.default_entity_manager');
         self::assertInstanceOf(ResettableEntityManager::class, $em);
 
         $client = self::createClient();
@@ -85,7 +85,7 @@ final class HttpRequestLifecycleTest extends TestCase
     public function testEmWillBeResetOnErrorWithServicesResetter(): void
     {
         /* @var $em EntityManagerInterface */
-        $em = self::$container->get('doctrine.orm.default_entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.default_entity_manager');
         self::assertInstanceOf(ResettableEntityManager::class, $em);
         $refl = new ReflectionClass(ResettableEntityManager::class);
         $wrappedProperty = $refl->getProperty('wrapped');
@@ -128,7 +128,7 @@ final class HttpRequestLifecycleTest extends TestCase
     public function testExcludedEmWillBeResetOnErrorWithServicesResetterButRepositoryWontBeResetted(): void
     {
         /* @var $em EntityManagerInterface */
-        $em = self::$container->get('doctrine.orm.excluded_entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.excluded_entity_manager');
         self::assertNotInstanceOf(ResettableEntityManager::class, $em);
 
         $client = self::createClient();
@@ -160,7 +160,7 @@ final class HttpRequestLifecycleTest extends TestCase
     public function testExcludedEmWontBeWrappedAndWillBeResetWithDefaultDoctrineServicesResetter(): void
     {
         /* @var $em EntityManagerInterface */
-        $em = self::$container->get('doctrine.orm.excluded_entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.excluded_entity_manager');
         self::assertInstanceOf(EntityManager::class, $em);
 
         $client = self::createClient();

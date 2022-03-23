@@ -59,7 +59,7 @@ class ResettableEntityManager extends EntityManagerDecorator
     /**
      * {@inheritDoc}
      */
-    public function createQuery($dql = '')
+    public function createQuery($dql = ''): Query
     {
         $query = new Query($this);
 
@@ -73,7 +73,7 @@ class ResettableEntityManager extends EntityManagerDecorator
     /**
      * {@inheritDoc}
      */
-    public function createNativeQuery($sql, ResultSetMapping $rsm)
+    public function createNativeQuery($sql, ResultSetMapping $rsm): NativeQuery
     {
         $query = new NativeQuery($this);
 
@@ -83,10 +83,7 @@ class ResettableEntityManager extends EntityManagerDecorator
         return $query;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function createQueryBuilder()
+    public function createQueryBuilder(): QueryBuilder
     {
         return new QueryBuilder($this);
     }

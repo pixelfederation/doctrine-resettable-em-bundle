@@ -28,6 +28,17 @@ grumphp:
         - shell
         - phpstan
         - psalm
+    php8.1:
+      tasks:
+        - phpmd
+        - phpcsfixer2
+        - phpparser
+        - phplint
+        - phpunit
+        - phpversion
+        - shell
+        - phpstan
+        - psalm
   tasks:
     phpcs:
       standard: 'phpcs.ruleset.xml'

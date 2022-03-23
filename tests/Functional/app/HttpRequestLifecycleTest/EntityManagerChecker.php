@@ -44,7 +44,7 @@ final class EntityManagerChecker implements EventSubscriberInterface
         return $this->wasEmptyOnLastCheck;
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             KernelEvents::REQUEST => 'checkEntityManager',

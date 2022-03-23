@@ -35,7 +35,7 @@ final class FailoverAwareTest extends TestCase
         $client = self::createClient();
 
         /* @var $em EntityManagerInterface */
-        $em = self::$container->get('doctrine.orm.default_entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.default_entity_manager');
         $connection = $em->getConnection();
         self::assertInstanceOf(ConnectionMock::class, $connection);
 

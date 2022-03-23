@@ -28,7 +28,7 @@ final class PingIntervalInjectionTest extends TestCase
     public function testPingIntervalInjectionFromConfiguration(): void
     {
         /* @var $handler OptimizedAliveKeeper */
-        $handler = self::$container->get(OptimizedAliveKeeper::class);
+        $handler = self::getContainer()->get(OptimizedAliveKeeper::class);
 
         self::assertSame(10, $handler->getPingIntervalInSeconds());
     }
