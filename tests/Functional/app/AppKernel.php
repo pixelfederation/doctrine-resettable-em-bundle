@@ -52,7 +52,7 @@ final class AppKernel extends Kernel
      * @return mixed|\Symfony\Component\HttpKernel\Bundle\BundleInterface[]
      * @throws RuntimeException
      */
-    public function registerBundles()
+    public function registerBundles(): iterable
     {
         if (!is_file($filename = $this->getRootDir() . '/config/bundles.php')) {
             throw new RuntimeException(sprintf('The bundles file "%s" does not exist.', $filename));

@@ -17,3 +17,11 @@ services:
       - .:/srv/www:delegated
     environment:
       - XDEBUG_CONFIG=idekey=PHPSTORM
+
+  doctrine-resettable-em-bundle-php81:
+    container_name: doctrine-resettable-em-bundle-php81
+    build: ./docker/php81
+    volumes:
+      - .:/srv/www:delegated
+    environment:
+      - XDEBUG_CONFIG=idekey=PHPSTORM

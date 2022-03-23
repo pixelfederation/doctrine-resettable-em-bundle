@@ -15,6 +15,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 abstract class TestCase extends KernelTestCase
 {
@@ -75,7 +76,7 @@ abstract class TestCase extends KernelTestCase
      * @inheritdoc
      * @throws InvalidArgumentException
      */
-    protected static function createKernel(array $options = [])
+    protected static function createKernel(array $options = []): KernelInterface
     {
         $class = self::getKernelClass();
 
@@ -101,7 +102,7 @@ abstract class TestCase extends KernelTestCase
     {
         static::bootTestKernel();
 
-        $client = self::$container->get('test.client');
+        $client = self::getContainer()->get('test.client');
         $client->setServerParameters($server);
 
         return $client;
