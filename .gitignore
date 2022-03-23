@@ -6,3 +6,4 @@ docker-compose.override.yml
 tests/Functional/app/data/*
 !tests/Functional/app/data/.gitkeep
 mutagen.yml.lock
+/.idea/
