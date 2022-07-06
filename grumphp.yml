@@ -1,6 +1,6 @@
 grumphp:
   git_hook_variables:
-    EXEC_GRUMPHP_COMMAND: './bin/grumphp_hooks/environment_spinup && docker exec -i doctrine-resettable-em-bundle-php7'
+    EXEC_GRUMPHP_COMMAND: './bin/grumphp_hooks/environment_spinup && docker exec -t doctrine-resettable-em-bundle-php7'
   stop_on_failure: true
   process_timeout: 600
   ignore_unstaged_changes: true
