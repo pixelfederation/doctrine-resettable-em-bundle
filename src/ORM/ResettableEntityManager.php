@@ -48,6 +48,7 @@ class ResettableEntityManager extends EntityManagerDecorator
      * @return ObjectRepository<T>
      * @throws Exception
      * @psalm-suppress LessSpecificImplementedReturnType
+     * @psalm-suppress MoreSpecificImplementedParamType
      * @psalm-suppress MixedReturnTypeCoercion
      */
     public function getRepository($className): ObjectRepository
