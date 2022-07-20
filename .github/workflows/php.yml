@@ -53,23 +53,20 @@ jobs:
       - name: Symfony version # run every time except for dependencies with SF 5.4 (locked in composer)
         if: ${{ matrix.grumphp-testsuite == 'no-analyse' }}
         run: composer require --no-update --no-progress --no-scripts --no-plugins symfony/flex && composer config extra.symfony.require ${{ matrix.symfony-version }}
-        env:
-          COMPOSER_AUTH: ${{ secrets.COMPOSER_PIXELFEDERATION_AUTH_TOKEN }}
 
       - name: Composer update # run for everything except php 7.4 or SF 5.4 locked in composer.lock
         if: ${{ matrix.php-version != '7.4' && matrix.symfony-version != '5.4.*' }}
         run: composer update ${{ matrix.composer-flag }} --prefer-dist --no-interaction
-        env:
-          COMPOSER_AUTH: ${{ secrets.COMPOSER_PIXELFEDERATION_AUTH_TOKEN }}
 
       - name: Composer install # only run for locked dependencies with php 7.4 or SF 5.4 (locked in composer)
         if: ${{ matrix.php-version == '7.4' || matrix.symfony-version == '5.4.*' }}
         run: composer install --prefer-dist --no-interaction
-        env:
-          COMPOSER_AUTH: ${{ secrets.COMPOSER_PIXELFEDERATION_AUTH_TOKEN }}
 
       - name: Run static analysis (GrumPHP)
         run: composer run-script grumphp${{ matrix.php-version }}${{ matrix.grumphp-flag }}
+
+      - name: Check vendor licenses
+        run: composer run-script lic-check
 
   dependabot:
     needs: [ build ]
