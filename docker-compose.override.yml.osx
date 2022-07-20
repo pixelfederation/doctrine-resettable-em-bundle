@@ -10,10 +10,14 @@ volumes:
 
 services:
   # PHP
-  doctrine-resettable-em-bundle-php7:
+  doctrine-resettable-em-bundle-php74:
     volumes:
       - php_volume:/srv/www
 
-  doctrine-resettable-em-bundle-php8:
+  doctrine-resettable-em-bundle-php80:
+    volumes:
+      - php_volume:/srv/www
+
+  doctrine-resettable-em-bundle-php81:
     volumes:
       - php_volume:/srv/www

@@ -1,6 +1,6 @@
 grumphp:
   git_hook_variables:
-    EXEC_GRUMPHP_COMMAND: './bin/grumphp_hooks/environment_spinup && docker exec -t doctrine-resettable-em-bundle-php7'
+    EXEC_GRUMPHP_COMMAND: './bin/grumphp_hooks/environment_spinup && docker exec -t doctrine-resettable-em-bundle-php74'
   stop_on_failure: true
   process_timeout: 600
   ignore_unstaged_changes: true
@@ -17,6 +17,11 @@ grumphp:
         - shell
         - phpstan
         - psalm
+    php7.4-lowest:
+      tasks:
+        - phpunit
+        - phpversion
+        - shell
     php8.0:
       tasks:
         - phpmd
@@ -26,8 +31,6 @@ grumphp:
         - phpunit
         - phpversion
         - shell
-        - phpstan
-        - psalm
     php8.1:
       tasks:
         - phpmd
@@ -37,8 +40,6 @@ grumphp:
         - phpunit
         - phpversion
         - shell
-        - phpstan
-        - psalm
   tasks:
     phpcs:
       standard: 'phpcs.ruleset.xml'
