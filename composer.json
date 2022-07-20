@@ -55,11 +55,13 @@
     "sort-packages": true,
     "allow-plugins": {
       "phpro/grumphp": true,
-      "dealerdirect/phpcodesniffer-composer-installer": true
+      "dealerdirect/phpcodesniffer-composer-installer": true,
+      "symfony/flex": false
     }
   },
   "scripts": {
     "grumphp7.4": "grumphp run --testsuite=php7.4",
+    "grumphp7.4-lowest": "grumphp run --testsuite=php7.4-lowest",
     "grumphp8.0": "grumphp run --testsuite=php8.0",
     "grumphp8.1": "grumphp run --testsuite=php8.1",
     "lic-check": "license-checker check",

@@ -10,4 +10,4 @@ sync:
       defaultDirectoryMode: 755
   resettableembundle:
     alpha: "."
-    beta: "docker://root@doctrine-resettable-em-bundle-php7/srv/www"
+    beta: "docker://root@doctrine-resettable-em-bundle-php74/srv/www"
