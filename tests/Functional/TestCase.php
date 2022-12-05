@@ -1,9 +1,5 @@
 <?php
 declare(strict_types=1);
-/*
- * @author jhrncar
- */
-
 namespace PixelFederation\DoctrineResettableEmBundle\Tests\Functional;
 
 use Exception;

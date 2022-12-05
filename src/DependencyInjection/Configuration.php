@@ -2,10 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * @author mfris
- */
-
 namespace PixelFederation\DoctrineResettableEmBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;

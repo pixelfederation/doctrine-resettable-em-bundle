@@ -2,10 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * @author mfris
- */
-
 namespace PixelFederation\DoctrineResettableEmBundle\RequestCycle;
 
 final class Initializers

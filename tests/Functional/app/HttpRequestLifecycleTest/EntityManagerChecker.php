@@ -2,12 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * @author    mfris
- * @copyright PIXELFEDERATION s.r.o.
- * @license   Internal use only
- */
-
 namespace PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest;
 
 use Doctrine\ORM\EntityManagerInterface;
