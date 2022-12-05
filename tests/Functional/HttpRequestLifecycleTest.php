@@ -13,6 +13,7 @@ use PixelFederation\DoctrineResettableEmBundle\ORM\ResettableEntityManager;
 use PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\EntityManagerChecker;
 use RedisCluster;
 use ReflectionClass;
+use Symfony\Component\HttpKernel\Kernel;
 
 final class HttpRequestLifecycleTest extends TestCase
 {
@@ -127,6 +128,12 @@ final class HttpRequestLifecycleTest extends TestCase
      */
     public function testExcludedEmWillBeResetOnErrorWithServicesResetterButRepositoryWontBeResetted(): void
     {
+        if (version_compare(Kernel::VERSION, '6.2.0') >= 0) {
+            $this->markTestSkipped('This test is not needed with Symfony 6.2');
+
+            return;
+        }
+
         /* @var $em EntityManagerInterface */
         $em = self::getContainer()->get('doctrine.orm.excluded_entity_manager');
         self::assertNotInstanceOf(ResettableEntityManager::class, $em);

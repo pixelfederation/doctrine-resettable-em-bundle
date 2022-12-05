@@ -4,6 +4,7 @@ framework:
     resource: "%kernel.project_dir%/%kernel.test_case%/configs/routing.yaml"
     utf8: true
   test: ~
+  http_method_override: true
 
 sensio_framework_extra:
   router:
