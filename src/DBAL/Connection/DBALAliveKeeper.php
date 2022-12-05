@@ -14,6 +14,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception\ConnectionLost;
 use Exception;
 use PixelFederation\DoctrineResettableEmBundle\Connection\AliveKeeper\AliveKeeper;
+use ProxyManager\Proxy\VirtualProxyInterface;
 
 final class DBALAliveKeeper implements AliveKeeper
 {
@@ -29,6 +30,10 @@ final class DBALAliveKeeper implements AliveKeeper
      */
     public function keepAlive(): void
     {
+        if ($this->connection instanceof VirtualProxyInterface && !$this->connection->isProxyInitialized()) {
+            return;
+        }
+
         $query = $this->connection->getDatabasePlatform()->getDummySelectSQL();
         try {
             $this->connection->executeQuery($query);
