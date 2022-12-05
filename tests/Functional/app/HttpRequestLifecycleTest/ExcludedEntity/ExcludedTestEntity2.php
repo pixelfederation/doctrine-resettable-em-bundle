@@ -1,9 +1,5 @@
 <?php
 declare(strict_types=1);
-/*
- * @author     mfris
- */
-
 namespace PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\ExcludedEntity;
 
 use Doctrine\ORM\Mapping as ORM;
