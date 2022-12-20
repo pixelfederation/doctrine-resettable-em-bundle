@@ -1,0 +1,35 @@
+imports:
+  - {resource: ../../config/framework.yaml}
+  - {resource: ../../config/doctrine.yaml}
+
+pixel_federation_doctrine_resettable_em:
+  ping_interval: 10
+  redis_cluster_connections:
+    default: 'RedisCluster'
+
+doctrine:
+  dbal:
+    default_connection: default
+    connections:
+      default:
+        wrapper_class: PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\OptimisedAliveKeeperTest\ConnectionMock
+
+services:
+  _defaults:
+    public: false
+    autowire: true
+    autoconfigure: true
+
+  PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\TestController:
+    public: true
+    arguments:
+      $entityManager: '@doctrine.orm.default_entity_manager'
+
+  RedisCluster:
+    class: PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\OptimisedAliveKeeperTest\RedisClusterSpy
+    public: true
+    arguments:
+      $name: 'default'
+      $seeds: [ 'localhost:6379' ]
+      $timeout: 2
+      $readTimeout: 2

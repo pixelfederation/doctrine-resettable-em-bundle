@@ -26,7 +26,7 @@ class OptimizedAliveKeeperTest extends TestCase
 
         $aliveKeeper = new OptimizedAliveKeeper($decoratedAliveKeepr->reveal(), 3);
         $aliveKeeper->keepAlive();
-        sleep(4);
+        sleep(2);
         $aliveKeeper->keepAlive();
     }
 }

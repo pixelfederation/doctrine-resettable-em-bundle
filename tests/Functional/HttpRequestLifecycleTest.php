@@ -33,6 +33,24 @@ final class HttpRequestLifecycleTest extends TestCase
         return 'HttpRequestLifecycleTest';
     }
 
+    public function testDoNotPingConnectionsOnRequestStartIfConnectionIsNotOpen(): void
+    {
+        $client = self::createClient();
+
+        /* @var $em EntityManagerInterface */
+        $em = self::getContainer()->get('doctrine.orm.default_entity_manager');
+        $connection = $em->getConnection();
+        $redisCluster = self::getContainer()->get(RedisCluster::class);
+        $redisCluster->setIsProxyInitialized(false);
+
+        self::assertFalse($connection->isConnected());
+        self::assertFalse($redisCluster->wasConstructorCalled());
+        $client->request('GET', '/dummy'); // this action does nothing with the database
+        self::assertFalse($connection->isConnected());
+        // redis cluster does not provide conenction instance without creating the connection
+        self::assertFalse($redisCluster->wasConstructorCalled());
+    }
+
     public function testPingConnectionsOnRequestStart(): void
     {
         $client = self::createClient();
@@ -44,8 +62,12 @@ final class HttpRequestLifecycleTest extends TestCase
 
         self::assertFalse($connection->isConnected());
         self::assertFalse($redisCluster->wasConstructorCalled());
+        $connection->connect(); // simulates real connection usage
+        $connection->beginTransaction();
+        self::assertTrue($connection->isTransactionActive());
         $client->request('GET', '/dummy'); // this action does nothing with the database
         self::assertTrue($connection->isConnected());
+        self::assertFalse($connection->isTransactionActive());
         self::assertTrue($redisCluster->wasConstructorCalled());
         self::assertSame(
             $redisCluster->getConstructorParametersFirst(),

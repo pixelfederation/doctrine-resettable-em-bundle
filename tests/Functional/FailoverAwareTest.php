@@ -26,7 +26,7 @@ final class FailoverAwareTest extends TestCase
         return 'FailoverAwareTest';
     }
 
-    public function testFailoverAliveKeeperOnRequestStart(): void
+    public function testFailoverAliveKeeperOnRequestStartIsNotActivatedIfConnectionIsNotOpen(): void
     {
         $client = self::createClient();
 
@@ -37,7 +37,25 @@ final class FailoverAwareTest extends TestCase
 
         self::assertFalse($connection->isConnected());
         $client->request('GET', '/dummy'); // this action does nothing with the database
+        self::assertFalse($connection->isConnected());
+    }
+
+    public function testFailoverAliveKeeperOnRequestStart(): void
+    {
+        $client = self::createClient();
+
+        /* @var $em EntityManagerInterface */
+        $em = self::getContainer()->get('doctrine.orm.default_entity_manager');
+        $connection = $em->getConnection();
+        self::assertInstanceOf(ConnectionMock::class, $connection);
+
+        self::assertFalse($connection->isConnected());
+        $connection->connect();
+        $connection->beginTransaction();
+        self::assertTrue($connection->isTransactionActive());
+        $client->request('GET', '/dummy'); // this action does nothing with the database
         self::assertTrue($connection->isConnected());
         self::assertSame('SELECT @@global.innodb_read_only;', $connection->getQuery());
+        self::assertFalse($connection->isTransactionActive());
     }
 }
