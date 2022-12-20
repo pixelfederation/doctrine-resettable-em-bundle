@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace PixelFederation\DoctrineResettableEmBundle\Tests\Unit\DBAL\Connection\FailoverAware;
 
 use Doctrine\DBAL\Connection;

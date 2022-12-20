@@ -14,33 +14,56 @@ services:
 
   PixelFederation\DoctrineResettableEmBundle\Connection\AliveKeeper\AggregatedAliveKeeper:
     arguments:
-      $aliveKeepers: [] # will be provided by the extension
+      $aliveKeepers: [] # will be provided by compiler pass
 
   PixelFederation\DoctrineResettableEmBundle\Connection\AliveKeeper\OptimizedAliveKeeper:
+    abstract: true
     arguments:
       $decorated: '@PixelFederation\DoctrineResettableEmBundle\Connection\AliveKeeper\AggregatedAliveKeeper'
 
   PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\DBALAliveKeeper:
     abstract: true
     arguments:
-      $connection: ~ #will be provided by the extension
+      $connection: ~ # will be provided by compiler pass
+
+  PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\TransactionDiscardingDBALAliveKeeper:
+    abstract: true
+    arguments:
+      $decorated: ~ # will be provided by compiler pass
+      $connection: ~ # will be provided by compiler pass
+      $connectionName: ~ # will be provided by compiler pass
+      $logger: '@logger'
+    tags:
+      - { name: monolog.logger, channel: doctrine-resettable-em-bundle }
+
+  PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\PassiveIgnoringDBALAliveKeeper:
+    abstract: true
+    arguments:
+      $decorated: ~ # will be provided by compiler pass
+      $connection: ~ # will be provided by compiler pass
 
   PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection\RedisClusterAliveKeeper:
     abstract: true
     arguments:
-      $connectionName: ~ #will be provided by the extension
-      $redis: ~ #will be provided by the extension
-      $constructorArguments: ~ #will be provided by the extension
-      $logger: '@logger' #will be provided by the extension
+      $connectionName: ~ # will be provided by compiler pass
+      $redis: ~ # will be provided by compiler pass
+      $constructorArguments: ~ # will be provided by compiler pass
+      $logger: '@logger' # will be provided by compiler pass
     tags:
       - { name: monolog.logger, channel: doctrine-resettable-em-bundle }
+
+  PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection\PassiveIgnoringRedisClusterAliveKeeper:
+    abstract: true
+    arguments:
+      $decorated: ~ # will be provided by compiler pass
+      $redis: ~ # will be provided by compiler pass
 
   PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\FailoverAware\FailoverAwareAliveKeeper:
     abstract: true
     arguments:
       $logger: '@logger'
-      $connection: ~ #will be provided by the extension
-      $connectionName: ~ #will be provided by the extension
+      $connection: ~ # will be provided by compiler pass
+      $connectionName: ~ # will be provided by compiler pass
     tags:
       - { name: monolog.logger, channel: doctrine-resettable-em-bundle }
 

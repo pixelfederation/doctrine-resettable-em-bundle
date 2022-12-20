@@ -23,12 +23,7 @@ final class OptimizedAliveKeeper implements AliveKeeper
     {
         $this->decorated = $decorated;
         $this->pingIntervalInSeconds = $pingIntervalInSeconds;
-        $this->lastPingAt = time();
-    }
-
-    public function getPingIntervalInSeconds(): int
-    {
-        return $this->pingIntervalInSeconds;
+        $this->lastPingAt = 0;
     }
 
     /**

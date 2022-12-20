@@ -20,18 +20,18 @@ jobs:
       matrix:
         php-version: [ '8.0', '8.1' ]
         symfony-version: [ '5.4.*', '6.*' ]
-        symfony-deprecations-helper: [ 'max[direct]=0' ]
+        symfony-deprecations-helper: [ 'max[direct]=0&baselineFile=./tests/allowed.json' ]
         grumphp-testsuite: [ 'no-analyse' ]
         include:
           - php-version: '7.4'
             symfony-version: '5.4.*'
-            symfony-deprecations-helper: 'disabled=1&max[indirect]=99999'
+            symfony-deprecations-helper: 'disabled=1&max[indirect]=99999&baselineFile=./tests/allowed.json'
             composer-flag: '--prefer-lowest'
             grumphp-flag: '-lowest'
             grumphp-testsuite: 'no-analyse'
           - php-version: '7.4'
             symfony-version: '5.4.*'
-            symfony-deprecations-helper: 'max[direct]=0&max[indirect]=99999'
+            symfony-deprecations-helper: 'max[direct]=0&max[indirect]=99999&baselineFile=./tests/allowed.json'
             grumphp-testsuite: 'main'
 
     name: "PHP: ${{ matrix.php-version }}, Symfony: ${{ matrix.symfony-version }}, GrumPHP: ${{ matrix.grumphp-testsuite }}, Composer: ${{ matrix.composer-flag }}"

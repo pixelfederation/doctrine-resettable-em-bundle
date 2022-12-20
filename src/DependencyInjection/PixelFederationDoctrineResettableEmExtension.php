@@ -5,11 +5,8 @@ declare(strict_types=1);
 namespace PixelFederation\DoctrineResettableEmBundle\DependencyInjection;
 
 use Exception;
-use PixelFederation\DoctrineResettableEmBundle\Connection\AliveKeeper\AliveKeeper;
-use PixelFederation\DoctrineResettableEmBundle\Connection\AliveKeeper\OptimizedAliveKeeper;
 use PixelFederation\DoctrineResettableEmBundle\DependencyInjection\CompilerPass\AliveKeeperPass;
 use Symfony\Component\Config\FileLocator;
-use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
@@ -51,9 +48,7 @@ final class PixelFederationDoctrineResettableEmExtension extends ConfigurableExt
         }
 
         $pingInterval = intval($config['ping_interval']);
-        $connectionsHandler = $container->getDefinition(OptimizedAliveKeeper::class);
-        $connectionsHandler->setArgument('$pingIntervalInSeconds', $pingInterval);
-        $container->setAlias(AliveKeeper::class, new Alias(OptimizedAliveKeeper::class));
+        $container->setParameter(Parameters::PING_INTERVAL, $pingInterval);
     }
 
     /**

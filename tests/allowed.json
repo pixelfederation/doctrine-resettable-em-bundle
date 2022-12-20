@@ -1,0 +1,12 @@
+[
+  {
+    "location": "PixelFederation\\DoctrineResettableEmBundle\\Tests\\Functional\\FailoverAwareTest::testFailoverAliveKeeperOnRequestStartIsNotActivatedIfConnectionIsNotOpen",
+    "message": "The \"Doctrine\\DBAL\\Result::__construct()\" method is considered internal The result can be only instantiated by {@see Connection} or {@see Statement}. It may change without further notice. You should not extend it from \"Doctrine\\DBAL\\Result@anonymous\".",
+    "count": 1
+  },
+  {
+    "location": "PixelFederation\\DoctrineResettableEmBundle\\Tests\\Unit\\DBAL\\Connection\\PassiveIgnoringDBALAliveKeeperTest::testKeepAliveWithoutInitialisedConnectionProxyDoesNotDoAnything",
+    "message": "The \"Doctrine\\DBAL\\Connection::__construct()\" method is considered internal The connection can be only instantiated by the driver manager. It may change without further notice. You should not extend it from \"PixelFederation\\DoctrineResettableEmBundle\\Tests\\Unit\\Helper\\ProxyConnectionMock\".",
+    "count": 1
+  }
+]
