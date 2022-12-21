@@ -52,7 +52,7 @@ jobs:
 
       - name: Symfony version # run every time except for dependencies with SF 5.4 (locked in composer)
         if: ${{ matrix.grumphp-testsuite == 'no-analyse' }}
-        run: composer require --no-update --no-progress --no-scripts --no-plugins symfony/flex && composer config extra.symfony.require ${{ matrix.symfony-version }}
+        run: composer config extra.symfony.require ${{ matrix.symfony-version }}
 
       - name: Composer update # run for everything except php 7.4 or SF 5.4 locked in composer.lock
         if: ${{ matrix.php-version != '7.4' && matrix.symfony-version != '5.4.*' }}
