@@ -78,7 +78,16 @@ final class AliveKeeperPass implements CompilerPassInterface
             return null;
         }
 
+        /** @var array<string, string> $connections */
+        $connections = $container->getParameter('doctrine.connections');
+        $connectionRefs = [];
+
+        foreach ($connections as $connectionName => $connectionSvcId) {
+            $connectionRefs[$connectionName] = new Reference($connectionSvcId);
+        }
+
         $aliveKeeperDef = $container->findDefinition(DBALPlatformAliveKeeper::class);
+        $aliveKeeperDef->setArgument('$connections', $connectionRefs);
         $aliveKeeperDef->setArgument('$aliveKeepers', $aliveKeepers);
 
         return new Reference(DBALPlatformAliveKeeper::class);
