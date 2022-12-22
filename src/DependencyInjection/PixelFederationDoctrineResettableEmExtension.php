@@ -15,7 +15,13 @@ final class PixelFederationDoctrineResettableEmExtension extends ConfigurableExt
 {
     /**
      * @param array{
-     *     exclude_from_resetting: array<string>,
+     *     exclude_from_processing: array{
+     *         entity_managers: array<string>,
+     *         connections: array{
+     *             dbal: array<string>,
+     *             redis_cluster: array<string>
+     *         }
+     *     },
      *     redis_cluster_connections?: array<string, string>
      * } $mergedConfig
      * @throws Exception
@@ -24,18 +30,45 @@ final class PixelFederationDoctrineResettableEmExtension extends ConfigurableExt
     {
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yaml');
-        $this->registerNotResettableEntityManagers($container, $mergedConfig);
+        $this->registerNotResettableEntityManagers(
+            $container,
+            $mergedConfig['exclude_from_processing']['entity_managers']
+        );
+        $this->registerNotPingableDbalConnections(
+            $container,
+            $mergedConfig['exclude_from_processing']['connections']['dbal']
+        );
+        $this->registerNotPingableRedisClusterConnections(
+            $container,
+            $mergedConfig['exclude_from_processing']['connections']['redis_cluster']
+        );
         $this->tryToOptimizeAliveKeeper($container, $mergedConfig);
         $this->registerReaderWriterConnections($container, $mergedConfig);
         $this->registerRedisClusterConnections($container, $mergedConfig);
     }
 
     /**
-     * @param array{exclude_from_resetting: array<string>} $config
+     * @param array<string> $config
      */
     private function registerNotResettableEntityManagers(ContainerBuilder $container, array $config): void
     {
-        $container->setParameter(Parameters::EXCLUDED_FROM_RESETTING, $config['exclude_from_resetting']);
+        $container->setParameter(Parameters::EXCLUDED_FROM_PROCESSING_ENTITY_MANAGERS, array_unique($config));
+    }
+
+    /**
+     * @param array<string> $config
+     */
+    private function registerNotPingableDbalConnections(ContainerBuilder $container, array $config): void
+    {
+        $container->setParameter(Parameters::EXCLUDED_FROM_PROCESSING_DBAL_CONNECTIONS, array_unique($config));
+    }
+
+    /**
+     * @param array<string> $config
+     */
+    private function registerNotPingableRedisClusterConnections(ContainerBuilder $container, array $config): void
+    {
+        $container->setParameter(Parameters::EXCLUDED_FROM_PROCESSING_REDIS_CLUSTER_CONNECTIONS, array_unique($config));
     }
 
     /**

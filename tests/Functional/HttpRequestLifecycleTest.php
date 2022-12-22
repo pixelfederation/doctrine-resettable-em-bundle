@@ -58,21 +58,29 @@ final class HttpRequestLifecycleTest extends TestCase
         /* @var $em EntityManagerInterface */
         $em = self::getContainer()->get('doctrine.orm.default_entity_manager');
         $connection = $em->getConnection();
+        /* @var $emExcluded EntityManagerInterface */
+        $emExcluded = self::getContainer()->get('doctrine.orm.excluded_entity_manager');
+        $connectionExcluded = $em->getConnection();
         $redisCluster = self::getContainer()->get(RedisCluster::class);
+        $redisClusterExcluded = self::getContainer()->get(RedisCluster::class . '2');
 
         self::assertFalse($connection->isConnected());
+        self::assertFalse($connectionExcluded->isConnected());
         self::assertFalse($redisCluster->wasConstructorCalled());
+        self::assertFalse($redisClusterExcluded->wasConstructorCalled());
         $connection->connect(); // simulates real connection usage
         $connection->beginTransaction();
         self::assertTrue($connection->isTransactionActive());
         $client->request('GET', '/dummy'); // this action does nothing with the database
         self::assertTrue($connection->isConnected());
         self::assertFalse($connection->isTransactionActive());
+        self::assertTrue($connectionExcluded->isConnected());
         self::assertTrue($redisCluster->wasConstructorCalled());
         self::assertSame(
             $redisCluster->getConstructorParametersFirst(),
             $redisCluster->getConstructorParametersSecond()
         );
+        self::assertFalse($redisClusterExcluded->wasConstructorCalled());
     }
 
     /**

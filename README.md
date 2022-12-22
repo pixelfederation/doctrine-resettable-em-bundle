@@ -31,9 +31,16 @@ return [
 
 ```yaml
 pixel_federation_doctrine_resettable_em:
-  # these entity managers won't be wrapped by the resettable entity manager:
-  exclude_from_resetting:
-    - readonly
+  exclude_from_processing:
+    # these entity managers won't be wrapped by the resettable entity manager:
+    entity_managers:
+        - readonly
+    # these dbal connections won't be assigned to the keep alive handler
+    dbal:
+      - readonly
+    # these redis cluster connections won't be assigned to the keep alive handler
+    redis_cluster:
+        - default
   # default 0 - if set, the connection ping operation will be executed each X seconds 
   # (instead of at the beginning of each request) 
   ping_interval: 10 

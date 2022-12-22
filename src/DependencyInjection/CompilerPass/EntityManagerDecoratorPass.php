@@ -18,7 +18,7 @@ final class EntityManagerDecoratorPass implements CompilerPassInterface
         /** @var array<string, string> $entityManagers */
         $entityManagers = $container->getParameter('doctrine.entity_managers');
         /** @var array<string> $excluded */
-        $excluded = $container->getParameter(Parameters::EXCLUDED_FROM_RESETTING);
+        $excluded = $container->getParameter(Parameters::EXCLUDED_FROM_PROCESSING_ENTITY_MANAGERS);
         $resettableEntityManagers = [];
 
         foreach ($entityManagers as $name => $id) {

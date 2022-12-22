@@ -3,10 +3,17 @@ imports:
   - {resource: ../../config/doctrine.yaml}
 
 pixel_federation_doctrine_resettable_em:
-  exclude_from_resetting:
-    - excluded
+  exclude_from_processing:
+    entity_managers:
+      - excluded
+    connections:
+      dbal:
+        - excluded
+      redis_cluster:
+        - excluded
   redis_cluster_connections:
     default: 'RedisCluster'
+    excluded: 'RedisCluster2'
 
 services:
   _defaults:
@@ -42,5 +49,14 @@ services:
     arguments:
       $name: 'default'
       $seeds: ['localhost:6379']
+      $timeout: 2
+      $readTimeout: 2
+
+  RedisCluster2:
+    class: PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\RedisClusterSpy
+    public: true
+    arguments:
+      $name: 'default'
+      $seeds: [ 'localhost:6379' ]
       $timeout: 2
       $readTimeout: 2
