@@ -29,6 +29,12 @@ final class TransactionDiscardingAliveKeeper implements AliveKeeper
         // roll back unfinished transaction from previous request
         if ($connection->isTransactionActive()) {
             try {
+                $this->logger->error(
+                    sprintf(
+                        'Connection "%s" needed to discard active transaction while running keep-alive routine.',
+                        $connectionName
+                    )
+                );
                 $connection->rollBack();
             } catch (Throwable $e) {
                 $this->logger->error(
@@ -39,13 +45,6 @@ final class TransactionDiscardingAliveKeeper implements AliveKeeper
                     [
                         'exception' => $e,
                     ]
-                );
-            } finally {
-                $this->logger->error(
-                    sprintf(
-                        'Connection "%s" needed to discard active transaction while running keep-alive routine.',
-                        $connectionName
-                    )
                 );
             }
         }

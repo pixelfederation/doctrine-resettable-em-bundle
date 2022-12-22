@@ -14,20 +14,65 @@ final class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder('pixel_federation_doctrine_resettable_em');
         $rootNode = $treeBuilder->getRootNode();
         $rootNode->children()
-            ->variableNode('exclude_from_resetting')
-                ->info('Entity manager names excluded from resetting.')
-                ->defaultValue([])
-                ->validate()
-                ->always(static function ($emNames) {
-                    $validEmNames = [];
+            ->arrayNode('exclude_from_processing')
+                ->addDefaultsIfNotSet()
+                ->children()
+                    ->arrayNode('entity_managers')
+                        ->info('Entity manager names excluded from processing.')
+                        ->scalarPrototype()->end()
+                        ->defaultValue([])
+                        ->validate()
+                        ->always(static function ($emNames) {
+                            $validEmNames = [];
 
-                    foreach ((array) $emNames as $emName) {
-                        $emName = trim((string) $emName);
-                        $validEmNames[] = $emName;
-                    }
+                            foreach ((array) $emNames as $emName) {
+                                $emName = trim((string) $emName);
+                                $validEmNames[] = $emName;
+                            }
 
-                    return $validEmNames;
-                })
+                            return $validEmNames;
+                        })
+                        ->end()
+                    ->end()
+                    ->arrayNode('connections')
+                        ->addDefaultsIfNotSet()
+                        ->children()
+                            ->arrayNode('dbal')
+                                ->info('DBAL connection names excluded from processing.')
+                                ->scalarPrototype()->end()
+                                ->defaultValue([])
+                                ->validate()
+                                ->always(static function ($connectionNames) {
+                                    $validNames = [];
+
+                                    foreach ((array) $connectionNames as $connectionName) {
+                                        $connectionName = trim((string) $connectionName);
+                                        $validNames[] = $connectionName;
+                                    }
+
+                                    return $validNames;
+                                })
+                                ->end()
+                            ->end()
+                            ->arrayNode('redis_cluster')
+                                ->info('RedisCluster connection names excluded from processing.')
+                                ->scalarPrototype()->end()
+                                ->defaultValue([])
+                                ->validate()
+                                ->always(static function ($connectionNames) {
+                                    $validNames = [];
+
+                                    foreach ((array) $connectionNames as $connectionName) {
+                                        $connectionName = trim((string) $connectionName);
+                                        $validNames[] = $connectionName;
+                                    }
+
+                                    return $validNames;
+                                })
+                                ->end()
+                            ->end()
+                        ->end()
+                    ->end()
                 ->end()
             ->end()
             ->scalarNode('ping_interval')

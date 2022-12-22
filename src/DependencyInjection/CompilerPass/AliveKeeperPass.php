@@ -125,9 +125,15 @@ final class AliveKeeperPass implements CompilerPassInterface
         $failoverConnections = $container->getParameter(self::FAILOVER_CONNECTIONS_PARAM_NAME);
         $pingInterval = $container->hasParameter(Parameters::PING_INTERVAL) ?
             $container->getParameter(Parameters::PING_INTERVAL) : 0;
+        /** @var array<string> $excluded */
+        $excluded = $container->getParameter(Parameters::EXCLUDED_FROM_PROCESSING_DBAL_CONNECTIONS);
         $aliveKeepers = [];
 
         foreach (array_keys($connections) as $connectionName) {
+            if (in_array($connectionName, $excluded, true)) {
+                continue;
+            }
+
             $aliveKeeperSvcId = sprintf(
                 'pixel_federation_doctrine_resettable_em.alive_keeper.dbal.%s',
                 $connectionName
@@ -216,9 +222,15 @@ final class AliveKeeperPass implements CompilerPassInterface
         $clusterConnections = $container->getParameter(self::REDIS_CLUSTER_CONNECTIONS_PARAM_NAME);
         $pingInterval = $container->hasParameter(Parameters::PING_INTERVAL) ?
             $container->getParameter(Parameters::PING_INTERVAL) : 0;
+        /** @var array<string> $excluded */
+        $excluded = $container->getParameter(Parameters::EXCLUDED_FROM_PROCESSING_REDIS_CLUSTER_CONNECTIONS);
         $aliveKeepers = [];
 
         foreach ($clusterConnections as $connectionName => $clusterSvcId) {
+            if (in_array($connectionName, $excluded, true)) {
+                continue;
+            }
+
             $clusterDef = $container->findDefinition($clusterSvcId);
             $aliveKeeper = new ChildDefinition(RedisClusterPingingAliveKeeper::class);
             $aliveKeeper->setArgument('$constructorArguments', array_values($clusterDef->getArguments()));
