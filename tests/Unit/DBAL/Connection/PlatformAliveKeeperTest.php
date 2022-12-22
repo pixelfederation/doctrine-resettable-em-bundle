@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace PixelFederation\DoctrineResettableEmBundle\Tests\Unit\DBAL\Connection;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\Persistence\ManagerRegistry;
 use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\AliveKeeper;
 use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\PlatformAliveKeeper;
 use PHPUnit\Framework\TestCase;
@@ -21,17 +20,16 @@ class PlatformAliveKeeperTest extends TestCase
         $cMock2 = $this->prophesize(Connection::class);
         $cMock2 = $cMock2->reveal();
 
-        $doctrineMock = $this->prophesize(ManagerRegistry::class);
-        $doctrineMock->getConnection($cName1)->shouldBeCalledOnce()->willReturn($cMock1);
-        $doctrineMock->getConnection($cName2)->shouldBeCalledOnce()->willReturn($cMock2);
-
         $keeper1 = $this->prophesize(AliveKeeper::class);
         $keeper1->keepAlive($cMock1, $cName1)->shouldBeCalledOnce();
         $keeper2 = $this->prophesize(AliveKeeper::class);
         $keeper2->keepAlive($cMock2, $cName2)->shouldBeCalledOnce();
 
         $platformKeeper = new PlatformAliveKeeper(
-            $doctrineMock->reveal(),
+            [
+                $cName1 => $cMock1,
+                $cName2 => $cMock2,
+            ],
             [
                 $cName1 => $keeper1->reveal(),
                 $cName2 => $keeper2->reveal(),

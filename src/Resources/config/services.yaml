@@ -10,7 +10,7 @@ services:
 
   PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\PlatformAliveKeeper:
     arguments:
-      $registry: '@doctrine'
+      $connections: ~ # will be added by the compiler pass if needed
       $aliveKeepers: ~ # will be added by the compiler pass if needed
 
   PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\OptimizedAliveKeeper:
