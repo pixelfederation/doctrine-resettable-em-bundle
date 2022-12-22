@@ -4,18 +4,30 @@ declare(strict_types=1);
 
 namespace PixelFederation\DoctrineResettableEmBundle\DependencyInjection\CompilerPass;
 
-use PixelFederation\DoctrineResettableEmBundle\Connection\AliveKeeper\AggregatedAliveKeeper;
-use PixelFederation\DoctrineResettableEmBundle\Connection\AliveKeeper\OptimizedAliveKeeper;
-use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\DBALAliveKeeper;
-use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\FailoverAware\FailoverAwareAliveKeeper;
-use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\PassiveIgnoringDBALAliveKeeper;
-use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\TransactionDiscardingDBALAliveKeeper;
+// phpcs:disable SlevomatCodingStandard.Namespaces.DisallowGroupUse.DisallowedGroupUse
+// phpcs:disable SlevomatCodingStandard.Namespaces.MultipleUsesPerLine.MultipleUsesPerLine
+// phpcs:disable SlevomatCodingStandard.Namespaces.UseSpacing.IncorrectLinesCountBetweenSameTypeOfUse
+// phpcs:disable SlevomatCodingStandard.Namespaces.AlphabeticallySortedUses.IncorrectlyOrderedUses
+use PixelFederation\DoctrineResettableEmBundle\Connection\ConnectionsHandler;
+use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\{
+    FailoverAware\FailoverAwareAliveKeeper,
+    OptimizedAliveKeeper as DBALOptimizedAliveKeeper,
+    PassiveIgnoringAliveKeeper as DBALPassiveIgnoringAliveKeeper,
+    PingingAliveKeeper as DBALPingingAliveKeeper,
+    PlatformAliveKeeper as DBALPlatformAliveKeeper,
+    TransactionDiscardingAliveKeeper
+};
 use PixelFederation\DoctrineResettableEmBundle\DependencyInjection\Parameters;
-use PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection\PassiveIgnoringRedisClusterAliveKeeper;
-use PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection\RedisClusterAliveKeeper;
+use PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection\{
+    OptimizedAliveKeeper as RedisClusterOptimizedAliveKeeper,
+    PassiveIgnoringAliveKeeper as RedisClusterPassiveIgnoringAliveKeeper,
+    PingingAliveKeeper as RedisClusterPingingAliveKeeper,
+    PlatformAliveKeeper as RedisClusterPlatformAliveKeeper
+};
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 
 final class AliveKeeperPass implements CompilerPassInterface
@@ -30,27 +42,73 @@ final class AliveKeeperPass implements CompilerPassInterface
             return;
         }
 
-        $aliveKeepers = $this->createAliveKeepers($container);
+        $aliveKeepers = $this->createPlatformAliveKeepers($container);
 
-        $aggregatedAliveKeeper = $container->findDefinition(AggregatedAliveKeeper::class);
-        $aggregatedAliveKeeper->setArgument('$aliveKeepers', $aliveKeepers);
+        $connectionsHandlerDef = $container->findDefinition(ConnectionsHandler::class);
+        $connectionsHandlerDef->setArgument('$aliveKeepers', $aliveKeepers);
+        $connectionsHandlerDef->addTag('pixelfederation_doctrine_resettable_em_bundle.app_initializer');
     }
 
     /**
      * @return array<ChildDefinition|Reference>
      */
-    private function createAliveKeepers(ContainerBuilder $container): array
+    private function createPlatformAliveKeepers(ContainerBuilder $container): array
     {
-        return array_merge(
-            $this->createDoctrineAliveKeepers($container),
-            $this->createRedisClusterAliveKeepers($container)
-        );
+        $aliveKeepers = [];
+        $dbalAliveKeeper = $this->createDBALPlatformAliveKeeper($container);
+
+        if ($dbalAliveKeeper !== null) {
+            $aliveKeepers[] = $dbalAliveKeeper;
+        }
+
+        $redisClusterAliveKeeper = $this->createRedisClusterPlatformAliveKeeper($container);
+
+        if ($redisClusterAliveKeeper !== null) {
+            $aliveKeepers[] = $redisClusterAliveKeeper;
+        }
+
+        return $aliveKeepers;
+    }
+
+    private function createDBALPlatformAliveKeeper(ContainerBuilder $container): ?Reference
+    {
+        $aliveKeepers = $this->createDBALAliveKeepers($container);
+
+        if (count($aliveKeepers) === 0) {
+            return null;
+        }
+
+        $aliveKeeperDef = $container->findDefinition(DBALPlatformAliveKeeper::class);
+        $aliveKeeperDef->setArgument('$aliveKeepers', $aliveKeepers);
+
+        return new Reference(DBALPlatformAliveKeeper::class);
+    }
+
+    private function createRedisClusterPlatformAliveKeeper(ContainerBuilder $container): ?Reference
+    {
+        $connections = $this->createRedisClusterConnectionReferences($container);
+
+        if (count($connections) === 0) {
+            return null;
+        }
+
+        $aliveKeepers = $this->createRedisClusterAliveKeepers($container);
+
+        if (count($aliveKeepers) === 0) {
+            return null;
+        }
+
+        $aliveKeeperDef = $container->findDefinition(RedisClusterPlatformAliveKeeper::class);
+        $aliveKeeperDef->setArgument('$connections', $connections);
+        $aliveKeeperDef->setArgument('$aliveKeepers', $aliveKeepers);
+
+        return new Reference(RedisClusterPlatformAliveKeeper::class);
     }
 
     /**
      * @return array<Reference>
      */
-    private function createDoctrineAliveKeepers(ContainerBuilder $container): array
+    private function createDBALAliveKeepers(ContainerBuilder $container): array
     {
         /** @var array<string, string> $connections */
         $connections = $container->getParameter('doctrine.connections');
@@ -60,45 +118,44 @@ final class AliveKeeperPass implements CompilerPassInterface
             $container->getParameter(Parameters::PING_INTERVAL) : 0;
         $aliveKeepers = [];
 
-        foreach ($connections as $connectionName => $connectionSvcId) {
-            $aliveKeeperSvcId = sprintf('pixel_federation_doctrine_resettable_em.alive_keeper.%s', $connectionName);
-            $aliveKeeper = $container->setDefinition(
-                $aliveKeeperSvcId,
-                $this->getAliveKeeperDefinition($connectionName, $failoverConnections)
+        foreach (array_keys($connections) as $connectionName) {
+            $aliveKeeperSvcId = sprintf(
+                'pixel_federation_doctrine_resettable_em.alive_keeper.dbal.%s',
+                $connectionName
             );
-            $aliveKeeper->setArgument('$connection', new Reference($connectionSvcId));
+            $container->setDefinition(
+                $aliveKeeperSvcId,
+                $this->getAliveKeeperDefinition($container, $connectionName, $failoverConnections)
+            );
 
-            $decoratorAliveKeeperSvcId = sprintf('%s_%s', TransactionDiscardingDBALAliveKeeper::class, $connectionName);
+            $decoratorAliveKeeperSvcId = sprintf('%s_%s', TransactionDiscardingAliveKeeper::class, $connectionName);
             $decoratedAliveKeeperSvcId = sprintf('%s.inner', $decoratorAliveKeeperSvcId);
-            $transDiscardingDef = new ChildDefinition(TransactionDiscardingDBALAliveKeeper::class);
+            $transDiscardingDef = new ChildDefinition(TransactionDiscardingAliveKeeper::class);
             $transDiscardingDef->setDecoratedService($aliveKeeperSvcId, $decoratedAliveKeeperSvcId, 1);
             $transDiscardingDef->setArgument('$decorated', new Reference($decoratedAliveKeeperSvcId));
-            $transDiscardingDef->setArgument('$connection', new Reference($connectionSvcId));
-            $transDiscardingDef->setArgument('$connectionName', $connectionName);
             $container->setDefinition($decoratorAliveKeeperSvcId, $transDiscardingDef);
 
             $passiveDecoratorAliveKeeperSvcId = sprintf(
                 '%s_%s',
-                PassiveIgnoringDBALAliveKeeper::class,
+                DBALPassiveIgnoringAliveKeeper::class,
                 $connectionName
             );
 
             $ignorePassiveAliveKeeperSvcId = sprintf('%s.inner', $passiveDecoratorAliveKeeperSvcId);
-            $passiveIgnoringDef = new ChildDefinition(PassiveIgnoringDBALAliveKeeper::class);
+            $passiveIgnoringDef = new ChildDefinition(DBALPassiveIgnoringAliveKeeper::class);
             $passiveIgnoringDef->setDecoratedService($aliveKeeperSvcId, $ignorePassiveAliveKeeperSvcId);
             $passiveIgnoringDef->setArgument('$decorated', new Reference($ignorePassiveAliveKeeperSvcId));
-            $passiveIgnoringDef->setArgument('$connection', new Reference($connectionSvcId));
             $container->setDefinition($passiveDecoratorAliveKeeperSvcId, $passiveIgnoringDef);
 
-            $aliveKeepers[] = new Reference($aliveKeeperSvcId);
+            $aliveKeepers[$connectionName] = new Reference($aliveKeeperSvcId);
 
             if ($pingInterval === 0) {
                 continue;
             }
 
-            $optDecoratorAliveKeeperSvcId = sprintf('%s:doctrine_%s', OptimizedAliveKeeper::class, $connectionName);
+            $optDecoratorAliveKeeperSvcId = sprintf('%s_%s', DBALOptimizedAliveKeeper::class, $connectionName);
             $optDecoratedAliveKeeperSvcId = sprintf('%s.inner', $optDecoratorAliveKeeperSvcId);
-            $optimisedKeeperDef = new ChildDefinition(OptimizedAliveKeeper::class);
+            $optimisedKeeperDef = new ChildDefinition(DBALOptimizedAliveKeeper::class);
             $optimisedKeeperDef->setDecoratedService($aliveKeeperSvcId, $optDecoratedAliveKeeperSvcId, 2);
             $optimisedKeeperDef->setArgument('$decorated', new Reference($optDecoratedAliveKeeperSvcId));
             $optimisedKeeperDef->setArgument('$pingIntervalInSeconds', $pingInterval);
@@ -110,18 +167,35 @@ final class AliveKeeperPass implements CompilerPassInterface
 
     /**
      * @param array<string, string> $failoverConnections
+     * @return Reference|Definition
      */
-    private function getAliveKeeperDefinition(string $connectionName, array $failoverConnections): ChildDefinition
-    {
+    private function getAliveKeeperDefinition(
+        ContainerBuilder $container,
+        string $connectionName,
+        array $failoverConnections
+    ) {
         if (!isset($failoverConnections[$connectionName])) {
-            return new ChildDefinition(DBALAliveKeeper::class);
+            return $container->findDefinition(DBALPingingAliveKeeper::class);
         }
 
         $aliveKeeper = new ChildDefinition(FailoverAwareAliveKeeper::class);
-        $aliveKeeper->setArgument('$connectionName', $connectionName);
         $aliveKeeper->setArgument('$connectionType', $failoverConnections[$connectionName]);
 
         return $aliveKeeper;
+    }
+
+    /**
+     * @return array<Reference>
+     */
+    private function createRedisClusterConnectionReferences(ContainerBuilder $container): array
+    {
+        /** @var array<string, string> $clusterConnections */
+        $clusterConnections = $container->getParameter(self::REDIS_CLUSTER_CONNECTIONS_PARAM_NAME);
+
+        return array_map(
+            static fn (string $connectionSvcId): Reference => new Reference($connectionSvcId),
+            $clusterConnections
+        );
     }
 
     /**
@@ -137,38 +211,35 @@ final class AliveKeeperPass implements CompilerPassInterface
 
         foreach ($clusterConnections as $connectionName => $clusterSvcId) {
             $clusterDef = $container->findDefinition($clusterSvcId);
-            $aliveKeeper = new ChildDefinition(RedisClusterAliveKeeper::class);
-            $aliveKeeper->setArgument('$connectionName', $connectionName);
-            $aliveKeeper->setArgument('$redis', new Reference($clusterSvcId));
+            $aliveKeeper = new ChildDefinition(RedisClusterPingingAliveKeeper::class);
             $aliveKeeper->setArgument('$constructorArguments', array_values($clusterDef->getArguments()));
             $aliveKeeperSvcId = sprintf(
-                'pixel_federation_doctrine_resettable_em.alive_keeper.redis.%s',
+                'pixel_federation_doctrine_resettable_em.alive_keeper.redis_cluster.%s',
                 $connectionName
             );
             $container->setDefinition($aliveKeeperSvcId, $aliveKeeper);
 
             $passiveDecoratorAliveKeeperSvcId = sprintf(
                 '%s_%s',
-                PassiveIgnoringRedisClusterAliveKeeper::class,
+                RedisClusterPassiveIgnoringAliveKeeper::class,
                 $connectionName
             );
 
             $ignorePassiveAliveKeeperSvcId = sprintf('%s.inner', $passiveDecoratorAliveKeeperSvcId);
-            $passiveIgnoringDef = new ChildDefinition(PassiveIgnoringRedisClusterAliveKeeper::class);
+            $passiveIgnoringDef = new ChildDefinition(RedisClusterPassiveIgnoringAliveKeeper::class);
             $passiveIgnoringDef->setDecoratedService($aliveKeeperSvcId, $ignorePassiveAliveKeeperSvcId);
             $passiveIgnoringDef->setArgument('$decorated', new Reference($ignorePassiveAliveKeeperSvcId));
-            $passiveIgnoringDef->setArgument('$redis', new Reference($clusterSvcId));
             $container->setDefinition($passiveDecoratorAliveKeeperSvcId, $passiveIgnoringDef);
 
-            $aliveKeepers[] = new Reference($aliveKeeperSvcId);
+            $aliveKeepers[$connectionName] = new Reference($aliveKeeperSvcId);
 
             if ($pingInterval === 0) {
                 continue;
             }
 
-            $optDecoratorAliveKeeperSvcId = sprintf('%s:redis_%s', OptimizedAliveKeeper::class, $connectionName);
+            $optDecoratorAliveKeeperSvcId = sprintf('%s_%s', RedisClusterOptimizedAliveKeeper::class, $connectionName);
             $optDecoratedAliveKeeperSvcId = sprintf('%s.inner', $optDecoratorAliveKeeperSvcId);
-            $optimisedKeeperDef = new ChildDefinition(OptimizedAliveKeeper::class);
+            $optimisedKeeperDef = new ChildDefinition(RedisClusterOptimizedAliveKeeper::class);
             $optimisedKeeperDef->setDecoratedService($aliveKeeperSvcId, $optDecoratedAliveKeeperSvcId, 2);
             $optimisedKeeperDef->setArgument('$decorated', new Reference($optDecoratedAliveKeeperSvcId));
             $optimisedKeeperDef->setArgument('$pingIntervalInSeconds', $pingInterval);

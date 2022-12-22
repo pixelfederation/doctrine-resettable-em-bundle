@@ -4,68 +4,65 @@ services:
     autowire: false
     autoconfigure: false
 
-  PixelFederation\DoctrineResettableEmBundle\Connection\AliveKeeper\AliveKeeper: '@PixelFederation\DoctrineResettableEmBundle\Connection\AliveKeeper\AggregatedAliveKeeper'
-
   PixelFederation\DoctrineResettableEmBundle\Connection\ConnectionsHandler:
     arguments:
-      $aliveKeeper: '@PixelFederation\DoctrineResettableEmBundle\Connection\AliveKeeper\AliveKeeper'
-    tags:
-      - {name: pixelfederation_doctrine_resettable_em_bundle.app_initializer}
+      $aliveKeepers: ~ # will be added by the compiler pass if needed
 
-  PixelFederation\DoctrineResettableEmBundle\Connection\AliveKeeper\AggregatedAliveKeeper:
+  PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\PlatformAliveKeeper:
     arguments:
-      $aliveKeepers: [] # will be provided by compiler pass
+      $registry: '@doctrine'
+      $aliveKeepers: ~ # will be added by the compiler pass if needed
 
-  PixelFederation\DoctrineResettableEmBundle\Connection\AliveKeeper\OptimizedAliveKeeper:
+  PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\OptimizedAliveKeeper:
     abstract: true
     arguments:
-      $decorated: '@PixelFederation\DoctrineResettableEmBundle\Connection\AliveKeeper\AggregatedAliveKeeper'
+      $decorated: ~ # will be added by the compiler pass if needed
 
-  PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\DBALAliveKeeper:
-    abstract: true
-    arguments:
-      $connection: ~ # will be provided by compiler pass
+  PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\PingingAliveKeeper:
 
-  PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\TransactionDiscardingDBALAliveKeeper:
+  PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\TransactionDiscardingAliveKeeper:
     abstract: true
     arguments:
       $decorated: ~ # will be provided by compiler pass
-      $connection: ~ # will be provided by compiler pass
-      $connectionName: ~ # will be provided by compiler pass
       $logger: '@logger'
     tags:
       - { name: monolog.logger, channel: doctrine-resettable-em-bundle }
 
-  PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\PassiveIgnoringDBALAliveKeeper:
+  PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\PassiveIgnoringAliveKeeper:
     abstract: true
     arguments:
       $decorated: ~ # will be provided by compiler pass
-      $connection: ~ # will be provided by compiler pass
 
-  PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection\RedisClusterAliveKeeper:
+  PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection\PlatformAliveKeeper:
+    arguments:
+      $connections: ~ # will be provided by compiler pass
+      $aliveKeepers: ~ # will be provided by compiler pass
+
+  PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection\PingingAliveKeeper:
     abstract: true
     arguments:
-      $connectionName: ~ # will be provided by compiler pass
-      $redis: ~ # will be provided by compiler pass
       $constructorArguments: ~ # will be provided by compiler pass
       $logger: '@logger' # will be provided by compiler pass
     tags:
       - { name: monolog.logger, channel: doctrine-resettable-em-bundle }
 
-  PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection\PassiveIgnoringRedisClusterAliveKeeper:
+  PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection\PassiveIgnoringAliveKeeper:
     abstract: true
     arguments:
       $decorated: ~ # will be provided by compiler pass
-      $redis: ~ # will be provided by compiler pass
 
   PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\FailoverAware\FailoverAwareAliveKeeper:
     abstract: true
     arguments:
       $logger: '@logger'
-      $connection: ~ # will be provided by compiler pass
-      $connectionName: ~ # will be provided by compiler pass
+      $connectionType: ~ # will be provided by compiler pass
     tags:
       - { name: monolog.logger, channel: doctrine-resettable-em-bundle }
+
+  PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection\OptimizedAliveKeeper:
+    abstract: true
+    arguments:
+      $decorated: ~ # will be added by the compiler pass if needed
 
   PixelFederation\DoctrineResettableEmBundle\RequestCycle\Initializers:
     arguments: [!tagged 'pixelfederation_doctrine_resettable_em_bundle.app_initializer']

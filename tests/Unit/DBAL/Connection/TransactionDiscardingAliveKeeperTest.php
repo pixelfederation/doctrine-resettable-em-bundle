@@ -5,9 +5,9 @@ namespace PixelFederation\DoctrineResettableEmBundle\Tests\Unit\DBAL\Connection;
 
 use Doctrine\DBAL\Connection;
 use Exception;
-use PixelFederation\DoctrineResettableEmBundle\Connection\AliveKeeper\AliveKeeper;
 use PHPUnit\Framework\TestCase;
-use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\TransactionDiscardingDBALAliveKeeper;
+use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\AliveKeeper;
+use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\TransactionDiscardingAliveKeeper;
 use PixelFederation\DoctrineResettableEmBundle\Tests\Unit\Helper\ProxyConnectionMock;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
@@ -16,7 +16,7 @@ use ProxyManager\Proxy\VirtualProxyInterface;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
-class TransactionDiscardingDBALAliveKeeperTest extends TestCase
+class TransactionDiscardingAliveKeeperTest extends TestCase
 {
     use ProphecyTrait;
 
@@ -37,34 +37,35 @@ class TransactionDiscardingDBALAliveKeeperTest extends TestCase
             ->shouldBeCalled();
         $connectionProphecy->rollBack()
             ->shouldBeCalled();
+        $connectionMock = $connectionProphecy->reveal();
+        $connectionName = 'default';
 
         /** @var $decoratedAliveKeeper AliveKeeper|ObjectProphecy */
         $decoratedAliveKeeper = $this->prophesize(AliveKeeper::class);
-        $decoratedAliveKeeper->keepAlive()
+        $decoratedAliveKeeper->keepAlive($connectionMock, $connectionName)
             ->shouldBeCalled();
 
-        $aliveKeeper = new TransactionDiscardingDBALAliveKeeper(
-            $decoratedAliveKeeper->reveal(),
-            $connectionProphecy->reveal(),
-            'default',
-            $loggerProphecy->reveal()
-        );
-        $aliveKeeper->keepAlive();
+        $aliveKeeper = new TransactionDiscardingAliveKeeper($decoratedAliveKeeper->reveal(), $loggerProphecy->reveal());
+        $aliveKeeper->keepAlive($connectionMock, $connectionName);
     }
 
     public function testRollbackConnectionIfItIsInTransactionAndLogRollbackException(): void
     {
+        $connectionName = 'default';
         $exceptionProphecy = $this->prophesize(Throwable::class)->reveal();
 
         /** @var $loggerProphecy LoggerInterface|ObjectProphecy */
         $loggerProphecy = $this->prophesize(LoggerInterface::class);
         $loggerProphecy->error(
-            'An error occurred while discarding active transaction in connection "default".',
+            sprintf('An error occurred while discarding active transaction in connection "%s".', $connectionName),
             ['exception' => $exceptionProphecy]
         )
             ->shouldBeCalled();
         $loggerProphecy->error(
-            'Connection "default" needed to discard active transaction while running keep-alive routine.'
+            sprintf(
+                'Connection "%s" needed to discard active transaction while running keep-alive routine.',
+                $connectionName
+            )
         )
             ->shouldBeCalled();
 
@@ -77,18 +78,15 @@ class TransactionDiscardingDBALAliveKeeperTest extends TestCase
             ->willThrow($exceptionProphecy)
             ->shouldBeCalled();
 
+        $connectionMock = $connectionProphecy->reveal();
+
         /** @var $decoratedAliveKeeper AliveKeeper|ObjectProphecy */
         $decoratedAliveKeeper = $this->prophesize(AliveKeeper::class);
-        $decoratedAliveKeeper->keepAlive()
+        $decoratedAliveKeeper->keepAlive($connectionMock, $connectionName)
             ->shouldBeCalled();
 
-        $aliveKeeper = new TransactionDiscardingDBALAliveKeeper(
-            $decoratedAliveKeeper->reveal(),
-            $connectionProphecy->reveal(),
-            'default',
-            $loggerProphecy->reveal()
-        );
-        $aliveKeeper->keepAlive();
+        $aliveKeeper = new TransactionDiscardingAliveKeeper($decoratedAliveKeeper->reveal(), $loggerProphecy->reveal());
+        $aliveKeeper->keepAlive($connectionMock, $connectionName);
     }
 
     public function testDoNotRollbackConnectionIfItIsNotInTransaction(): void
@@ -106,17 +104,15 @@ class TransactionDiscardingDBALAliveKeeperTest extends TestCase
         $connectionProphecy->rollBack()
             ->shouldNotBeCalled();
 
+        $connectionMock = $connectionProphecy->reveal();
+        $connectionName = 'default';
+
         /** @var $decoratedAliveKeeper AliveKeeper|ObjectProphecy */
         $decoratedAliveKeeper = $this->prophesize(AliveKeeper::class);
-        $decoratedAliveKeeper->keepAlive()
+        $decoratedAliveKeeper->keepAlive($connectionMock, $connectionName)
             ->shouldBeCalled();
 
-        $aliveKeeper = new TransactionDiscardingDBALAliveKeeper(
-            $decoratedAliveKeeper->reveal(),
-            $connectionProphecy->reveal(),
-            'default',
-            $loggerProphecy->reveal()
-        );
-        $aliveKeeper->keepAlive();
+        $aliveKeeper = new TransactionDiscardingAliveKeeper($decoratedAliveKeeper->reveal(), $loggerProphecy->reveal());
+        $aliveKeeper->keepAlive($connectionMock, $connectionName);
     }
 }
