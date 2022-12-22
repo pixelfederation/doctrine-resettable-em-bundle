@@ -9,6 +9,7 @@ use InvalidArgumentException;
 final class ConnectionType
 {
     public const WRITER = 'writer';
+
     public const READER = 'reader';
 
     private const ALLOWED_TYPES = [

@@ -3,6 +3,9 @@
 
   <description>PixelFederation rule set.</description>
 
+  <!-- Show progress, show the error codes for each message (source). -->
+  <arg value="ps"/>
+
   <config name="testVersion" value="7.4"/>
   <rule ref="vendor/pixelfederation/coding-standards/phpcs.ruleset.xml">
     <exclude name="SlevomatCodingStandard.ControlStructures.DisallowEmpty"/>

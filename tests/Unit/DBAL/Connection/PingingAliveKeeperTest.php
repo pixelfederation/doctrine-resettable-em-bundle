@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace PixelFederation\DoctrineResettableEmBundle\Tests\Unit\Connection\AliveKeeper;
+namespace PixelFederation\DoctrineResettableEmBundle\Tests\Unit\DBAL\Connection;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception\ConnectionLost;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Exception;
-use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\DBALAliveKeeper;
 use PHPUnit\Framework\TestCase;
+use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\PingingAliveKeeper;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 
-class SimpleAliveKeeperTest extends TestCase
+class PingingAliveKeeperTest extends TestCase
 {
     use ProphecyTrait;
 
@@ -35,8 +35,8 @@ class SimpleAliveKeeperTest extends TestCase
         $connectionProphecy->close()->shouldNotBeCalled();
         $connectionProphecy->connect()->shouldNotBeCalled();
 
-        $aliveKeeper = new DBALAliveKeeper($connectionProphecy->reveal());
-        $aliveKeeper->keepAlive();
+        $aliveKeeper = new PingingAliveKeeper();
+        $aliveKeeper->keepAlive($connectionProphecy->reveal(), 'default');
     }
 
     /**
@@ -57,7 +57,7 @@ class SimpleAliveKeeperTest extends TestCase
         $connectionProphecy->close()->shouldBeCalled();
         $connectionProphecy->connect()->willReturn(true)->shouldBeCalled();
 
-        $aliveKeeper = new DBALAliveKeeper($connectionProphecy->reveal());
-        $aliveKeeper->keepAlive();
+        $aliveKeeper = new PingingAliveKeeper();
+        $aliveKeeper->keepAlive($connectionProphecy->reveal(), 'default');
     }
 }

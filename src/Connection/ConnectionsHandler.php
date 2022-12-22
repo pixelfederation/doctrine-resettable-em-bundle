@@ -5,16 +5,21 @@ declare(strict_types=1);
 namespace PixelFederation\DoctrineResettableEmBundle\Connection;
 
 use Exception;
-use PixelFederation\DoctrineResettableEmBundle\Connection\AliveKeeper\AliveKeeper;
 use PixelFederation\DoctrineResettableEmBundle\RequestCycle\Initializer;
 
 final class ConnectionsHandler implements Initializer
 {
-    private AliveKeeper $aliveKeeper;
+    /**
+     * @var array<PlatformAliveKeeper>
+     */
+    private array $aliveKeepers;
 
-    public function __construct(AliveKeeper $aliveKeeper)
+    /**
+     * @param array<PlatformAliveKeeper> $aliveKeepers
+     */
+    public function __construct(array $aliveKeepers)
     {
-        $this->aliveKeeper = $aliveKeeper;
+        $this->aliveKeepers = $aliveKeepers;
     }
 
     /**
@@ -22,6 +27,8 @@ final class ConnectionsHandler implements Initializer
      */
     public function initialize(): void
     {
-        $this->aliveKeeper->keepAlive();
+        foreach ($this->aliveKeepers as $aliveKeeper) {
+            $aliveKeeper->keepAlive();
+        }
     }
 }

@@ -7,7 +7,7 @@ namespace PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\FailoverAwa
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception\DriverException;
 use Exception;
-use PixelFederation\DoctrineResettableEmBundle\Connection\AliveKeeper\AliveKeeper;
+use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\AliveKeeper;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 
@@ -15,62 +15,52 @@ final class FailoverAwareAliveKeeper implements AliveKeeper
 {
     private LoggerInterface $logger;
 
-    private Connection $connection;
-
-    private string $connectionName;
-
     private ConnectionType $connectionType;
 
     /**
      * @SuppressWarnings(PHPMD.StaticAccess)
      */
-    public function __construct(
-        LoggerInterface $logger,
-        Connection $connection,
-        string $connectionName,
-        string $connectionType = ConnectionType::WRITER
-    ) {
+    public function __construct(LoggerInterface $logger, string $connectionType = ConnectionType::WRITER)
+    {
         $this->logger = $logger;
-        $this->connection = $connection;
-        $this->connectionName = $connectionName;
         $this->connectionType = ConnectionType::create($connectionType);
     }
 
     /**
      * @throws Exception
      */
-    public function keepAlive(): void
+    public function keepAlive(Connection $connection, string $connectionName): void
     {
         try {
-            if (!$this->isProperConnection()) {
+            if (!$this->isProperConnection($connection)) {
                 $logLevel = $this->connectionType->isWriter() ? LogLevel::ALERT : LogLevel::WARNING;
                 $this->logger->log(
                     $logLevel,
-                    sprintf("Failover reconnect for connection '%s'", $this->connectionName)
+                    sprintf("Failover reconnect for connection '%s'", $connectionName)
                 );
-                $this->reconnect();
+                $this->reconnect($connection);
             }
         } catch (DriverException $e) {
             $this->logger->info(
-                sprintf("Exceptional reconnect for DBAL connection '%s'", $this->connectionName),
+                sprintf("Exceptional reconnect for DBAL connection '%s'", $connectionName),
                 [
                     'exception' => $e,
                 ]
             );
 
             try {
-                $this->reconnect();
+                $this->reconnect($connection);
             } catch (DriverException $e) {
                 // this is usual reconnect
             }
         }
     }
 
-    private function reconnect(): void
+    private function reconnect(Connection $connection): void
     {
-        $this->connection->close();
+        $connection->close();
         /** @psalm-suppress InternalMethod */
-        $this->connection->connect();
+        $connection->connect();
     }
 
     /**
@@ -80,9 +70,9 @@ final class FailoverAwareAliveKeeper implements AliveKeeper
      *
      * @throws DriverException
      */
-    private function isProperConnection(): bool
+    private function isProperConnection(Connection $connection): bool
     {
-        $stmt = $this->connection->executeQuery('SELECT @@global.innodb_read_only;');
+        $stmt = $connection->executeQuery('SELECT @@global.innodb_read_only;');
         $currentConnectionIsWriter = (bool)$stmt->fetchOne() === false;
 
         return $this->connectionType->isWriter() === $currentConnectionIsWriter;

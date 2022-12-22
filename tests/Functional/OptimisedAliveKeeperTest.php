@@ -4,7 +4,8 @@ namespace PixelFederation\DoctrineResettableEmBundle\Tests\Functional;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
-use PixelFederation\DoctrineResettableEmBundle\Connection\AliveKeeper\OptimizedAliveKeeper;
+use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\OptimizedAliveKeeper as DBALOptimizedAliveKeeper;
+use PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection\OptimizedAliveKeeper as RedisClusterOptimizedAliveKeeper;
 use PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\OptimisedAliveKeeperTest\ConnectionMock;
 use PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\OptimisedAliveKeeperTest\RedisClusterSpy;
 use RedisCluster;
@@ -28,20 +29,23 @@ final class OptimisedAliveKeeperTest extends TestCase
 
     public function testPingIntervalInjectionFromConfiguration(): void
     {
-        $doctrineHandlerSvcId = sprintf('%s:doctrine_%s', OptimizedAliveKeeper::class, 'default');
-        /* @var $handler OptimizedAliveKeeper */
+        $doctrineHandlerSvcId = sprintf('%s_%s', DBALOptimizedAliveKeeper::class, 'default');
+        /* @var $handler DBALOptimizedAliveKeeper */
         $handler = self::getContainer()->get($doctrineHandlerSvcId);
-        $refl = new ReflectionClass(OptimizedAliveKeeper::class);
+        $refl = new ReflectionClass(DBALOptimizedAliveKeeper::class);
         $intervalParam = $refl->getProperty('pingIntervalInSeconds');
         $intervalParam->setAccessible(true);
 
         self::assertSame(10, $intervalParam->getValue($handler));
 
-        $redisHandlerSvcId = sprintf('%s:redis_%s', OptimizedAliveKeeper::class, 'default');
-        /* @var $handler OptimizedAliveKeeper */
+        $redisHandlerSvcId = sprintf('%s_%s', RedisClusterOptimizedAliveKeeper::class, 'default');
+        /* @var $handler RedisClusterOptimizedAliveKeeper */
         $handler = self::getContainer()->get($redisHandlerSvcId);
+        $refl2 = new ReflectionClass(RedisClusterOptimizedAliveKeeper::class);
+        $intervalParam2 = $refl2->getProperty('pingIntervalInSeconds');
+        $intervalParam2->setAccessible(true);
 
-        self::assertSame(10, $intervalParam->getValue($handler));
+        self::assertSame(10, $intervalParam2->getValue($handler));
     }
 
     public function testThatOnlyFirstPingWillBeMadeIn10SecondsOnRequestStart(): void

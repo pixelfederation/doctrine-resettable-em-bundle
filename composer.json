@@ -26,7 +26,7 @@
     }
   },
   "require-dev": {
-    "friendsofphp/php-cs-fixer": "^3.2",
+    "friendsofphp/php-cs-fixer": "3.13.0||^3.14",
     "madewithlove/license-checker": "^0.10|^1.0",
     "nikic/php-parser": "^4.2",
     "php-parallel-lint/php-parallel-lint": "^1.2",

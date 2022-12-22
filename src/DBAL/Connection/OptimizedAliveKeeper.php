@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace PixelFederation\DoctrineResettableEmBundle\Connection\AliveKeeper;
+namespace PixelFederation\DoctrineResettableEmBundle\DBAL\Connection;
 
+use Doctrine\DBAL\Connection;
 use Exception;
 
 final class OptimizedAliveKeeper implements AliveKeeper
@@ -29,13 +30,13 @@ final class OptimizedAliveKeeper implements AliveKeeper
     /**
      * @throws Exception
      */
-    public function keepAlive(): void
+    public function keepAlive(Connection $connection, string $connectionName): void
     {
         if (!$this->isPingNeeded()) {
             return;
         }
 
-        $this->decorated->keepAlive();
+        $this->decorated->keepAlive($connection, $connectionName);
     }
 
     /**

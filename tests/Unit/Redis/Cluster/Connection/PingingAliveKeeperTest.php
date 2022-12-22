@@ -2,17 +2,16 @@
 
 declare(strict_types=1);
 
-namespace PixelFederation\DoctrineResettableEmBundle\Tests\Redis\Cluster\Connection;
+namespace PixelFederation\DoctrineResettableEmBundle\Tests\Unit\Redis\Cluster\Connection;
 
-use PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection\RedisClusterAliveKeeper;
 use PHPUnit\Framework\TestCase;
+use PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection\PingingAliveKeeper;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Log\LoggerInterface;
 use RedisCluster;
-use RedisClusterException;
 
-class RedisClusterAliveKeeperTest extends TestCase
+class PingingAliveKeeperTest extends TestCase
 {
     use ProphecyTrait;
 
@@ -21,19 +20,10 @@ class RedisClusterAliveKeeperTest extends TestCase
         $loggerProphecy = $this->prophesize(LoggerInterface::class);
         $clusterProphecy = $this->prophesize(RedisCluster::class);
         $clusterProphecy->ping('hello')->willReturn('hello')->shouldBeCalled();
-        $aliveKeeper = new RedisClusterAliveKeeper(
-            'default',
-            $clusterProphecy->reveal(),
-            [],
-            $loggerProphecy->reveal(),
-
-        );
-        $aliveKeeper->keepAlive();
+        $aliveKeeper = new PingingAliveKeeper([], $loggerProphecy->reveal());
+        $aliveKeeper->keepAlive($clusterProphecy->reveal(), 'default');
     }
 
-    /**
-     * @throws Exception
-     */
     public function testKeepAliveWithReconnectOnFailedPing(): void
     {
         $constructorParameters = [
@@ -48,13 +38,8 @@ class RedisClusterAliveKeeperTest extends TestCase
         $loggerProphecy->info("Exceptional reconnect for redis cluster connection 'default'", Argument::any())
             ->shouldBeCalled();
 
-        $aliveKeeper = new RedisClusterAliveKeeper(
-            'default',
-            $clusterSpy,
-            $constructorParameters,
-            $loggerProphecy->reveal(),
-        );
-        $aliveKeeper->keepAlive();
+        $aliveKeeper = new PingingAliveKeeper($constructorParameters, $loggerProphecy->reveal());
+        $aliveKeeper->keepAlive($clusterSpy, 'default');
 
         self::assertTrue($clusterSpy->wasConstructorCalled());
         self::assertSame($constructorParameters, $clusterSpy->getConstructorParametersSecond());

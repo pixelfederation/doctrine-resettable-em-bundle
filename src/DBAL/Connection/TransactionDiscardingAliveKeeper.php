@@ -6,46 +6,35 @@ namespace PixelFederation\DoctrineResettableEmBundle\DBAL\Connection;
 
 use Doctrine\DBAL\Connection;
 use Exception;
-use PixelFederation\DoctrineResettableEmBundle\Connection\AliveKeeper\AliveKeeper;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
-final class TransactionDiscardingDBALAliveKeeper implements AliveKeeper
+final class TransactionDiscardingAliveKeeper implements AliveKeeper
 {
     private AliveKeeper $decorated;
 
-    private Connection $connection;
-
-    private string $connectionName;
-
     private LoggerInterface $logger;
 
-    public function __construct(
-        AliveKeeper $decorated,
-        Connection $connection,
-        string $connectionName,
-        LoggerInterface $logger
-    ) {
+    public function __construct(AliveKeeper $decorated, LoggerInterface $logger)
+    {
         $this->decorated = $decorated;
-        $this->connection = $connection;
-        $this->connectionName = $connectionName;
         $this->logger = $logger;
     }
 
     /**
      * @throws Exception
      */
-    public function keepAlive(): void
+    public function keepAlive(Connection $connection, string $connectionName): void
     {
         // roll back unfinished transaction from previous request
-        if ($this->connection->isTransactionActive()) {
+        if ($connection->isTransactionActive()) {
             try {
-                $this->connection->rollBack();
+                $connection->rollBack();
             } catch (Throwable $e) {
                 $this->logger->error(
                     sprintf(
                         'An error occurred while discarding active transaction in connection "%s".',
-                        $this->connectionName
+                        $connectionName
                     ),
                     [
                         'exception' => $e,
@@ -55,12 +44,12 @@ final class TransactionDiscardingDBALAliveKeeper implements AliveKeeper
                 $this->logger->error(
                     sprintf(
                         'Connection "%s" needed to discard active transaction while running keep-alive routine.',
-                        $this->connectionName
+                        $connectionName
                     )
                 );
             }
         }
 
-        $this->decorated->keepAlive();
+        $this->decorated->keepAlive($connection, $connectionName);
     }
 }

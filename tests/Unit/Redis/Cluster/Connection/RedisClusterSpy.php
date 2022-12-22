@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace PixelFederation\DoctrineResettableEmBundle\Tests\Redis\Cluster\Connection;
+namespace PixelFederation\DoctrineResettableEmBundle\Tests\Unit\Redis\Cluster\Connection;
 
 use Closure;
 use ProxyManager\Proxy\VirtualProxyInterface;

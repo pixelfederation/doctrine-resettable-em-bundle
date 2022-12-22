@@ -37,7 +37,7 @@ services:
       $entityManager: '@doctrine.orm.excluded_entity_manager'
 
   RedisCluster:
-    class: PixelFederation\DoctrineResettableEmBundle\Tests\Redis\Cluster\Connection\RedisClusterSpy
+    class: PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\RedisClusterSpy
     public: true
     arguments:
       $name: 'default'

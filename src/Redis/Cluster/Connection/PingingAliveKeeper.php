@@ -4,17 +4,12 @@ declare(strict_types=1);
 
 namespace PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection;
 
-use PixelFederation\DoctrineResettableEmBundle\Connection\AliveKeeper\AliveKeeper;
 use Psr\Log\LoggerInterface;
 use RedisCluster;
 use RedisClusterException;
 
-final class RedisClusterAliveKeeper implements AliveKeeper
+final class PingingAliveKeeper implements AliveKeeper
 {
-    private string $connectionName;
-
-    private RedisCluster $redis;
-
     /**
      * @var array{
      *   0: string|null,
@@ -39,32 +34,26 @@ final class RedisClusterAliveKeeper implements AliveKeeper
      *   5: string|null
      * } $constructorArguments
      */
-    public function __construct(
-        string $connectionName,
-        RedisCluster $redis,
-        array $constructorArguments,
-        LoggerInterface $logger
-    ) {
-        $this->connectionName = $connectionName;
-        $this->redis = $redis;
+    public function __construct(array $constructorArguments, LoggerInterface $logger)
+    {
         $this->constructorArguments = $constructorArguments;
         $this->logger = $logger;
     }
 
-    public function keepAlive(): void
+    public function keepAlive(RedisCluster $redis, string $connectionName): void
     {
         try {
-            $this->redis->ping('hello');
+            $redis->ping('hello');
         } catch (RedisClusterException $e) {
             $this->logger->info(
-                sprintf("Exceptional reconnect for redis cluster connection '%s'", $this->connectionName),
+                sprintf("Exceptional reconnect for redis cluster connection '%s'", $connectionName),
                 [
                     'exception' => $e,
                 ]
             );
             // redis cluster does not have a reconnect method and does not work with shard master to slave failover,
             // so this hack has to be used
-            call_user_func_array([$this->redis, '__construct'], $this->constructorArguments);
+            call_user_func_array([$redis, '__construct'], $this->constructorArguments);
         }
     }
 }
