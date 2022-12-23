@@ -22,7 +22,9 @@ final class PixelFederationDoctrineResettableEmExtension extends ConfigurableExt
      *             redis_cluster: array<string>
      *         }
      *     },
-     *     redis_cluster_connections?: array<string, string>
+     *     redis_cluster_connections?: array<string, string>,
+     *     ping_interval?: int|false,
+     *     check_active_transactions?: bool
      * } $mergedConfig
      * @throws Exception
      */
@@ -43,6 +45,7 @@ final class PixelFederationDoctrineResettableEmExtension extends ConfigurableExt
             $mergedConfig['exclude_from_processing']['connections']['redis_cluster']
         );
         $this->tryToOptimizeAliveKeeper($container, $mergedConfig);
+        $this->tryToActivateTransactionChecks($container, $mergedConfig);
         $this->registerReaderWriterConnections($container, $mergedConfig);
         $this->registerRedisClusterConnections($container, $mergedConfig);
     }
@@ -82,6 +85,19 @@ final class PixelFederationDoctrineResettableEmExtension extends ConfigurableExt
 
         $pingInterval = intval($config['ping_interval']);
         $container->setParameter(Parameters::PING_INTERVAL, $pingInterval);
+    }
+
+    /**
+     * @param array{check_active_transactions?: bool} $config
+     */
+    private function tryToActivateTransactionChecks(ContainerBuilder $container, array $config): void
+    {
+        if (!isset($config['check_active_transactions']) || $config['check_active_transactions'] === false) {
+            return;
+        }
+
+        $checkActiveTransactions = $config['check_active_transactions'];
+        $container->setParameter(Parameters::CHECK_ACTIVE_TRANSACTIONS, $checkActiveTransactions);
     }
 
     /**

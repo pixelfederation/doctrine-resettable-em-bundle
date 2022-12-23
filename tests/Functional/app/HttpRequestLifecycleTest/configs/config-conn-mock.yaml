@@ -1,0 +1,11 @@
+imports:
+  - {resource: config.yaml}
+
+doctrine:
+  dbal:
+    default_connection: default
+    connections:
+      default:
+        wrapper_class: PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\ConnectionMock
+      excluded:
+        wrapper_class: PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\ConnectionMock

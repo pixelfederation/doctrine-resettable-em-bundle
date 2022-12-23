@@ -123,8 +123,10 @@ final class AliveKeeperPass implements CompilerPassInterface
         $connections = $container->getParameter('doctrine.connections');
         /** @var array<string, string> $failoverConnections */
         $failoverConnections = $container->getParameter(self::FAILOVER_CONNECTIONS_PARAM_NAME);
-        $pingInterval = $container->hasParameter(Parameters::PING_INTERVAL) ?
+        $pingInterval = (int) $container->hasParameter(Parameters::PING_INTERVAL) ?
             $container->getParameter(Parameters::PING_INTERVAL) : 0;
+        $checkActiveTransactions = (bool) $container->hasParameter(Parameters::CHECK_ACTIVE_TRANSACTIONS) ?
+            $container->getParameter(Parameters::CHECK_ACTIVE_TRANSACTIONS) : false;
         /** @var array<string> $excluded */
         $excluded = $container->getParameter(Parameters::EXCLUDED_FROM_PROCESSING_DBAL_CONNECTIONS);
         $aliveKeepers = [];
@@ -143,12 +145,14 @@ final class AliveKeeperPass implements CompilerPassInterface
                 $this->getAliveKeeperDefinition($container, $connectionName, $failoverConnections)
             );
 
-            $decoratorAliveKeeperSvcId = sprintf('%s_%s', TransactionDiscardingAliveKeeper::class, $connectionName);
-            $decoratedAliveKeeperSvcId = sprintf('%s.inner', $decoratorAliveKeeperSvcId);
-            $transDiscardingDef = new ChildDefinition(TransactionDiscardingAliveKeeper::class);
-            $transDiscardingDef->setDecoratedService($aliveKeeperSvcId, $decoratedAliveKeeperSvcId, 1);
-            $transDiscardingDef->setArgument('$decorated', new Reference($decoratedAliveKeeperSvcId));
-            $container->setDefinition($decoratorAliveKeeperSvcId, $transDiscardingDef);
+            if ($checkActiveTransactions) {
+                $decoratorAliveKeeperSvcId = sprintf('%s_%s', TransactionDiscardingAliveKeeper::class, $connectionName);
+                $decoratedAliveKeeperSvcId = sprintf('%s.inner', $decoratorAliveKeeperSvcId);
+                $transDiscardingDef = new ChildDefinition(TransactionDiscardingAliveKeeper::class);
+                $transDiscardingDef->setDecoratedService($aliveKeeperSvcId, $decoratedAliveKeeperSvcId, 1);
+                $transDiscardingDef->setArgument('$decorated', new Reference($decoratedAliveKeeperSvcId));
+                $container->setDefinition($decoratorAliveKeeperSvcId, $transDiscardingDef);
+            }
 
             $passiveDecoratorAliveKeeperSvcId = sprintf(
                 '%s_%s',
@@ -220,7 +224,7 @@ final class AliveKeeperPass implements CompilerPassInterface
     {
         /** @var array<string, string> $clusterConnections */
         $clusterConnections = $container->getParameter(self::REDIS_CLUSTER_CONNECTIONS_PARAM_NAME);
-        $pingInterval = $container->hasParameter(Parameters::PING_INTERVAL) ?
+        $pingInterval = (int) $container->hasParameter(Parameters::PING_INTERVAL) ?
             $container->getParameter(Parameters::PING_INTERVAL) : 0;
         /** @var array<string> $excluded */
         $excluded = $container->getParameter(Parameters::EXCLUDED_FROM_PROCESSING_REDIS_CLUSTER_CONNECTIONS);

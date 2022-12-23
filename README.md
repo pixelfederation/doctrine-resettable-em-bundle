@@ -44,6 +44,9 @@ pixel_federation_doctrine_resettable_em:
   # default 0 - if set, the connection ping operation will be executed each X seconds 
   # (instead of at the beginning of each request) 
   ping_interval: 10 
+  # default false - if set to true, the app will checj if there is an active transaction
+  # in the processed connection, and it will rollback the transaction
+  check_active_transactions: true
   # for reader writer connections, each has to be defined as 'reader' or 'writer' to be able for the symfony
   # app to reconnect after db failover. currently only AWS Aurora is supported.
   failover_connections:  
