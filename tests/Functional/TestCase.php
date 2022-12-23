@@ -94,9 +94,9 @@ abstract class TestCase extends KernelTestCase
      *
      * @param array $server An array of server parameters
      */
-    protected static function createClient(array $server = []): KernelBrowser
+    protected static function createClient(array $server = [], string $rootConfig = 'configs/config.yaml'): KernelBrowser
     {
-        static::bootTestKernel();
+        static::bootTestKernel($rootConfig);
 
         $client = self::getContainer()->get('test.client');
         $client->setServerParameters($server);
@@ -113,9 +113,9 @@ abstract class TestCase extends KernelTestCase
         self::getApplication()->run(new StringInput($command));
     }
 
-    protected static function bootTestKernel(): void
+    protected static function bootTestKernel(string $rootConfig = 'configs/config.yaml'): void
     {
-        self::bootKernel(['test_case' => static::getTestCase(), 'root_config' => 'configs/config.yaml']);
+        self::bootKernel(['test_case' => static::getTestCase(), 'root_config' => $rootConfig]);
     }
 
     abstract protected static function getTestCase(): string;

@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use PixelFederation\DoctrineResettableEmBundle\ORM\ResettableEntityManager;
+use PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\ConnectionMock;
 use PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\EntityManagerChecker;
 use RedisCluster;
 use ReflectionClass;
@@ -13,19 +14,10 @@ use Symfony\Component\HttpKernel\Kernel;
 
 final class HttpRequestLifecycleTest extends TestCase
 {
-    /**
-     * @throws Exception
-     * @throws Exception
-     */
-    protected function setUp(): void
+    protected function tearDown(): void
     {
-        self::bootTestKernel();
-        self::runCommand('cache:clear --no-warmup');
-        self::runCommand('cache:warmup');
-        self::runCommand('doctrine:database:drop --force --connection default');
-        self::runCommand('doctrine:schema:create --em default');
-        self::runCommand('doctrine:database:drop --force --connection excluded');
-        self::runCommand('doctrine:schema:create --em excluded');
+        parent::tearDown();
+        self::deleteTmpDir();
     }
 
     protected static function getTestCase(): string
@@ -35,6 +27,7 @@ final class HttpRequestLifecycleTest extends TestCase
 
     public function testDoNotPingConnectionsOnRequestStartIfConnectionIsNotOpen(): void
     {
+        $this->setUpInternal();
         $client = self::createClient();
 
         /* @var $em EntityManagerInterface */
@@ -53,14 +46,17 @@ final class HttpRequestLifecycleTest extends TestCase
 
     public function testPingConnectionsOnRequestStart(): void
     {
-        $client = self::createClient();
+        $this->setUpInternal('configs/config-conn-mock.yaml');
+        $client = self::createClient([], 'configs/config-conn-mock.yaml');
 
         /* @var $em EntityManagerInterface */
         $em = self::getContainer()->get('doctrine.orm.default_entity_manager');
+        /** @var ConnectionMock $connection */
         $connection = $em->getConnection();
         /* @var $emExcluded EntityManagerInterface */
         $emExcluded = self::getContainer()->get('doctrine.orm.excluded_entity_manager');
-        $connectionExcluded = $em->getConnection();
+        /** @var ConnectionMock $connectionExcluded */
+        $connectionExcluded = $emExcluded->getConnection();
         $redisCluster = self::getContainer()->get(RedisCluster::class);
         $redisClusterExcluded = self::getContainer()->get(RedisCluster::class . '2');
 
@@ -69,11 +65,11 @@ final class HttpRequestLifecycleTest extends TestCase
         self::assertFalse($redisCluster->wasConstructorCalled());
         self::assertFalse($redisClusterExcluded->wasConstructorCalled());
         $connection->connect(); // simulates real connection usage
-        $connection->beginTransaction();
-        self::assertTrue($connection->isTransactionActive());
+        $connectionExcluded->connect(); // simulates real connection usage
         $client->request('GET', '/dummy'); // this action does nothing with the database
         self::assertTrue($connection->isConnected());
-        self::assertFalse($connection->isTransactionActive());
+        self::assertSame('SELECT 1', $connection->getQuery());
+        self::assertNull($connectionExcluded->getQuery());
         self::assertTrue($connectionExcluded->isConnected());
         self::assertTrue($redisCluster->wasConstructorCalled());
         self::assertSame(
@@ -83,11 +79,39 @@ final class HttpRequestLifecycleTest extends TestCase
         self::assertFalse($redisClusterExcluded->wasConstructorCalled());
     }
 
+    public function testCheckIfConnectionsHaveActiveTransactionsOnRequestStart(): void
+    {
+        $this->setUpInternal('configs/config-trans-check.yaml');
+        $client = self::createClient([], 'configs/config-trans-check.yaml');
+
+        /* @var $em EntityManagerInterface */
+        $em = self::getContainer()->get('doctrine.orm.default_entity_manager');
+        $connection = $em->getConnection();
+        /* @var $emExcluded EntityManagerInterface */
+        $emExcluded = self::getContainer()->get('doctrine.orm.excluded_entity_manager');
+        $connectionExcluded = $emExcluded->getConnection();
+
+        self::assertFalse($connection->isConnected());
+        self::assertFalse($connectionExcluded->isConnected());
+        $connection->connect(); // simulates real connection usage
+        $connection->beginTransaction();
+        $connectionExcluded->connect(); // simulates real connection usage
+        $connectionExcluded->beginTransaction();
+        self::assertTrue($connection->isTransactionActive());
+        self::assertTrue($connectionExcluded->isTransactionActive());
+        $client->request('GET', '/dummy'); // this action does nothing with the database
+        self::assertTrue($connection->isConnected());
+        self::assertFalse($connection->isTransactionActive());
+        self::assertTrue($connectionExcluded->isConnected());
+        self::assertTrue($connectionExcluded->isTransactionActive());
+    }
+
     /**
      * @throws Exception
      */
     public function testEmWillBeResetWithServicesResetter(): void
     {
+        $this->setUpInternal();
         /* @var $em EntityManagerInterface */
         $em = self::getContainer()->get('doctrine.orm.default_entity_manager');
         self::assertInstanceOf(ResettableEntityManager::class, $em);
@@ -111,6 +135,7 @@ final class HttpRequestLifecycleTest extends TestCase
      */
     public function testEmWillBeResetOnErrorWithServicesResetter(): void
     {
+        $this->setUpInternal();
         /* @var $em EntityManagerInterface */
         $em = self::getContainer()->get('doctrine.orm.default_entity_manager');
         self::assertInstanceOf(ResettableEntityManager::class, $em);
@@ -160,6 +185,8 @@ final class HttpRequestLifecycleTest extends TestCase
             return;
         }
 
+        $this->setUpInternal();
+
         /* @var $em EntityManagerInterface */
         $em = self::getContainer()->get('doctrine.orm.excluded_entity_manager');
         self::assertNotInstanceOf(ResettableEntityManager::class, $em);
@@ -192,6 +219,8 @@ final class HttpRequestLifecycleTest extends TestCase
      */
     public function testExcludedEmWontBeWrappedAndWillBeResetWithDefaultDoctrineServicesResetter(): void
     {
+        $this->setUpInternal();
+
         /* @var $em EntityManagerInterface */
         $em = self::getContainer()->get('doctrine.orm.excluded_entity_manager');
         self::assertInstanceOf(EntityManager::class, $em);
@@ -208,5 +237,16 @@ final class HttpRequestLifecycleTest extends TestCase
 
         self::assertSame(2, $checker->getNumberOfChecks());
         self::assertTrue($checker->wasEmptyOnLastCheck());
+    }
+
+    private function setUpInternal(string $rootConfig = 'configs/config.yaml'): void
+    {
+        self::bootTestKernel($rootConfig);
+        self::runCommand('cache:clear --no-warmup');
+        self::runCommand('cache:warmup');
+        self::runCommand('doctrine:database:drop --force --connection default');
+        self::runCommand('doctrine:schema:create --em default');
+        self::runCommand('doctrine:database:drop --force --connection excluded');
+        self::runCommand('doctrine:schema:create --em excluded');
     }
 }
