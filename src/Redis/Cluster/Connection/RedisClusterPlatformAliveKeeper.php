@@ -2,27 +2,27 @@
 
 declare(strict_types=1);
 
-namespace PixelFederation\DoctrineResettableEmBundle\DBAL\Connection;
+namespace PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection;
 
-use Doctrine\DBAL\Connection;
 use PixelFederation\DoctrineResettableEmBundle\Connection\PlatformAliveKeeper as GenericPlatformAliveKeeper;
+use RedisCluster;
 use RuntimeException;
 
-final class PlatformAliveKeeper implements GenericPlatformAliveKeeper
+final class RedisClusterPlatformAliveKeeper implements GenericPlatformAliveKeeper
 {
     /**
-     * @var array<string, Connection>
+     * @var array<string, RedisCluster>
      */
     private array $connections;
 
     /**
-     * @var array<string, AliveKeeper>
+     * @var array<string, RedisClusterAliveKeeper>
      */
     private array $aliveKeepers;
 
     /**
-     * @param array<string, Connection> $connections
-     * @param array<string, AliveKeeper> $aliveKeepers
+     * @param array<string, RedisCluster> $connections
+     * @param array<string, RedisClusterAliveKeeper> $aliveKeepers
      */
     public function __construct(array $connections, array $aliveKeepers)
     {
@@ -42,17 +42,5 @@ final class PlatformAliveKeeper implements GenericPlatformAliveKeeper
             $connection = $this->connections[$connectionName];
             $aliveKeeper->keepAlive($connection, $connectionName);
         }
-    }
-
-    public function addAliveKeeper(string $connectionName, Connection $connection, AliveKeeper $aliveKeeper): void
-    {
-        $this->connections[$connectionName] = $connection;
-        $this->aliveKeepers[$connectionName] = $aliveKeeper;
-    }
-
-    public function removeAliveKeeper(string $connectionName): void
-    {
-        unset($this->connections[$connectionName]);
-        unset($this->aliveKeepers[$connectionName]);
     }
 }

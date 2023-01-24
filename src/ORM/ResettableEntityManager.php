@@ -17,6 +17,10 @@ use Doctrine\Persistence\ObjectRepository;
 use Exception;
 use UnexpectedValueException;
 
+/**
+ * @final
+ */
+// phpcs:ignore SlevomatCodingStandard.Classes.RequireAbstractOrFinal.ClassNeitherAbstractNorFinal
 class ResettableEntityManager extends EntityManagerDecorator
 {
     private RepositoryFactory $repositoryFactory;

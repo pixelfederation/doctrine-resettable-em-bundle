@@ -8,11 +8,11 @@ use Doctrine\DBAL\Connection;
 use Exception;
 use ProxyManager\Proxy\VirtualProxyInterface;
 
-final class PassiveIgnoringAliveKeeper implements AliveKeeper
+final class PassiveIgnoringDBALAliveKeeper implements DBALAliveKeeper
 {
-    private AliveKeeper $decorated;
+    private DBALAliveKeeper $decorated;
 
-    public function __construct(AliveKeeper $decorated)
+    public function __construct(DBALAliveKeeper $decorated)
     {
         $this->decorated = $decorated;
     }

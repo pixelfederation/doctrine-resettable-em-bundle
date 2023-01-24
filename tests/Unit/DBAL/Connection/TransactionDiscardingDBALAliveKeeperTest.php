@@ -6,8 +6,8 @@ namespace PixelFederation\DoctrineResettableEmBundle\Tests\Unit\DBAL\Connection;
 use Doctrine\DBAL\Connection;
 use Exception;
 use PHPUnit\Framework\TestCase;
-use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\AliveKeeper;
-use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\TransactionDiscardingAliveKeeper;
+use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\DBALAliveKeeper;
+use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\TransactionDiscardingDBALAliveKeeper;
 use PixelFederation\DoctrineResettableEmBundle\Tests\Unit\Helper\ProxyConnectionMock;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
@@ -16,7 +16,7 @@ use ProxyManager\Proxy\VirtualProxyInterface;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
-class TransactionDiscardingAliveKeeperTest extends TestCase
+class TransactionDiscardingDBALAliveKeeperTest extends TestCase
 {
     use ProphecyTrait;
 
@@ -40,12 +40,12 @@ class TransactionDiscardingAliveKeeperTest extends TestCase
         $connectionMock = $connectionProphecy->reveal();
         $connectionName = 'default';
 
-        /** @var $decoratedAliveKeeper AliveKeeper|ObjectProphecy */
-        $decoratedAliveKeeper = $this->prophesize(AliveKeeper::class);
+        /** @var $decoratedAliveKeeper DBALAliveKeeper|ObjectProphecy */
+        $decoratedAliveKeeper = $this->prophesize(DBALAliveKeeper::class);
         $decoratedAliveKeeper->keepAlive($connectionMock, $connectionName)
             ->shouldBeCalled();
 
-        $aliveKeeper = new TransactionDiscardingAliveKeeper($decoratedAliveKeeper->reveal(), $loggerProphecy->reveal());
+        $aliveKeeper = new TransactionDiscardingDBALAliveKeeper($decoratedAliveKeeper->reveal(), $loggerProphecy->reveal());
         $aliveKeeper->keepAlive($connectionMock, $connectionName);
     }
 
@@ -80,12 +80,12 @@ class TransactionDiscardingAliveKeeperTest extends TestCase
 
         $connectionMock = $connectionProphecy->reveal();
 
-        /** @var $decoratedAliveKeeper AliveKeeper|ObjectProphecy */
-        $decoratedAliveKeeper = $this->prophesize(AliveKeeper::class);
+        /** @var $decoratedAliveKeeper DBALAliveKeeper|ObjectProphecy */
+        $decoratedAliveKeeper = $this->prophesize(DBALAliveKeeper::class);
         $decoratedAliveKeeper->keepAlive($connectionMock, $connectionName)
             ->shouldBeCalled();
 
-        $aliveKeeper = new TransactionDiscardingAliveKeeper($decoratedAliveKeeper->reveal(), $loggerProphecy->reveal());
+        $aliveKeeper = new TransactionDiscardingDBALAliveKeeper($decoratedAliveKeeper->reveal(), $loggerProphecy->reveal());
         $aliveKeeper->keepAlive($connectionMock, $connectionName);
     }
 
@@ -107,12 +107,12 @@ class TransactionDiscardingAliveKeeperTest extends TestCase
         $connectionMock = $connectionProphecy->reveal();
         $connectionName = 'default';
 
-        /** @var $decoratedAliveKeeper AliveKeeper|ObjectProphecy */
-        $decoratedAliveKeeper = $this->prophesize(AliveKeeper::class);
+        /** @var $decoratedAliveKeeper DBALAliveKeeper|ObjectProphecy */
+        $decoratedAliveKeeper = $this->prophesize(DBALAliveKeeper::class);
         $decoratedAliveKeeper->keepAlive($connectionMock, $connectionName)
             ->shouldBeCalled();
 
-        $aliveKeeper = new TransactionDiscardingAliveKeeper($decoratedAliveKeeper->reveal(), $loggerProphecy->reveal());
+        $aliveKeeper = new TransactionDiscardingDBALAliveKeeper($decoratedAliveKeeper->reveal(), $loggerProphecy->reveal());
         $aliveKeeper->keepAlive($connectionMock, $connectionName);
     }
 }

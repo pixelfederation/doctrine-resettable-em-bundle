@@ -4,8 +4,8 @@ namespace PixelFederation\DoctrineResettableEmBundle\Tests\Functional;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
-use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\OptimizedAliveKeeper as DBALOptimizedAliveKeeper;
-use PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection\OptimizedAliveKeeper as RedisClusterOptimizedAliveKeeper;
+use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\OptimizedDBALAliveKeeper;
+use PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection\OptimizedRedisClusterAliveKeeper;
 use PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\OptimisedAliveKeeperTest\ConnectionMock;
 use PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\OptimisedAliveKeeperTest\RedisClusterSpy;
 use RedisCluster;
@@ -29,19 +29,19 @@ final class OptimisedAliveKeeperTest extends TestCase
 
     public function testPingIntervalInjectionFromConfiguration(): void
     {
-        $doctrineHandlerSvcId = sprintf('%s_%s', DBALOptimizedAliveKeeper::class, 'default');
-        /* @var $handler DBALOptimizedAliveKeeper */
+        $doctrineHandlerSvcId = sprintf('%s_%s', OptimizedDBALAliveKeeper::class, 'default');
+        /* @var $handler OptimizedDBALAliveKeeper */
         $handler = self::getContainer()->get($doctrineHandlerSvcId);
-        $refl = new ReflectionClass(DBALOptimizedAliveKeeper::class);
+        $refl = new ReflectionClass(OptimizedDBALAliveKeeper::class);
         $intervalParam = $refl->getProperty('pingIntervalInSeconds');
         $intervalParam->setAccessible(true);
 
         self::assertSame(10, $intervalParam->getValue($handler));
 
-        $redisHandlerSvcId = sprintf('%s_%s', RedisClusterOptimizedAliveKeeper::class, 'default');
-        /* @var $handler RedisClusterOptimizedAliveKeeper */
+        $redisHandlerSvcId = sprintf('%s_%s', OptimizedRedisClusterAliveKeeper::class, 'default');
+        /* @var $handler OptimizedRedisClusterAliveKeeper */
         $handler = self::getContainer()->get($redisHandlerSvcId);
-        $refl2 = new ReflectionClass(RedisClusterOptimizedAliveKeeper::class);
+        $refl2 = new ReflectionClass(OptimizedRedisClusterAliveKeeper::class);
         $intervalParam2 = $refl2->getProperty('pingIntervalInSeconds');
         $intervalParam2->setAccessible(true);
 

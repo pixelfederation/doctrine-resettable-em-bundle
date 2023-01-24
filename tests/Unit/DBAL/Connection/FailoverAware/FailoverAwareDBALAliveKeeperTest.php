@@ -9,7 +9,7 @@ use Doctrine\DBAL\Exception\DriverException;
 use Doctrine\DBAL\Result;
 use Exception;
 use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\FailoverAware\ConnectionType;
-use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\FailoverAware\FailoverAwareAliveKeeper;
+use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\FailoverAware\FailoverAwareDBALAliveKeeper;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
@@ -17,7 +17,7 @@ use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 
-class FailoverAwareAliveKeeperTest extends TestCase
+class FailoverAwareDBALAliveKeeperTest extends TestCase
 {
     use ProphecyTrait;
 
@@ -36,7 +36,7 @@ class FailoverAwareAliveKeeperTest extends TestCase
         $connectionProphecy->close()->shouldNotBeCalled();
         $connectionProphecy->connect()->shouldNotBeCalled();
 
-        $aliveKeeper = new FailoverAwareAliveKeeper($loggerProphecy->reveal());
+        $aliveKeeper = new FailoverAwareDBALAliveKeeper($loggerProphecy->reveal());
         $aliveKeeper->keepAlive($connectionProphecy->reveal(), 'default');
     }
 
@@ -55,7 +55,7 @@ class FailoverAwareAliveKeeperTest extends TestCase
         $connectionProphecy->close()->shouldNotBeCalled();
         $connectionProphecy->connect()->shouldNotBeCalled();
 
-        $aliveKeeper = new FailoverAwareAliveKeeper($loggerProphecy->reveal(), ConnectionType::READER);
+        $aliveKeeper = new FailoverAwareDBALAliveKeeper($loggerProphecy->reveal(), ConnectionType::READER);
         $aliveKeeper->keepAlive($connectionProphecy->reveal(), 'default',);
     }
 
@@ -75,7 +75,7 @@ class FailoverAwareAliveKeeperTest extends TestCase
         $connectionProphecy->close()->shouldBeCalled();
         $connectionProphecy->connect()->shouldBeCalled();
 
-        $aliveKeeper = new FailoverAwareAliveKeeper($loggerProphecy->reveal());
+        $aliveKeeper = new FailoverAwareDBALAliveKeeper($loggerProphecy->reveal());
         $aliveKeeper->keepAlive($connectionProphecy->reveal(), 'default');
     }
 
@@ -95,7 +95,7 @@ class FailoverAwareAliveKeeperTest extends TestCase
         $connectionProphecy->close()->shouldBeCalled();
         $connectionProphecy->connect()->shouldBeCalled();
 
-        $aliveKeeper = new FailoverAwareAliveKeeper($loggerProphecy->reveal(), ConnectionType::READER);
+        $aliveKeeper = new FailoverAwareDBALAliveKeeper($loggerProphecy->reveal(), ConnectionType::READER);
         $aliveKeeper->keepAlive($connectionProphecy->reveal(), 'default');
     }
 
@@ -115,7 +115,7 @@ class FailoverAwareAliveKeeperTest extends TestCase
         $connectionProphecy->close()->shouldBeCalled();
         $connectionProphecy->connect()->shouldBeCalled();
 
-        $aliveKeeper = new FailoverAwareAliveKeeper($loggerProphecy->reveal());
+        $aliveKeeper = new FailoverAwareDBALAliveKeeper($loggerProphecy->reveal());
         $aliveKeeper->keepAlive($connectionProphecy->reveal(), 'default');
     }
 }

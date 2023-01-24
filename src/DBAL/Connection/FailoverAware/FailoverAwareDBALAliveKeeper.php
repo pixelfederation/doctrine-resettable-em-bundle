@@ -7,11 +7,11 @@ namespace PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\FailoverAwa
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception\DriverException;
 use Exception;
-use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\AliveKeeper;
+use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\DBALAliveKeeper;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 
-final class FailoverAwareAliveKeeper implements AliveKeeper
+final class FailoverAwareDBALAliveKeeper implements DBALAliveKeeper
 {
     private LoggerInterface $logger;
 

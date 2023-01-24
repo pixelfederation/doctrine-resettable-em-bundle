@@ -8,7 +8,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception\ConnectionLost;
 use Exception;
 
-final class PingingAliveKeeper implements AliveKeeper
+final class PingingDBALAliveKeeper implements DBALAliveKeeper
 {
     /**
      * @throws Exception

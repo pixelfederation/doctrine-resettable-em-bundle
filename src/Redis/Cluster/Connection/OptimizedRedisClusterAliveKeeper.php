@@ -2,26 +2,28 @@
 
 declare(strict_types=1);
 
-namespace PixelFederation\DoctrineResettableEmBundle\DBAL\Connection;
+namespace PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection;
 
-use Doctrine\DBAL\Connection;
 use Exception;
+use RedisCluster;
 
-final class OptimizedAliveKeeper implements AliveKeeper
+final class OptimizedRedisClusterAliveKeeper implements RedisClusterAliveKeeper
 {
     /**
      * @const int
      */
     private const DEFAULT_PING_INTERVAL = 0;
 
-    private AliveKeeper $decorated;
+    private RedisClusterAliveKeeper $decorated;
 
     private int $pingIntervalInSeconds;
 
     private int $lastPingAt;
 
-    public function __construct(AliveKeeper $decorated, int $pingIntervalInSeconds = self::DEFAULT_PING_INTERVAL)
-    {
+    public function __construct(
+        RedisClusterAliveKeeper $decorated,
+        int $pingIntervalInSeconds = self::DEFAULT_PING_INTERVAL
+    ) {
         $this->decorated = $decorated;
         $this->pingIntervalInSeconds = $pingIntervalInSeconds;
         $this->lastPingAt = 0;
@@ -30,13 +32,13 @@ final class OptimizedAliveKeeper implements AliveKeeper
     /**
      * @throws Exception
      */
-    public function keepAlive(Connection $connection, string $connectionName): void
+    public function keepAlive(RedisCluster $redis, string $connectionName): void
     {
         if (!$this->isPingNeeded()) {
             return;
         }
 
-        $this->decorated->keepAlive($connection, $connectionName);
+        $this->decorated->keepAlive($redis, $connectionName);
     }
 
     /**

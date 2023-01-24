@@ -6,14 +6,14 @@ namespace PixelFederation\DoctrineResettableEmBundle\Tests\Unit\DBAL\Connection;
 use Doctrine\DBAL\Connection;
 use Exception;
 use PHPUnit\Framework\TestCase;
-use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\AliveKeeper;
-use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\PassiveIgnoringAliveKeeper;
+use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\DBALAliveKeeper;
+use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\PassiveIgnoringDBALAliveKeeper;
 use PixelFederation\DoctrineResettableEmBundle\Tests\Unit\Helper\ProxyConnectionMock;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 use ProxyManager\Proxy\VirtualProxyInterface;
 
-class PassiveIgnoringAliveKeeperTest extends TestCase
+class PassiveIgnoringDBALAliveKeeperTest extends TestCase
 {
     use ProphecyTrait;
 
@@ -32,12 +32,12 @@ class PassiveIgnoringAliveKeeperTest extends TestCase
         $connectionMock = $connectionProphecy->reveal();
         $connectionName = 'default';
 
-        /** @var $decoratedAliveKeeper AliveKeeper|ObjectProphecy */
-        $decoratedAliveKeeper = $this->prophesize(AliveKeeper::class);
+        /** @var $decoratedAliveKeeper DBALAliveKeeper|ObjectProphecy */
+        $decoratedAliveKeeper = $this->prophesize(DBALAliveKeeper::class);
         $decoratedAliveKeeper->keepAlive($connectionMock, $connectionName)
             ->shouldNotBeCalled();
 
-        $aliveKeeper = new PassiveIgnoringAliveKeeper(
+        $aliveKeeper = new PassiveIgnoringDBALAliveKeeper(
             $decoratedAliveKeeper->reveal());
         $aliveKeeper->keepAlive($connectionMock, $connectionName);
     }
@@ -54,12 +54,12 @@ class PassiveIgnoringAliveKeeperTest extends TestCase
         $connectionMock = $connectionProphecy->reveal();
         $connectionName = 'default';
 
-        /** @var $decoratedAliveKeeper AliveKeeper|ObjectProphecy */
-        $decoratedAliveKeeper = $this->prophesize(AliveKeeper::class);
+        /** @var $decoratedAliveKeeper DBALAliveKeeper|ObjectProphecy */
+        $decoratedAliveKeeper = $this->prophesize(DBALAliveKeeper::class);
         $decoratedAliveKeeper->keepAlive($connectionMock, $connectionName)
             ->shouldNotBeCalled();
 
-        $aliveKeeper = new PassiveIgnoringAliveKeeper(
+        $aliveKeeper = new PassiveIgnoringDBALAliveKeeper(
             $decoratedAliveKeeper->reveal());
         $aliveKeeper->keepAlive($connectionMock, $connectionName);
     }
@@ -79,12 +79,12 @@ class PassiveIgnoringAliveKeeperTest extends TestCase
         $connectionMock = $connectionProphecy->reveal();
         $connectionName = 'default';
 
-        /** @var $decoratedAliveKeeper AliveKeeper|ObjectProphecy */
-        $decoratedAliveKeeper = $this->prophesize(AliveKeeper::class);
+        /** @var $decoratedAliveKeeper DBALAliveKeeper|ObjectProphecy */
+        $decoratedAliveKeeper = $this->prophesize(DBALAliveKeeper::class);
         $decoratedAliveKeeper->keepAlive($connectionMock, $connectionName)
             ->shouldBeCalled();
 
-        $aliveKeeper = new PassiveIgnoringAliveKeeper($decoratedAliveKeeper->reveal());
+        $aliveKeeper = new PassiveIgnoringDBALAliveKeeper($decoratedAliveKeeper->reveal());
         $aliveKeeper->keepAlive($connectionMock, $connectionName);
     }
 }

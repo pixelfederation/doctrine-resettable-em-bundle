@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace PixelFederation\DoctrineResettableEmBundle\Tests\Unit\Redis\Cluster\Connection;
 
 use PHPUnit\Framework\TestCase;
-use PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection\PingingAliveKeeper;
+use PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection\PingingRedisClusterAliveKeeper;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Log\LoggerInterface;
 use RedisCluster;
 
-class PingingAliveKeeperTest extends TestCase
+class PingingRedisClusterAliveKeeperTest extends TestCase
 {
     use ProphecyTrait;
 
@@ -20,7 +20,7 @@ class PingingAliveKeeperTest extends TestCase
         $loggerProphecy = $this->prophesize(LoggerInterface::class);
         $clusterProphecy = $this->prophesize(RedisCluster::class);
         $clusterProphecy->ping('hello')->willReturn('hello')->shouldBeCalled();
-        $aliveKeeper = new PingingAliveKeeper([], $loggerProphecy->reveal());
+        $aliveKeeper = new PingingRedisClusterAliveKeeper([], $loggerProphecy->reveal());
         $aliveKeeper->keepAlive($clusterProphecy->reveal(), 'default');
     }
 
@@ -38,7 +38,7 @@ class PingingAliveKeeperTest extends TestCase
         $loggerProphecy->info("Exceptional reconnect for redis cluster connection 'default'", Argument::any())
             ->shouldBeCalled();
 
-        $aliveKeeper = new PingingAliveKeeper($constructorParameters, $loggerProphecy->reveal());
+        $aliveKeeper = new PingingRedisClusterAliveKeeper($constructorParameters, $loggerProphecy->reveal());
         $aliveKeeper->keepAlive($clusterSpy, 'default');
 
         self::assertTrue($clusterSpy->wasConstructorCalled());

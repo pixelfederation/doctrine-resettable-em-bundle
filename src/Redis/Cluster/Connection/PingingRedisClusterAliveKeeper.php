@@ -8,7 +8,7 @@ use Psr\Log\LoggerInterface;
 use RedisCluster;
 use RedisClusterException;
 
-final class PingingAliveKeeper implements AliveKeeper
+final class PingingRedisClusterAliveKeeper implements RedisClusterAliveKeeper
 {
     /**
      * @var array{

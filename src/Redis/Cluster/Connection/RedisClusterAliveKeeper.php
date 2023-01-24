@@ -6,7 +6,7 @@ namespace PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection;
 
 use RedisCluster;
 
-interface AliveKeeper
+interface RedisClusterAliveKeeper
 {
     public function keepAlive(RedisCluster $redis, string $connectionName): void;
 }
