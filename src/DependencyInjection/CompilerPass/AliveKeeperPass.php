@@ -4,26 +4,18 @@ declare(strict_types=1);
 
 namespace PixelFederation\DoctrineResettableEmBundle\DependencyInjection\CompilerPass;
 
-// phpcs:disable SlevomatCodingStandard.Namespaces.DisallowGroupUse.DisallowedGroupUse
-// phpcs:disable SlevomatCodingStandard.Namespaces.MultipleUsesPerLine.MultipleUsesPerLine
-// phpcs:disable SlevomatCodingStandard.Namespaces.UseSpacing.IncorrectLinesCountBetweenSameTypeOfUse
-// phpcs:disable SlevomatCodingStandard.Namespaces.AlphabeticallySortedUses.IncorrectlyOrderedUses
 use PixelFederation\DoctrineResettableEmBundle\Connection\ConnectionsHandler;
-use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\{
-    FailoverAware\FailoverAwareAliveKeeper,
-    OptimizedAliveKeeper as DBALOptimizedAliveKeeper,
-    PassiveIgnoringAliveKeeper as DBALPassiveIgnoringAliveKeeper,
-    PingingAliveKeeper as DBALPingingAliveKeeper,
-    PlatformAliveKeeper as DBALPlatformAliveKeeper,
-    TransactionDiscardingAliveKeeper
-};
+use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\DBALPlatformAliveKeeper;
+use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\FailoverAware\FailoverAwareDBALAliveKeeper;
+use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\OptimizedDBALAliveKeeper;
+use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\PassiveIgnoringDBALAliveKeeper;
+use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\PingingDBALAliveKeeper;
+use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\TransactionDiscardingDBALAliveKeeper;
 use PixelFederation\DoctrineResettableEmBundle\DependencyInjection\Parameters;
-use PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection\{
-    OptimizedAliveKeeper as RedisClusterOptimizedAliveKeeper,
-    PassiveIgnoringAliveKeeper as RedisClusterPassiveIgnoringAliveKeeper,
-    PingingAliveKeeper as RedisClusterPingingAliveKeeper,
-    PlatformAliveKeeper as RedisClusterPlatformAliveKeeper
-};
+use PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection\OptimizedRedisClusterAliveKeeper;
+use PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection\PassiveIgnoringRedisClusterAliveKeeper;
+use PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection\PingingRedisClusterAliveKeeper;
+use PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection\RedisClusterPlatformAliveKeeper;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -146,9 +138,13 @@ final class AliveKeeperPass implements CompilerPassInterface
             );
 
             if ($checkActiveTransactions) {
-                $decoratorAliveKeeperSvcId = sprintf('%s_%s', TransactionDiscardingAliveKeeper::class, $connectionName);
+                $decoratorAliveKeeperSvcId = sprintf(
+                    '%s_%s',
+                    TransactionDiscardingDBALAliveKeeper::class,
+                    $connectionName
+                );
                 $decoratedAliveKeeperSvcId = sprintf('%s.inner', $decoratorAliveKeeperSvcId);
-                $transDiscardingDef = new ChildDefinition(TransactionDiscardingAliveKeeper::class);
+                $transDiscardingDef = new ChildDefinition(TransactionDiscardingDBALAliveKeeper::class);
                 $transDiscardingDef->setDecoratedService($aliveKeeperSvcId, $decoratedAliveKeeperSvcId, 1);
                 $transDiscardingDef->setArgument('$decorated', new Reference($decoratedAliveKeeperSvcId));
                 $container->setDefinition($decoratorAliveKeeperSvcId, $transDiscardingDef);
@@ -156,12 +152,12 @@ final class AliveKeeperPass implements CompilerPassInterface
 
             $passiveDecoratorAliveKeeperSvcId = sprintf(
                 '%s_%s',
-                DBALPassiveIgnoringAliveKeeper::class,
+                PassiveIgnoringDBALAliveKeeper::class,
                 $connectionName
             );
 
             $ignorePassiveAliveKeeperSvcId = sprintf('%s.inner', $passiveDecoratorAliveKeeperSvcId);
-            $passiveIgnoringDef = new ChildDefinition(DBALPassiveIgnoringAliveKeeper::class);
+            $passiveIgnoringDef = new ChildDefinition(PassiveIgnoringDBALAliveKeeper::class);
             $passiveIgnoringDef->setDecoratedService($aliveKeeperSvcId, $ignorePassiveAliveKeeperSvcId);
             $passiveIgnoringDef->setArgument('$decorated', new Reference($ignorePassiveAliveKeeperSvcId));
             $container->setDefinition($passiveDecoratorAliveKeeperSvcId, $passiveIgnoringDef);
@@ -172,9 +168,9 @@ final class AliveKeeperPass implements CompilerPassInterface
                 continue;
             }
 
-            $optDecoratorAliveKeeperSvcId = sprintf('%s_%s', DBALOptimizedAliveKeeper::class, $connectionName);
+            $optDecoratorAliveKeeperSvcId = sprintf('%s_%s', OptimizedDBALAliveKeeper::class, $connectionName);
             $optDecoratedAliveKeeperSvcId = sprintf('%s.inner', $optDecoratorAliveKeeperSvcId);
-            $optimisedKeeperDef = new ChildDefinition(DBALOptimizedAliveKeeper::class);
+            $optimisedKeeperDef = new ChildDefinition(OptimizedDBALAliveKeeper::class);
             $optimisedKeeperDef->setDecoratedService($aliveKeeperSvcId, $optDecoratedAliveKeeperSvcId, 2);
             $optimisedKeeperDef->setArgument('$decorated', new Reference($optDecoratedAliveKeeperSvcId));
             $optimisedKeeperDef->setArgument('$pingIntervalInSeconds', $pingInterval);
@@ -194,10 +190,10 @@ final class AliveKeeperPass implements CompilerPassInterface
         array $failoverConnections
     ) {
         if (!isset($failoverConnections[$connectionName])) {
-            return $container->findDefinition(DBALPingingAliveKeeper::class);
+            return $container->findDefinition(PingingDBALAliveKeeper::class);
         }
 
-        $aliveKeeper = new ChildDefinition(FailoverAwareAliveKeeper::class);
+        $aliveKeeper = new ChildDefinition(FailoverAwareDBALAliveKeeper::class);
         $aliveKeeper->setArgument('$connectionType', $failoverConnections[$connectionName]);
 
         return $aliveKeeper;
@@ -236,7 +232,7 @@ final class AliveKeeperPass implements CompilerPassInterface
             }
 
             $clusterDef = $container->findDefinition($clusterSvcId);
-            $aliveKeeper = new ChildDefinition(RedisClusterPingingAliveKeeper::class);
+            $aliveKeeper = new ChildDefinition(PingingRedisClusterAliveKeeper::class);
             $aliveKeeper->setArgument('$constructorArguments', array_values($clusterDef->getArguments()));
             $aliveKeeperSvcId = sprintf(
                 'pixel_federation_doctrine_resettable_em.alive_keeper.redis_cluster.%s',
@@ -246,12 +242,12 @@ final class AliveKeeperPass implements CompilerPassInterface
 
             $passiveDecoratorAliveKeeperSvcId = sprintf(
                 '%s_%s',
-                RedisClusterPassiveIgnoringAliveKeeper::class,
+                PassiveIgnoringRedisClusterAliveKeeper::class,
                 $connectionName
             );
 
             $ignorePassiveAliveKeeperSvcId = sprintf('%s.inner', $passiveDecoratorAliveKeeperSvcId);
-            $passiveIgnoringDef = new ChildDefinition(RedisClusterPassiveIgnoringAliveKeeper::class);
+            $passiveIgnoringDef = new ChildDefinition(PassiveIgnoringRedisClusterAliveKeeper::class);
             $passiveIgnoringDef->setDecoratedService($aliveKeeperSvcId, $ignorePassiveAliveKeeperSvcId);
             $passiveIgnoringDef->setArgument('$decorated', new Reference($ignorePassiveAliveKeeperSvcId));
             $container->setDefinition($passiveDecoratorAliveKeeperSvcId, $passiveIgnoringDef);
@@ -262,9 +258,9 @@ final class AliveKeeperPass implements CompilerPassInterface
                 continue;
             }
 
-            $optDecoratorAliveKeeperSvcId = sprintf('%s_%s', RedisClusterOptimizedAliveKeeper::class, $connectionName);
+            $optDecoratorAliveKeeperSvcId = sprintf('%s_%s', OptimizedRedisClusterAliveKeeper::class, $connectionName);
             $optDecoratedAliveKeeperSvcId = sprintf('%s.inner', $optDecoratorAliveKeeperSvcId);
-            $optimisedKeeperDef = new ChildDefinition(RedisClusterOptimizedAliveKeeper::class);
+            $optimisedKeeperDef = new ChildDefinition(OptimizedRedisClusterAliveKeeper::class);
             $optimisedKeeperDef->setDecoratedService($aliveKeeperSvcId, $optDecoratedAliveKeeperSvcId, 2);
             $optimisedKeeperDef->setArgument('$decorated', new Reference($optDecoratedAliveKeeperSvcId));
             $optimisedKeeperDef->setArgument('$pingIntervalInSeconds', $pingInterval);

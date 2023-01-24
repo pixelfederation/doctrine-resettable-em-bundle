@@ -8,19 +8,19 @@ services:
     arguments:
       $aliveKeepers: ~ # will be added by the compiler pass if needed
 
-  PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\PlatformAliveKeeper:
+  PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\DBALPlatformAliveKeeper:
     arguments:
       $connections: ~ # will be added by the compiler pass if needed
       $aliveKeepers: ~ # will be added by the compiler pass if needed
 
-  PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\OptimizedAliveKeeper:
+  PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\OptimizedDBALAliveKeeper:
     abstract: true
     arguments:
       $decorated: ~ # will be added by the compiler pass if needed
 
-  PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\PingingAliveKeeper:
+  PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\PingingDBALAliveKeeper:
 
-  PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\TransactionDiscardingAliveKeeper:
+  PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\TransactionDiscardingDBALAliveKeeper:
     abstract: true
     arguments:
       $decorated: ~ # will be provided by compiler pass
@@ -28,17 +28,17 @@ services:
     tags:
       - { name: monolog.logger, channel: doctrine-resettable-em-bundle }
 
-  PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\PassiveIgnoringAliveKeeper:
+  PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\PassiveIgnoringDBALAliveKeeper:
     abstract: true
     arguments:
       $decorated: ~ # will be provided by compiler pass
 
-  PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection\PlatformAliveKeeper:
+  PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection\RedisClusterPlatformAliveKeeper:
     arguments:
       $connections: ~ # will be provided by compiler pass
       $aliveKeepers: ~ # will be provided by compiler pass
 
-  PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection\PingingAliveKeeper:
+  PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection\PingingRedisClusterAliveKeeper:
     abstract: true
     arguments:
       $constructorArguments: ~ # will be provided by compiler pass
@@ -46,12 +46,12 @@ services:
     tags:
       - { name: monolog.logger, channel: doctrine-resettable-em-bundle }
 
-  PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection\PassiveIgnoringAliveKeeper:
+  PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection\PassiveIgnoringRedisClusterAliveKeeper:
     abstract: true
     arguments:
       $decorated: ~ # will be provided by compiler pass
 
-  PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\FailoverAware\FailoverAwareAliveKeeper:
+  PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\FailoverAware\FailoverAwareDBALAliveKeeper:
     abstract: true
     arguments:
       $logger: '@logger'
@@ -59,7 +59,7 @@ services:
     tags:
       - { name: monolog.logger, channel: doctrine-resettable-em-bundle }
 
-  PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection\OptimizedAliveKeeper:
+  PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection\OptimizedRedisClusterAliveKeeper:
     abstract: true
     arguments:
       $decorated: ~ # will be added by the compiler pass if needed

@@ -9,11 +9,11 @@ use Doctrine\DBAL\Exception\ConnectionLost;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Exception;
 use PHPUnit\Framework\TestCase;
-use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\PingingAliveKeeper;
+use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\PingingDBALAliveKeeper;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 
-class PingingAliveKeeperTest extends TestCase
+class PingingDBALAliveKeeperTest extends TestCase
 {
     use ProphecyTrait;
 
@@ -35,7 +35,7 @@ class PingingAliveKeeperTest extends TestCase
         $connectionProphecy->close()->shouldNotBeCalled();
         $connectionProphecy->connect()->shouldNotBeCalled();
 
-        $aliveKeeper = new PingingAliveKeeper();
+        $aliveKeeper = new PingingDBALAliveKeeper();
         $aliveKeeper->keepAlive($connectionProphecy->reveal(), 'default');
     }
 
@@ -57,7 +57,7 @@ class PingingAliveKeeperTest extends TestCase
         $connectionProphecy->close()->shouldBeCalled();
         $connectionProphecy->connect()->willReturn(true)->shouldBeCalled();
 
-        $aliveKeeper = new PingingAliveKeeper();
+        $aliveKeeper = new PingingDBALAliveKeeper();
         $aliveKeeper->keepAlive($connectionProphecy->reveal(), 'default');
     }
 }

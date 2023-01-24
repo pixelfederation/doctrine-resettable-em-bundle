@@ -7,11 +7,11 @@ namespace PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection;
 use ProxyManager\Proxy\VirtualProxyInterface;
 use RedisCluster;
 
-final class PassiveIgnoringAliveKeeper implements AliveKeeper
+final class PassiveIgnoringRedisClusterAliveKeeper implements RedisClusterAliveKeeper
 {
-    private AliveKeeper $decorated;
+    private RedisClusterAliveKeeper $decorated;
 
-    public function __construct(AliveKeeper $decorated)
+    public function __construct(RedisClusterAliveKeeper $decorated)
     {
         $this->decorated = $decorated;
     }

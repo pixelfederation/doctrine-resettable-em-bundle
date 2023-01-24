@@ -9,13 +9,13 @@ use Exception;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
-final class TransactionDiscardingAliveKeeper implements AliveKeeper
+final class TransactionDiscardingDBALAliveKeeper implements DBALAliveKeeper
 {
-    private AliveKeeper $decorated;
+    private DBALAliveKeeper $decorated;
 
     private LoggerInterface $logger;
 
-    public function __construct(AliveKeeper $decorated, LoggerInterface $logger)
+    public function __construct(DBALAliveKeeper $decorated, LoggerInterface $logger)
     {
         $this->decorated = $decorated;
         $this->logger = $logger;
