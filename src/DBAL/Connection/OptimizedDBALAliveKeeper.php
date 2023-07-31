@@ -14,16 +14,12 @@ final class OptimizedDBALAliveKeeper implements DBALAliveKeeper
      */
     private const DEFAULT_PING_INTERVAL = 0;
 
-    private DBALAliveKeeper $decorated;
-
-    private int $pingIntervalInSeconds;
-
     private int $lastPingAt;
 
-    public function __construct(DBALAliveKeeper $decorated, int $pingIntervalInSeconds = self::DEFAULT_PING_INTERVAL)
-    {
-        $this->decorated = $decorated;
-        $this->pingIntervalInSeconds = $pingIntervalInSeconds;
+    public function __construct(
+        private readonly DBALAliveKeeper $decorated,
+        private readonly int $pingIntervalInSeconds = self::DEFAULT_PING_INTERVAL,
+    ) {
         $this->lastPingAt = 0;
     }
 

@@ -9,11 +9,9 @@ use RedisCluster;
 
 final class PassiveIgnoringRedisClusterAliveKeeper implements RedisClusterAliveKeeper
 {
-    private RedisClusterAliveKeeper $decorated;
-
-    public function __construct(RedisClusterAliveKeeper $decorated)
-    {
-        $this->decorated = $decorated;
+    public function __construct(
+        private readonly RedisClusterAliveKeeper $decorated,
+    ) {
     }
 
     public function keepAlive(RedisCluster $redis, string $connectionName): void

@@ -12,6 +12,7 @@ final class PingingDBALAliveKeeper implements DBALAliveKeeper
 {
     /**
      * @throws Exception
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     // phpcs:ignore SlevomatCodingStandard.Functions.UnusedParameter.UnusedParameter
     public function keepAlive(Connection $connection, string $connectionName): void
@@ -19,7 +20,7 @@ final class PingingDBALAliveKeeper implements DBALAliveKeeper
         $query = $connection->getDatabasePlatform()->getDummySelectSQL();
         try {
             $connection->executeQuery($query);
-        } catch (ConnectionLost $e) {
+        } catch (ConnectionLost) {
             $connection->close();
             /** @psalm-suppress InternalMethod */
             $connection->connect();

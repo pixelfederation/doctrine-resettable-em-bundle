@@ -17,11 +17,9 @@ final class ConnectionType
         self::READER,
     ];
 
-    private string $type;
-
-    private function __construct(string $type)
-    {
-        $this->type = $type;
+    private function __construct(
+        private readonly string $type,
+    ) {
     }
 
     public static function create(string $type): ConnectionType

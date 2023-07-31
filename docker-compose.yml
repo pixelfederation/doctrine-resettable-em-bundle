@@ -2,25 +2,17 @@ version: '3.5'
 
 services:
   # PHP
-  doctrine-resettable-em-bundle-php74:
-    container_name: doctrine-resettable-em-bundle-php74
-    build: ./docker/php
-    volumes:
-      - .:/srv/www:delegated
-    environment:
-      - XDEBUG_CONFIG=idekey=PHPSTORM
-
-  doctrine-resettable-em-bundle-php80:
-    container_name: doctrine-resettable-em-bundle-php80
-    build: ./docker/php8
-    volumes:
-      - .:/srv/www:delegated
-    environment:
-      - XDEBUG_CONFIG=idekey=PHPSTORM
-
   doctrine-resettable-em-bundle-php81:
     container_name: doctrine-resettable-em-bundle-php81
     build: ./docker/php81
+    volumes:
+      - .:/srv/www:delegated
+    environment:
+      - XDEBUG_CONFIG=idekey=PHPSTORM
+
+  doctrine-resettable-em-bundle-php82:
+    container_name: doctrine-resettable-em-bundle-php82
+    build: ./docker/php82
     volumes:
       - .:/srv/www:delegated
     environment:

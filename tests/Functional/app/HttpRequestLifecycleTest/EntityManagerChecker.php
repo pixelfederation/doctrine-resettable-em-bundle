@@ -10,15 +10,13 @@ use Symfony\Component\HttpKernel\KernelEvents;
 
 final class EntityManagerChecker implements EventSubscriberInterface
 {
-    private EntityManagerInterface $entityManager;
-
     private int $numberOfChecks = 0;
 
     private bool $wasEmptyOnLastCheck = false;
 
-    public function __construct(EntityManagerInterface $entityManager)
-    {
-        $this->entityManager = $entityManager;
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager,
+    ) {
     }
 
     public function checkEntityManager(): void

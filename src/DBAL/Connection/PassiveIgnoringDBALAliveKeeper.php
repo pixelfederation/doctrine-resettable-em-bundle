@@ -10,11 +10,9 @@ use ProxyManager\Proxy\VirtualProxyInterface;
 
 final class PassiveIgnoringDBALAliveKeeper implements DBALAliveKeeper
 {
-    private DBALAliveKeeper $decorated;
-
-    public function __construct(DBALAliveKeeper $decorated)
-    {
-        $this->decorated = $decorated;
+    public function __construct(
+        private readonly DBALAliveKeeper $decorated,
+    ) {
     }
 
     /**

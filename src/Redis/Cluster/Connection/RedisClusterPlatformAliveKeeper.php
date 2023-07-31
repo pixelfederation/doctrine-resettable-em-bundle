@@ -11,23 +11,13 @@ use RuntimeException;
 final class RedisClusterPlatformAliveKeeper implements GenericPlatformAliveKeeper
 {
     /**
-     * @var array<string, RedisCluster>
-     */
-    private array $connections;
-
-    /**
-     * @var array<string, RedisClusterAliveKeeper>
-     */
-    private array $aliveKeepers;
-
-    /**
      * @param array<string, RedisCluster> $connections
      * @param array<string, RedisClusterAliveKeeper> $aliveKeepers
      */
-    public function __construct(array $connections, array $aliveKeepers)
-    {
-        $this->connections = $connections;
-        $this->aliveKeepers = $aliveKeepers;
+    public function __construct(
+        private array $connections,
+        private readonly array $aliveKeepers,
+    ) {
     }
 
     public function keepAlive(): void

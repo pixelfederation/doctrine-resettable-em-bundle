@@ -4,20 +4,13 @@ namespace PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRe
 
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="test2")
- */
+#[ORM\Entity]
+#[ORM\Table(name: 'test2')]
 class TestEntity2
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     */
-    private int $id;
-
-    public function __construct(int $id)
+    public function __construct(#[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    private int $id)
     {
-        $this->id = $id;
     }
 }

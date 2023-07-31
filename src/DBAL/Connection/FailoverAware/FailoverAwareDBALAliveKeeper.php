@@ -13,16 +13,15 @@ use Psr\Log\LogLevel;
 
 final class FailoverAwareDBALAliveKeeper implements DBALAliveKeeper
 {
-    private LoggerInterface $logger;
-
-    private ConnectionType $connectionType;
+    private readonly ConnectionType $connectionType;
 
     /**
      * @SuppressWarnings(PHPMD.StaticAccess)
      */
-    public function __construct(LoggerInterface $logger, string $connectionType = ConnectionType::WRITER)
-    {
-        $this->logger = $logger;
+    public function __construct(
+        private readonly LoggerInterface $logger,
+        string $connectionType = ConnectionType::WRITER,
+    ) {
         $this->connectionType = ConnectionType::create($connectionType);
     }
 
@@ -50,7 +49,7 @@ final class FailoverAwareDBALAliveKeeper implements DBALAliveKeeper
 
             try {
                 $this->reconnect($connection);
-            } catch (DriverException $e) {
+            } catch (DriverException) {
                 // this is usual reconnect
             }
         }
