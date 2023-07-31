@@ -18,21 +18,26 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php-version: [ '8.0', '8.1' ]
-        symfony-version: [ '5.4.*', '6.*' ]
+        php-version: [ '8.2' ]
+        symfony-version: [ '5.4.*', '6.3.*' ]
         symfony-deprecations-helper: [ 'max[direct]=0&baselineFile=./tests/allowed.json' ]
         grumphp-testsuite: [ 'no-analyse' ]
         include:
-          - php-version: '7.4'
+          - php-version: '8.1'
             symfony-version: '5.4.*'
-            symfony-deprecations-helper: 'disabled=1&max[indirect]=99999&baselineFile=./tests/allowed.json'
+            symfony-deprecations-helper: 'max[indirect]=99999&baselineFile=./tests/allowed.json'
             composer-flag: '--prefer-lowest'
-            grumphp-flag: '-lowest'
+            grumphp-flag: '-no-analyse'
             grumphp-testsuite: 'no-analyse'
-          - php-version: '7.4'
+          - php-version: '8.1'
             symfony-version: '5.4.*'
             symfony-deprecations-helper: 'max[direct]=0&max[indirect]=99999&baselineFile=./tests/allowed.json'
             grumphp-testsuite: 'main'
+          - php-version: '8.1'
+            symfony-version: '6.3.*'
+            symfony-deprecations-helper: 'max[direct]=0&max[indirect]=99999'
+            grumphp-flag: '-no-analyse'
+            grumphp-testsuite: 'no-analyse'
 
     name: "PHP: ${{ matrix.php-version }}, Symfony: ${{ matrix.symfony-version }}, GrumPHP: ${{ matrix.grumphp-testsuite }}, Composer: ${{ matrix.composer-flag }}"
 
@@ -54,12 +59,12 @@ jobs:
         if: ${{ matrix.grumphp-testsuite == 'no-analyse' }}
         run: composer config extra.symfony.require ${{ matrix.symfony-version }}
 
-      - name: Composer update # run for everything except php 7.4 or SF 5.4 locked in composer.lock
-        if: ${{ matrix.php-version != '7.4' && matrix.symfony-version != '5.4.*' }}
+      - name: Composer update # run for everything except php 8.1 or SF 5.4 locked in composer.lock
+        if: ${{ matrix.grumphp-testsuite == 'no-analyse' }}
         run: composer update ${{ matrix.composer-flag }} --prefer-dist --no-interaction
 
-      - name: Composer install # only run for locked dependencies with php 7.4 or SF 5.4 (locked in composer)
-        if: ${{ matrix.php-version == '7.4' || matrix.symfony-version == '5.4.*' }}
+      - name: Composer install # only run for locked dependencies with php 8.1 or SF 5.4 (locked in composer)
+        if: ${{ matrix.grumphp-testsuite == 'main' }}
         run: composer install --prefer-dist --no-interaction
 
       - name: Run static analysis (GrumPHP)

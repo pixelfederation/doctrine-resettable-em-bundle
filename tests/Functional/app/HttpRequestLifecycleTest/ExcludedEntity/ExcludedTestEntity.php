@@ -4,17 +4,12 @@ namespace PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRe
 
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="excluded_test")
- */
+#[ORM\Entity]
+#[ORM\Table(name: 'excluded_test')]
 class ExcludedTestEntity
 {
-    /**
-     * @var int
-     * @ORM\Id
-     * @ORM\Column(type="integer", options={"unsigned"=true})
-     * @ORM\GeneratedValue
-     */
-    private $id;
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer', options: ['unsigned' => true])]
+    #[ORM\GeneratedValue]
+    private int $id;
 }

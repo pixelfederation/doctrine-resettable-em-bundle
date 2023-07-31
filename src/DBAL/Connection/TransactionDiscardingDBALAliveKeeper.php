@@ -11,14 +11,10 @@ use Throwable;
 
 final class TransactionDiscardingDBALAliveKeeper implements DBALAliveKeeper
 {
-    private DBALAliveKeeper $decorated;
-
-    private LoggerInterface $logger;
-
-    public function __construct(DBALAliveKeeper $decorated, LoggerInterface $logger)
-    {
-        $this->decorated = $decorated;
-        $this->logger = $logger;
+    public function __construct(
+        private readonly DBALAliveKeeper $decorated,
+        private readonly LoggerInterface $logger,
+    ) {
     }
 
     /**

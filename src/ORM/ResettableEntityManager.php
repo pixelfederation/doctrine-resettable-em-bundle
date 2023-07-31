@@ -23,21 +23,15 @@ use UnexpectedValueException;
 // phpcs:ignore SlevomatCodingStandard.Classes.RequireAbstractOrFinal.ClassNeitherAbstractNorFinal
 class ResettableEntityManager extends EntityManagerDecorator
 {
-    private RepositoryFactory $repositoryFactory;
-
-    private ManagerRegistry $doctrineRegistry;
-
-    private string $decoratedName;
+    private readonly RepositoryFactory $repositoryFactory;
 
     public function __construct(
         Configuration $configuration,
         EntityManagerInterface $wrapped,
-        ManagerRegistry $doctrineRegistry,
-        string $decoratedName
+        private readonly ManagerRegistry $doctrineRegistry,
+        private readonly string $decoratedName,
     ) {
         $this->repositoryFactory = $configuration->getRepositoryFactory();
-        $this->doctrineRegistry = $doctrineRegistry;
-        $this->decoratedName = $decoratedName;
 
         parent::__construct($wrapped);
     }
@@ -101,7 +95,7 @@ class ResettableEntityManager extends EntityManagerDecorator
 
         if (!$newEntityManager instanceof EntityManagerInterface) {
             throw new UnexpectedValueException(
-                sprintf('Invalid entity manager class - %s', get_class($newEntityManager))
+                sprintf('Invalid entity manager class - %s', $newEntityManager::class)
             );
         }
     }

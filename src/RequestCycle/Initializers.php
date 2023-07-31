@@ -7,16 +7,11 @@ namespace PixelFederation\DoctrineResettableEmBundle\RequestCycle;
 final class Initializers
 {
     /**
-     * @var iterable<Initializer>
-     */
-    private iterable $initializers;
-
-    /**
      * @param iterable<Initializer> $initializers
      */
-    public function __construct(iterable $initializers)
-    {
-        $this->initializers = $initializers;
+    public function __construct(
+        private readonly iterable $initializers,
+    ) {
     }
 
     public function initialize(): void

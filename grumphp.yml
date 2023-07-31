@@ -1,11 +1,11 @@
 grumphp:
   git_hook_variables:
-    EXEC_GRUMPHP_COMMAND: './bin/grumphp_hooks/environment_spinup && docker exec -t doctrine-resettable-em-bundle-php74'
+    EXEC_GRUMPHP_COMMAND: './bin/grumphp_hooks/environment_spinup && docker exec -t doctrine-resettable-em-bundle-php81'
   stop_on_failure: true
   process_timeout: 600
   ignore_unstaged_changes: true
   testsuites:
-    php7.4:
+    php8.1:
       tasks:
         - phpcs
         - phpmd
@@ -13,33 +13,18 @@ grumphp:
         - phpparser
         - phplint
         - phpunit
-        - phpversion
-        - shell
         - phpstan
         - psalm
-    php7.4-lowest:
+    php8.1-no-analyse:
       tasks:
-        - phpunit
-        - phpversion
-        - shell
-    php8.0:
-      tasks:
-        - phpmd
-        - phpcsfixer2
         - phpparser
         - phplint
         - phpunit
-        - phpversion
-        - shell
-    php8.1:
+    php8.2-no-analyse:
       tasks:
-        - phpmd
-        - phpcsfixer2
         - phpparser
         - phplint
         - phpunit
-        - phpversion
-        - shell
   tasks:
     phpcs:
       standard: 'phpcs.ruleset.xml'
@@ -78,8 +63,6 @@ grumphp:
       triggered_by: [php]
     phplint: ~
     phpunit: ~
-    phpversion: ~
-    shell: ~
     phpstan:
       autoload_file: ~
       configuration: 'phpstan.neon'

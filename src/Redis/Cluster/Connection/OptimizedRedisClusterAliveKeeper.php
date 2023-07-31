@@ -14,18 +14,12 @@ final class OptimizedRedisClusterAliveKeeper implements RedisClusterAliveKeeper
      */
     private const DEFAULT_PING_INTERVAL = 0;
 
-    private RedisClusterAliveKeeper $decorated;
-
-    private int $pingIntervalInSeconds;
-
     private int $lastPingAt;
 
     public function __construct(
-        RedisClusterAliveKeeper $decorated,
-        int $pingIntervalInSeconds = self::DEFAULT_PING_INTERVAL
+        private readonly RedisClusterAliveKeeper $decorated,
+        private readonly int $pingIntervalInSeconds = self::DEFAULT_PING_INTERVAL,
     ) {
-        $this->decorated = $decorated;
-        $this->pingIntervalInSeconds = $pingIntervalInSeconds;
         $this->lastPingAt = 0;
     }
 

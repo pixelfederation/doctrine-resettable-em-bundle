@@ -10,16 +10,11 @@ use PixelFederation\DoctrineResettableEmBundle\RequestCycle\Initializer;
 final class ConnectionsHandler implements Initializer
 {
     /**
-     * @var array<PlatformAliveKeeper>
-     */
-    private array $aliveKeepers;
-
-    /**
      * @param array<PlatformAliveKeeper> $aliveKeepers
      */
-    public function __construct(array $aliveKeepers)
-    {
-        $this->aliveKeepers = $aliveKeepers;
+    public function __construct(
+        private readonly array $aliveKeepers,
+    ) {
     }
 
     /**

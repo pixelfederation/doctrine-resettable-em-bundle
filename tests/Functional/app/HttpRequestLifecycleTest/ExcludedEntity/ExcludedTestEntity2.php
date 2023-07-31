@@ -8,17 +8,13 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity
  * @ORM\Table(name="excluded_test2")
  */
+#[ORM\Entity]
+#[ORM\Table(name: 'excluded_test2')]
 class ExcludedTestEntity2
 {
-    /**
-     * @var int
-     * @ORM\Id
-     * @ORM\Column(type="integer", options={"unsigned"=true})
-     */
-    private $id;
-
-    public function __construct(int $id)
+    public function __construct(#[ORM\Id]
+    #[ORM\Column(type: 'integer', options: ['unsigned' => true])]
+    private int $id)
     {
-        $this->id = $id;
     }
 }

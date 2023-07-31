@@ -6,12 +6,16 @@
   <!-- Show progress, show the error codes for each message (source). -->
   <arg value="ps"/>
 
-  <config name="testVersion" value="7.4"/>
+  <config name="testVersion" value="8.1"/>
   <rule ref="vendor/pixelfederation/coding-standards/phpcs.ruleset.xml">
     <exclude name="SlevomatCodingStandard.ControlStructures.DisallowEmpty"/>
     <exclude name="SlevomatCodingStandard.Operators.DisallowIncrementAndDecrementOperators"/>
     <exclude name="SlevomatCodingStandard.Files.FunctionLength.FunctionLength"/>
     <exclude name="SlevomatCodingStandard.Namespaces.UseSpacing.IncorrectLinesCountBetweenDifferentTypeOfUse"/>
+    <exclude name="SlevomatCodingStandard.Classes.RequireSingleLineMethodSignature.RequiredSingleLineSignature"/>
+    <exclude name="SlevomatCodingStandard.Classes.DisallowConstructorPropertyPromotion.DisallowedConstructorPropertyPromotion"/>
+    <exclude name="SlevomatCodingStandard.Functions.DisallowTrailingCommaInDeclaration.DisallowedTrailingComma"/>
+    <exclude name="SlevomatCodingStandard.Exceptions.DisallowNonCapturingCatch.DisallowedNonCapturingCatch"/>
   </rule>
 
   <rule ref="SlevomatCodingStandard.Files.TypeNameMatchesFileName">

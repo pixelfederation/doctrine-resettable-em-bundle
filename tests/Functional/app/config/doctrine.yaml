@@ -21,7 +21,7 @@ doctrine:
         mappings:
           Entity:
             is_bundle: false
-            type: annotation
+            type: attribute
             dir: '%kernel.project_dir%/HttpRequestLifecycleTest/Entity'
             prefix: 'PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\Entity'
             alias: Entity
@@ -30,7 +30,7 @@ doctrine:
         mappings:
           ExcludedEntity:
             is_bundle: false
-            type: annotation
+            type: attribute
             dir: '%kernel.project_dir%/HttpRequestLifecycleTest/ExcludedEntity'
             prefix: 'PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\ExcludedEntity'
             alias: Entity

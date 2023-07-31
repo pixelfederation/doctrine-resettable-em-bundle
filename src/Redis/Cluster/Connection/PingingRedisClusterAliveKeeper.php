@@ -11,20 +11,6 @@ use RedisClusterException;
 final class PingingRedisClusterAliveKeeper implements RedisClusterAliveKeeper
 {
     /**
-     * @var array{
-     *   0: string|null,
-     *   1: array<string>,
-     *   2: float,
-     *   3: float,
-     *   4: bool,
-     *   5: string|null
-     * }
-     */
-    private array $constructorArguments;
-
-    private LoggerInterface $logger;
-
-    /**
      * @param array{
      *   0: string|null,
      *   1: array<string>,
@@ -34,10 +20,10 @@ final class PingingRedisClusterAliveKeeper implements RedisClusterAliveKeeper
      *   5: string|null
      * } $constructorArguments
      */
-    public function __construct(array $constructorArguments, LoggerInterface $logger)
-    {
-        $this->constructorArguments = $constructorArguments;
-        $this->logger = $logger;
+    public function __construct(
+        private readonly array $constructorArguments,
+        private readonly LoggerInterface $logger,
+    ) {
     }
 
     public function keepAlive(RedisCluster $redis, string $connectionName): void

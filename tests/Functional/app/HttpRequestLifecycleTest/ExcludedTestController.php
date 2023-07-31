@@ -11,12 +11,11 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class ExcludedTestController
 {
-    private EntityManagerInterface $entityManager;
-    private EntityRepository $repository;
+    private readonly EntityRepository $repository;
 
-    public function __construct(EntityManagerInterface $entityManager)
-    {
-        $this->entityManager = $entityManager;
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager,
+    ) {
         $this->repository = $entityManager->getRepository(ExcludedTestEntity2::class);
     }
 
@@ -38,7 +37,7 @@ final class ExcludedTestController
         try {
             $this->entityManager->persist(new ExcludedTestEntity2(10));
             $this->entityManager->flush();
-        } catch (UniqueConstraintViolationException $e) {}
+        } catch (UniqueConstraintViolationException) {}
 
         return new Response();
     }

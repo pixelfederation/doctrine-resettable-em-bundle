@@ -5,7 +5,3 @@ framework:
     utf8: true
   test: ~
   http_method_override: true
-
-sensio_framework_extra:
-  router:
-    annotations: false

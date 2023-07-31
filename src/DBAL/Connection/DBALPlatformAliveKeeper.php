@@ -11,23 +11,13 @@ use RuntimeException;
 final class DBALPlatformAliveKeeper implements GenericPlatformAliveKeeper
 {
     /**
-     * @var array<string, Connection>
-     */
-    private array $connections;
-
-    /**
-     * @var array<string, DBALAliveKeeper>
-     */
-    private array $aliveKeepers;
-
-    /**
      * @param array<string, Connection> $connections
      * @param array<string, DBALAliveKeeper> $aliveKeepers
      */
-    public function __construct(array $connections, array $aliveKeepers)
-    {
-        $this->connections = $connections;
-        $this->aliveKeepers = $aliveKeepers;
+    public function __construct(
+        private array $connections,
+        private array $aliveKeepers,
+    ) {
     }
 
     public function keepAlive(): void
