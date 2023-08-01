@@ -7,28 +7,26 @@ use Exception;
 use PHPUnit\Framework\TestCase;
 use PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection\RedisClusterAliveKeeper;
 use PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection\OptimizedRedisClusterAliveKeeper;
-use Prophecy\PhpUnit\ProphecyTrait;
 use RedisCluster;
 use Symfony\Bridge\PhpUnit\ClockMock;
 
 class OptimizedRedisClusterAliveKeeperTest extends TestCase
 {
-    use ProphecyTrait;
-
     /**
-     * @throws Exception
      * @group time-sensitive
      */
     public function testKeepAliveEachXSeconds(): void
     {
         ClockMock::register(OptimizedRedisClusterAliveKeeper::class);
 
-        $connectionMock = $this->prophesize(RedisCluster::class)->reveal();
+        $connectionMock = $this->createMock(RedisCluster::class);
         $connectionName = 'default';
-        $decoratedAliveKeepr = $this->prophesize(RedisClusterAliveKeeper::class);
-        $decoratedAliveKeepr->keepAlive($connectionMock, $connectionName)->shouldBeCalledOnce();
+        $decoratedAliveKeepr = $this->createMock(RedisClusterAliveKeeper::class);
+        $decoratedAliveKeepr->expects(self::once())
+            ->method('keepAlive')
+            ->with($connectionMock, $connectionName);
 
-        $aliveKeeper = new OptimizedRedisClusterAliveKeeper($decoratedAliveKeepr->reveal(), 3);
+        $aliveKeeper = new OptimizedRedisClusterAliveKeeper($decoratedAliveKeepr, 3);
         $aliveKeeper->keepAlive($connectionMock, $connectionName);
         sleep(2);
         $aliveKeeper->keepAlive($connectionMock, $connectionName);

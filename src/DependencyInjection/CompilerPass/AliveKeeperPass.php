@@ -182,13 +182,12 @@ final class AliveKeeperPass implements CompilerPassInterface
 
     /**
      * @param array<string, string> $failoverConnections
-     * @return Reference|Definition
      */
     private function getAliveKeeperDefinition(
         ContainerBuilder $container,
         string $connectionName,
-        array $failoverConnections
-    ) {
+        array $failoverConnections,
+    ): Reference|Definition {
         if (!isset($failoverConnections[$connectionName])) {
             return $container->findDefinition(PingingDBALAliveKeeper::class);
         }

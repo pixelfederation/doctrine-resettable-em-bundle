@@ -14,16 +14,14 @@ class DBALPlatformAliveKeeperTest extends TestCase
     public function testKeepAlive()
     {
         $cName1 = 'default';
-        $cMock1 = $this->prophesize(Connection::class);
-        $cMock1 = $cMock1->reveal();
+        $cMock1 = $this->createMock(Connection::class);
         $cName2 = 'other';
-        $cMock2 = $this->prophesize(Connection::class);
-        $cMock2 = $cMock2->reveal();
+        $cMock2 = $this->createMock(Connection::class);
 
-        $keeper1 = $this->prophesize(DBALAliveKeeper::class);
-        $keeper1->keepAlive($cMock1, $cName1)->shouldBeCalledOnce();
-        $keeper2 = $this->prophesize(DBALAliveKeeper::class);
-        $keeper2->keepAlive($cMock2, $cName2)->shouldBeCalledOnce();
+        $keeper1 = $this->createMock(DBALAliveKeeper::class);
+        $keeper1->expects(self::once())->method('keepAlive')->with($cMock1, $cName1);
+        $keeper2 = $this->createMock(DBALAliveKeeper::class);
+        $keeper2->expects(self::once())->method('keepAlive')->with($cMock2, $cName2);
 
         $platformKeeper = new DBALPlatformAliveKeeper(
             [
@@ -31,8 +29,8 @@ class DBALPlatformAliveKeeperTest extends TestCase
                 $cName2 => $cMock2,
             ],
             [
-                $cName1 => $keeper1->reveal(),
-                $cName2 => $keeper2->reveal(),
+                $cName1 => $keeper1,
+                $cName2 => $keeper2,
             ]
         );
         $platformKeeper->keepAlive();

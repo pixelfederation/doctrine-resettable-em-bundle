@@ -12,12 +12,12 @@ class ConnectionsHandlerTest extends TestCase
 {
     public function testKeepAliveAllConnections(): void
     {
-        $keeper1 = $this->prophesize(PlatformAliveKeeper::class);
-        $keeper1->keepAlive()->shouldBeCalledOnce();
-        $keeper2 = $this->prophesize(PlatformAliveKeeper::class);
-        $keeper2->keepAlive()->shouldBeCalledOnce();
+        $keeper1 = $this->createMock(PlatformAliveKeeper::class);
+        $keeper1->expects(self::once())->method('keepAlive');
+        $keeper2 = $this->createMock(PlatformAliveKeeper::class);
+        $keeper2->expects(self::once())->method('keepAlive');
 
-        $handler = new ConnectionsHandler([$keeper1->reveal(), $keeper2->reveal()]);
+        $handler = new ConnectionsHandler([$keeper1, $keeper2]);
         $handler->initialize();
     }
 }

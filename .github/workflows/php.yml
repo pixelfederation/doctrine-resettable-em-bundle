@@ -22,6 +22,7 @@ jobs:
         symfony-version: [ '5.4.*', '6.3.*' ]
         symfony-deprecations-helper: [ 'max[direct]=0&baselineFile=./tests/allowed.json' ]
         grumphp-testsuite: [ 'no-analyse' ]
+        grumphp-flag: [ '-no-analyse' ]
         include:
           - php-version: '8.1'
             symfony-version: '5.4.*'
