@@ -4,46 +4,37 @@ namespace PixelFederation\DoctrineResettableEmBundle\Tests\Unit\ORM;
 
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Repository\RepositoryFactory;
 use Doctrine\Persistence\ObjectRepository;
 use Exception;
 use PixelFederation\DoctrineResettableEmBundle\ORM\ResettableEntityManager;
 use PHPUnit\Framework\TestCase;
 use PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\Entity\TestEntity;
-use Prophecy\Argument;
-use Prophecy\PhpUnit\ProphecyTrait;
-use Prophecy\Prophecy\ObjectProphecy;
 use Doctrine\Persistence\ManagerRegistry as RegistryInterface;
 
 class ResettableEntityManagerTest extends TestCase
 {
-    use ProphecyTrait;
-
-    /**
-     * @throws Exception
-     */
     public function testGetRepository(): void
     {
-        /* @var $repositoryMock ObjectRepository|ObjectProphecy */
-        $repositoryMock = $this->prophesize(ObjectRepository::class);
-        /* @var $repositoryFactoryMock RepositoryFactory|ObjectProphecy */
-        $repositoryFactoryMock = $this->prophesize(RepositoryFactory::class);
-        $repositoryFactoryMock->getRepository(Argument::type(ResettableEntityManager::class), Argument::cetera())
-            ->shouldBeCalledTimes(1)
-            ->willReturn($repositoryMock->reveal());
-        /* @var $configurationMock Configuration|ObjectProphecy */
-        $configurationMock = $this->prophesize(Configuration::class);
-        $configurationMock->getRepositoryFactory()
-            ->shouldBeCalledTimes(1)
-            ->willReturn($repositoryFactoryMock->reveal());
-        /* @var $emMock EntityManagerInterface */
-        $emMock = $this->prophesize(EntityManagerInterface::class)->reveal();
-        /* @var $registryMock RegistryInterface */
-        $registryMock = $this->prophesize(RegistryInterface::class)->reveal();
+        $repositoryMock = $this->createMock(ObjectRepository::class);
+        $repositoryFactoryMock = $this->createMock(RepositoryFactory::class);
+        $repositoryFactoryMock->expects(self::once())
+            ->method('getRepository')
+            ->with($this->callback(function ($value) {
+                self::assertInstanceOf(ResettableEntityManager::class, $value);
+
+                return true;
+            }))
+            ->willReturn($repositoryMock);
+        $configurationMock = $this->createMock(Configuration::class);
+        $configurationMock->expects(self::once())
+            ->method('getRepositoryFactory')
+            ->willReturn($repositoryFactoryMock);
+        $emMock = $this->createMock(EntityManagerInterface::class);
+        $registryMock = $this->createMock(RegistryInterface::class);
 
         $em = new ResettableEntityManager(
-            $configurationMock->reveal(),
+            $configurationMock,
             $emMock,
             $registryMock,
             'default'
@@ -54,19 +45,22 @@ class ResettableEntityManagerTest extends TestCase
 
     public function testClearOrResetIfNeededShouldClearWhenWrappedIsOpen(): void
     {
-        /* @var $configurationMock Configuration|ObjectProphecy */
-        $configurationMock = $this->prophesize(Configuration::class);
-        $configurationMock->getRepositoryFactory()->willReturn($this->prophesize(RepositoryFactory::class));
-        /* @var $emMock EntityManagerInterface */
-        $emMock = $this->prophesize(EntityManagerInterface::class);
-        $emMock->isOpen()->willReturn(true);
-        $emMock->clear(Argument::is(null))->shouldBeCalled();
-        /* @var $registryMock RegistryInterface */
-        $registryMock = $this->prophesize(RegistryInterface::class)->reveal();
+        $configurationMock = $this->createMock(Configuration::class);
+        $configurationMock->expects(self::atLeast(1))
+            ->method('getRepositoryFactory')
+            ->willReturn($this->createMock(RepositoryFactory::class));
+        $emMock = $this->createMock(EntityManagerInterface::class);
+        $emMock->expects(self::atLeast(1))
+            ->method('isOpen')
+            ->willReturn(true);
+        $emMock->expects(self::atLeast(1))
+            ->method('clear')
+            ->with();
+        $registryMock = $this->createMock(RegistryInterface::class);
 
         $em = new ResettableEntityManager(
-            $configurationMock->reveal(),
-            $emMock->reveal(),
+            $configurationMock,
+            $emMock,
             $registryMock,
             'default'
         );
@@ -77,21 +71,22 @@ class ResettableEntityManagerTest extends TestCase
     public function testClearOrResetIfNeededShouldResetWhenWrappedIsClosed(): void
     {
         $decoratedName = 'default';
-        /* @var $configurationMock Configuration|ObjectProphecy */
-        $configurationMock = $this->prophesize(Configuration::class);
-        $configurationMock->getRepositoryFactory()->willReturn($this->prophesize(RepositoryFactory::class));
-        /* @var $emMock EntityManagerInterface */
-        $emMock = $this->prophesize(EntityManagerInterface::class);
-        $emMock->isOpen()->willReturn(false);
-        $emMock = $emMock->reveal();
-        /* @var $registryMock RegistryInterface */
-        $registryMock = $this->prophesize(RegistryInterface::class);
-        $registryMock->resetManager(Argument::is($decoratedName))
-            ->shouldBeCalled()->willReturn($this->createMock(ResettableEntityManager::class));
-        $registryMock = $registryMock->reveal();
+        $configurationMock = $this->createMock(Configuration::class);
+        $configurationMock->expects(self::atLeast(1))
+            ->method('getRepositoryFactory')
+            ->willReturn($this->createMock(RepositoryFactory::class));
+        $emMock = $this->createMock(EntityManagerInterface::class);
+        $emMock->expects(self::atLeast(1))
+            ->method('isOpen')
+            ->willReturn(false);
+        $registryMock = $this->createMock(RegistryInterface::class);
+        $registryMock->expects(self::atLeast(1))
+            ->method('resetManager')
+            ->with($decoratedName)
+            ->willReturn($this->createMock(ResettableEntityManager::class));
 
         $em = new ResettableEntityManager(
-            $configurationMock->reveal(),
+            $configurationMock,
             $emMock,
             $registryMock,
             $decoratedName

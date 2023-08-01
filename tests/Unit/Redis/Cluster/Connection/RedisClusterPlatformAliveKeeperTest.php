@@ -14,16 +14,17 @@ class RedisClusterPlatformAliveKeeperTest extends TestCase
     public function testKeepAlive()
     {
         $cName1 = 'default';
-        $cMock1 = $this->prophesize(RedisCluster::class);
-        $cMock1 = $cMock1->reveal();
+        $cMock1 = $this->createMock(RedisCluster::class);
         $cName2 = 'other';
-        $cMock2 = $this->prophesize(RedisCluster::class);
-        $cMock2 = $cMock2->reveal();
+        $cMock2 = $this->createMock(RedisCluster::class);
 
-        $keeper1 = $this->prophesize(RedisClusterAliveKeeper::class);
-        $keeper1->keepAlive($cMock1, $cName1)->shouldBeCalledOnce();
-        $keeper2 = $this->prophesize(RedisClusterAliveKeeper::class);
-        $keeper2->keepAlive($cMock2, $cName2)->shouldBeCalledOnce();
+        $keeper1 = $this->createMock(RedisClusterAliveKeeper::class);
+        $keeper1->expects(self::once())
+            ->method('keepAlive')
+            ->with($cMock1, $cName1);
+        $keeper2 = $this->createMock(RedisClusterAliveKeeper::class);
+        $keeper2->method('keepAlive')
+            ->with($cMock2, $cName2);
 
         $platformKeeper = new RedisClusterPlatformAliveKeeper(
             [
@@ -31,8 +32,8 @@ class RedisClusterPlatformAliveKeeperTest extends TestCase
                 $cName2 => $cMock2,
             ],
             [
-                $cName1 => $keeper1->reveal(),
-                $cName2 => $keeper2->reveal(),
+                $cName1 => $keeper1,
+                $cName2 => $keeper2,
             ]
         );
         $platformKeeper->keepAlive();

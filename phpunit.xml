@@ -1,27 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
-         bootstrap="vendor/autoload.php"
-         forceCoversAnnotation="false"
-         colors="true"
-         convertErrorsToExceptions="true"
-         convertNoticesToExceptions="true"
-         convertWarningsToExceptions="true"
-         beStrictAboutCoversAnnotation="true"
-         beStrictAboutOutputDuringTests="true"
-         beStrictAboutTodoAnnotatedTests="true"
-         verbose="true"
+<phpunit
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.2/phpunit.xsd"
+  bootstrap="vendor/autoload.php"
+  colors="true"
+  beStrictAboutOutputDuringTests="true"
+  cacheDirectory=".phpunit.cache"
+  requireCoverageMetadata="false"
+  beStrictAboutCoverageMetadata="true"
 >
-  <coverage processUncoveredFiles="true">
-    <include>
-      <directory suffix=".php">./</directory>
-    </include>
-    <exclude>
-      <directory>./src/Resources</directory>
-      <directory>./tests</directory>
-      <directory>./vendor</directory>
-    </exclude>
-  </coverage>
+  <coverage/>
   <php>
     <ini name="error_reporting" value="-1"/>
     <env name="SYMFONY_DEPRECATIONS_HELPER" value="max[direct]=5&amp;max[self]=0&amp;max[indirect]=99999&amp;baselineFile=./tests/allowed.json"/>
@@ -31,7 +19,14 @@
       <directory>tests</directory>
     </testsuite>
   </testsuites>
-  <listeners>
-    <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener"/>
-  </listeners>
+  <source>
+    <include>
+      <directory suffix=".php">./</directory>
+    </include>
+    <exclude>
+      <directory>./src/Resources</directory>
+      <directory>./tests</directory>
+      <directory>./vendor</directory>
+    </exclude>
+  </source>
 </phpunit>

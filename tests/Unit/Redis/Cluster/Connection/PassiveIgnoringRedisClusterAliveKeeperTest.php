@@ -7,38 +7,38 @@ namespace PixelFederation\DoctrineResettableEmBundle\Tests\Unit\Redis\Cluster\Co
 use PHPUnit\Framework\TestCase;
 use PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection\RedisClusterAliveKeeper;
 use PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection\PassiveIgnoringRedisClusterAliveKeeper;
-use Prophecy\PhpUnit\ProphecyTrait;
-use Prophecy\Prophecy\ObjectProphecy;
 
 class PassiveIgnoringRedisClusterAliveKeeperTest extends TestCase
 {
-    use ProphecyTrait;
-
     public function testKeepAliveWithoutInitialisedConnectionProxyDoesNotDoAnything(): void
     {
-        $clusterProphecy = $this->prophesize(RedisClusterSpy::class);
-        $clusterProphecy->isProxyInitialized()->willReturn(false)->shouldBeCalled();
-        $clusterMock = $clusterProphecy->reveal();
+        $clusterMock = $this->createMock(RedisClusterSpy::class);
+        $clusterMock->expects(self::atLeast(1))
+            ->method('isProxyInitialized')
+            ->willReturn(false);
         $connectionName = 'default';
-        /** @var $decoratedAliveKeeper RedisClusterAliveKeeper|ObjectProphecy */
-        $decoratedAliveKeeper = $this->prophesize(RedisClusterAliveKeeper::class);
-        $decoratedAliveKeeper->keepAlive($clusterMock, $connectionName)->shouldNotBeCalled();
+        $decoratedAliveKeeper = $this->createMock(RedisClusterAliveKeeper::class);
+        $decoratedAliveKeeper->expects(self::exactly(0))
+            ->method('keepAlive')
+            ->with($clusterMock, $connectionName);
 
-        $aliveKeeper = new PassiveIgnoringRedisClusterAliveKeeper($decoratedAliveKeeper->reveal());
+        $aliveKeeper = new PassiveIgnoringRedisClusterAliveKeeper($decoratedAliveKeeper);
         $aliveKeeper->keepAlive($clusterMock, $connectionName);
     }
 
     public function testKeepAliveWithInitialisedConnectionDelegatesControl(): void
     {
-        $clusterProphecy = $this->prophesize(RedisClusterSpy::class);
-        $clusterProphecy->isProxyInitialized()->willReturn(true)->shouldBeCalled();
-        $clusterMock = $clusterProphecy->reveal();
+        $clusterMock = $this->createMock(RedisClusterSpy::class);
+        $clusterMock->expects(self::atLeast(1))
+            ->method('isProxyInitialized')
+            ->willReturn(true);
         $connectionName = 'default';
-        /** @var $decoratedAliveKeeper RedisClusterAliveKeeper|ObjectProphecy */
-        $decoratedAliveKeeper = $this->prophesize(RedisClusterAliveKeeper::class);
-        $decoratedAliveKeeper->keepAlive($clusterMock, $connectionName)->shouldBeCalled();
+        $decoratedAliveKeeper = $this->createMock(RedisClusterAliveKeeper::class);
+        $decoratedAliveKeeper->expects(self::atLeast(1))
+            ->method('keepAlive')
+            ->with($clusterMock, $connectionName);
 
-        $aliveKeeper = new PassiveIgnoringRedisClusterAliveKeeper($decoratedAliveKeeper->reveal());
+        $aliveKeeper = new PassiveIgnoringRedisClusterAliveKeeper($decoratedAliveKeeper);
         $aliveKeeper->keepAlive($clusterMock, $connectionName);
     }
 }

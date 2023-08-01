@@ -11,111 +11,132 @@ use Exception;
 use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\FailoverAware\ConnectionType;
 use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\FailoverAware\FailoverAwareDBALAliveKeeper;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
-use Prophecy\PhpUnit\ProphecyTrait;
-use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 
 class FailoverAwareDBALAliveKeeperTest extends TestCase
 {
-    use ProphecyTrait;
-
-    /**
-     * @throws Exception
-     */
     public function testKeepAliveWriterWithoutReconnect(): void
     {
-        $loggerProphecy = $this->prophesize(LoggerInterface::class);
-        $statementProphecy = $this->prophesize(Result::class);
-        $statementProphecy->fetchOne()->willReturn('0')->shouldBeCalled();
+        $loggerMock = $this->createMock(LoggerInterface::class);
+        $statementMock = $this->createMock(Result::class);
+        $statementMock->expects(self::atLeast(1))
+            ->method('fetchOne')
+            ->willReturn('0');
 
-        /** @var $connectionProphecy Connection|ObjectProphecy */
-        $connectionProphecy = $this->prophesize(Connection::class);
-        $connectionProphecy->executeQuery(Argument::any())->willReturn($statementProphecy->reveal())->shouldBeCalled();
-        $connectionProphecy->close()->shouldNotBeCalled();
-        $connectionProphecy->connect()->shouldNotBeCalled();
+        /** @var $connectionMock Connection */
+        $connectionMock = $this->createMock(Connection::class);
+        $connectionMock->expects(self::atLeast(1))
+            ->method('executeQuery')
+            ->withAnyParameters()
+            ->willReturn($statementMock);
+        $connectionMock->expects(self::exactly(0))->method('close');
+        $connectionMock->expects(self::exactly(0))->method('connect');
 
-        $aliveKeeper = new FailoverAwareDBALAliveKeeper($loggerProphecy->reveal());
-        $aliveKeeper->keepAlive($connectionProphecy->reveal(), 'default');
+        $aliveKeeper = new FailoverAwareDBALAliveKeeper($loggerMock);
+        $aliveKeeper->keepAlive($connectionMock, 'default');
     }
 
-    /**
-     * @throws Exception
-     */
     public function testKeepAliveReaderWithoutReconnect(): void
     {
-        $loggerProphecy = $this->prophesize(LoggerInterface::class);
-        $statementProphecy = $this->prophesize(Result::class);
-        $statementProphecy->fetchOne()->willReturn('1')->shouldBeCalled();
+        $loggerMock = $this->createMock(LoggerInterface::class);
+        $statementMock = $this->createMock(Result::class);
+        $statementMock->expects(self::atLeast(1))
+            ->method('fetchOne')
+            ->willReturn('1');
 
-        /** @var $connectionProphecy Connection|ObjectProphecy */
-        $connectionProphecy = $this->prophesize(Connection::class);
-        $connectionProphecy->executeQuery(Argument::any())->willReturn($statementProphecy->reveal())->shouldBeCalled();
-        $connectionProphecy->close()->shouldNotBeCalled();
-        $connectionProphecy->connect()->shouldNotBeCalled();
+        /** @var $connectionMock Connection */
+        $connectionMock = $this->createMock(Connection::class);
+        $connectionMock->expects(self::atLeast(1))
+            ->method('executeQuery')
+            ->withAnyParameters()
+            ->willReturn($statementMock);
+        $connectionMock->expects(self::exactly(0))
+            ->method('close');
+        $connectionMock->expects(self::exactly(0))
+            ->method('connect');
 
-        $aliveKeeper = new FailoverAwareDBALAliveKeeper($loggerProphecy->reveal(), ConnectionType::READER);
-        $aliveKeeper->keepAlive($connectionProphecy->reveal(), 'default',);
+        $aliveKeeper = new FailoverAwareDBALAliveKeeper($loggerMock, ConnectionType::READER);
+        $aliveKeeper->keepAlive($connectionMock, 'default',);
     }
 
-    /**
-     * @throws Exception
-     */
     public function testKeepAliveWriterWithReconnectOnFailover(): void
     {
-        $loggerProphecy = $this->prophesize(LoggerInterface::class);
-        $loggerProphecy->log(LogLevel::ALERT, Argument::any())->shouldBeCalled();
-        $statementProphecy = $this->prophesize(Result::class);
-        $statementProphecy->fetchOne()->willReturn('1')->shouldBeCalled();
+        $loggerMock = $this->createMock(LoggerInterface::class);
+        $loggerMock->expects(self::atLeast(1))
+            ->method('log')
+            ->with(LogLevel::ALERT);
+        $statementMock = $this->createMock(Result::class);
+        $statementMock->expects(self::atLeast(1))
+            ->method('fetchOne')
+            ->willReturn('1');
 
-        /** @var $connectionProphecy Connection|ObjectProphecy */
-        $connectionProphecy = $this->prophesize(Connection::class);
-        $connectionProphecy->executeQuery(Argument::any())->willReturn($statementProphecy->reveal())->shouldBeCalled();
-        $connectionProphecy->close()->shouldBeCalled();
-        $connectionProphecy->connect()->shouldBeCalled();
+        /** @var $connectionMock Connection */
+        $connectionMock = $this->createMock(Connection::class);
+        $connectionMock->expects(self::atLeast(1))
+            ->method('executeQuery')
+            ->withAnyParameters()
+            ->willReturn($statementMock);
+        $connectionMock->expects(self::once())
+            ->method('close');
+        $connectionMock->expects(self::atLeast(1))
+            ->method('connect');
 
-        $aliveKeeper = new FailoverAwareDBALAliveKeeper($loggerProphecy->reveal());
-        $aliveKeeper->keepAlive($connectionProphecy->reveal(), 'default');
+        $aliveKeeper = new FailoverAwareDBALAliveKeeper($loggerMock);
+        $aliveKeeper->keepAlive($connectionMock, 'default');
     }
 
     /**
      * @throws Exception
+     * @throws \PHPUnit\Framework\MockObject\Exception
      */
     public function testKeepAliveReaderWithReconnectOnFailover(): void
     {
-        $loggerProphecy = $this->prophesize(LoggerInterface::class);
-        $loggerProphecy->log(LogLevel::WARNING, Argument::any())->shouldBeCalled();
-        $statementProphecy = $this->prophesize(Result::class);
-        $statementProphecy->fetchOne()->willReturn('0')->shouldBeCalled();
+        $loggerMock = $this->createMock(LoggerInterface::class);
+        $loggerMock->expects(self::atLeast(1))
+            ->method('log')
+            ->with(LogLevel::WARNING);
+        $statementMock = $this->createMock(Result::class);
+        $statementMock->expects(self::atLeast(1))
+            ->method('fetchOne')
+            ->willReturn('0');
 
-        /** @var $connectionProphecy Connection|ObjectProphecy */
-        $connectionProphecy = $this->prophesize(Connection::class);
-        $connectionProphecy->executeQuery(Argument::any())->willReturn($statementProphecy->reveal())->shouldBeCalled();
-        $connectionProphecy->close()->shouldBeCalled();
-        $connectionProphecy->connect()->shouldBeCalled();
+        $connectionMock = $this->createMock(Connection::class);
+        $connectionMock->expects(self::atLeast(1))
+            ->method('executeQuery')
+            ->withAnyParameters()
+            ->willReturn($statementMock);
+        $connectionMock->expects(self::once())
+            ->method('close');
+        $connectionMock->expects(self::atLeast(1))
+            ->method('connect');
 
-        $aliveKeeper = new FailoverAwareDBALAliveKeeper($loggerProphecy->reveal(), ConnectionType::READER);
-        $aliveKeeper->keepAlive($connectionProphecy->reveal(), 'default');
+        $aliveKeeper = new FailoverAwareDBALAliveKeeper($loggerMock, ConnectionType::READER);
+        $aliveKeeper->keepAlive($connectionMock, 'default');
     }
 
-    /**
-     * @throws Exception
-     */
     public function testKeepAliveWithReconnectConnectionError(): void
     {
-        $loggerProphecy = $this->prophesize(LoggerInterface::class);
-        $loggerProphecy->info(Argument::any(), Argument::any())->shouldBeCalled();
-        $statementProphecy = $this->prophesize(Result::class);
-        $statementProphecy->fetchOne()->willThrow(DriverException::class)->shouldBeCalled();
+        $loggerMock = $this->createMock(LoggerInterface::class);
+        $loggerMock->expects(self::atLeast(1))
+            ->method('info')
+            ->withAnyParameters();
+        $statementMock = $this->createMock(Result::class);
+        $statementMock->expects(self::atLeast(1))
+            ->method('fetchOne')
+            ->willThrowException($this->createMock(DriverException::class));
 
-        /** @var $connectionProphecy Connection|ObjectProphecy */
-        $connectionProphecy = $this->prophesize(Connection::class);
-        $connectionProphecy->executeQuery(Argument::any())->willReturn($statementProphecy->reveal())->shouldBeCalled();
-        $connectionProphecy->close()->shouldBeCalled();
-        $connectionProphecy->connect()->shouldBeCalled();
+        $connectionMock = $this->createMock(Connection::class);
+        $connectionMock->expects(self::atLeast(1))
+            ->method('executeQuery')
+            ->withAnyParameters()
+            ->willReturn($statementMock);
+        $connectionMock->expects(self::once())
+            ->method('close');
+        $connectionMock->expects(self::atLeast(1))
+            ->method('connect');
 
-        $aliveKeeper = new FailoverAwareDBALAliveKeeper($loggerProphecy->reveal());
-        $aliveKeeper->keepAlive($connectionProphecy->reveal(), 'default');
+        $aliveKeeper = new FailoverAwareDBALAliveKeeper($loggerMock);
+        $aliveKeeper->keepAlive($connectionMock, 'default');
     }
 }

@@ -10,6 +10,8 @@
       "email": "mfris@pixelfederation.com"
     }
   ],
+  "minimum-stability": "dev",
+  "prefer-stable": true,
   "require": {
     "php": ">= 8.1",
     "doctrine/doctrine-bundle": "^2.10",
@@ -33,10 +35,9 @@
     "phpcompatibility/php-compatibility": "^9.1",
     "phpmd/phpmd": "^2.8",
     "phpro/grumphp": "^1.15",
-    "phpspec/prophecy-phpunit": "^2.0",
     "phpstan/phpstan": "^1.0",
     "phpstan/phpstan-webmozart-assert": "^1.0",
-    "phpunit/phpunit": "^9.5",
+    "phpunit/phpunit": "^10.2",
     "pixelfederation/coding-standards": "^2.1",
     "roave/security-advisories": "dev-master",
     "squizlabs/php_codesniffer": "^3.4",
@@ -44,8 +45,8 @@
     "symfony/flex": "^2.3",
     "symfony/framework-bundle": "^5.4|^6.3",
     "symfony/http-kernel": "^5.4|^6.3",
-    "symfony/phpunit-bridge": "^5.4|^6.3",
-    "vimeo/psalm": "^4.0"
+    "symfony/phpunit-bridge": "^6.3",
+    "vimeo/psalm": "^5.14"
   },
   "autoload-dev": {
     "psr-4": {

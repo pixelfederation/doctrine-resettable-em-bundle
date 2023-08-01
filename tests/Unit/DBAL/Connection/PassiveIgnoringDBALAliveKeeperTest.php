@@ -4,87 +4,75 @@ declare(strict_types=1);
 namespace PixelFederation\DoctrineResettableEmBundle\Tests\Unit\DBAL\Connection;
 
 use Doctrine\DBAL\Connection;
-use Exception;
 use PHPUnit\Framework\TestCase;
 use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\DBALAliveKeeper;
 use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\PassiveIgnoringDBALAliveKeeper;
 use PixelFederation\DoctrineResettableEmBundle\Tests\Unit\Helper\ProxyConnectionMock;
-use Prophecy\PhpUnit\ProphecyTrait;
-use Prophecy\Prophecy\ObjectProphecy;
 use ProxyManager\Proxy\VirtualProxyInterface;
 
 class PassiveIgnoringDBALAliveKeeperTest extends TestCase
 {
-    use ProphecyTrait;
-
-    /**
-     * @throws Exception
-     */
     public function testKeepAliveWithoutInitialisedConnectionProxyDoesNotDoAnything(): void
     {
-        /** @var $connectionProphecy VirtualProxyInterface|Connection|ObjectProphecy */
-        $connectionProphecy = $this->prophesize(ProxyConnectionMock::class);
-        $connectionProphecy->isProxyInitialized()
-            ->willReturn(false)
-            ->shouldBeCalled();
-        $connectionProphecy->getDatabasePlatform()
-            ->shouldNotBeCalled();
-        $connectionMock = $connectionProphecy->reveal();
+        /** @var $connectionMock VirtualProxyInterface|Connection */
+        $connectionMock = $this->createMock(ProxyConnectionMock::class);
+        $connectionMock->expects(self::atLeast(1))
+            ->method('isProxyInitialized')
+            ->willReturn(false);
+        $connectionMock->expects(self::exactly(0))
+            ->method('getDatabasePlatform');
         $connectionName = 'default';
 
-        /** @var $decoratedAliveKeeper DBALAliveKeeper|ObjectProphecy */
-        $decoratedAliveKeeper = $this->prophesize(DBALAliveKeeper::class);
-        $decoratedAliveKeeper->keepAlive($connectionMock, $connectionName)
-            ->shouldNotBeCalled();
+        $decoratedAliveKeeper = $this->createMock(DBALAliveKeeper::class);
+        $decoratedAliveKeeper->expects(self::exactly(0))
+            ->method('keepAlive')
+            ->with($connectionMock, $connectionName);
 
         $aliveKeeper = new PassiveIgnoringDBALAliveKeeper(
-            $decoratedAliveKeeper->reveal());
+            $decoratedAliveKeeper);
         $aliveKeeper->keepAlive($connectionMock, $connectionName);
     }
 
     public function testKeepAliveWithoutInitialisedConnectionDoesNotDoAnything(): void
     {
-        /** @var $connectionProphecy Connection|ObjectProphecy */
-        $connectionProphecy = $this->prophesize(Connection::class);
-        $connectionProphecy->isConnected()
-            ->willReturn(false)
-            ->shouldBeCalled();
-        $connectionProphecy->getDatabasePlatform()
-            ->shouldNotBeCalled();
-        $connectionMock = $connectionProphecy->reveal();
+        $connectionMock = $this->createMock(Connection::class);
+        $connectionMock->expects(self::atLeast(1))
+            ->method('isConnected')
+            ->willReturn(false);
+        $connectionMock->expects(self::exactly(0))
+            ->method('getDatabasePlatform');
         $connectionName = 'default';
 
-        /** @var $decoratedAliveKeeper DBALAliveKeeper|ObjectProphecy */
-        $decoratedAliveKeeper = $this->prophesize(DBALAliveKeeper::class);
-        $decoratedAliveKeeper->keepAlive($connectionMock, $connectionName)
-            ->shouldNotBeCalled();
+        $decoratedAliveKeeper = $this->createMock(DBALAliveKeeper::class);
+        $decoratedAliveKeeper->expects(self::exactly(0))
+            ->method('keepAlive')
+            ->with($connectionMock, $connectionName);
 
         $aliveKeeper = new PassiveIgnoringDBALAliveKeeper(
-            $decoratedAliveKeeper->reveal());
+            $decoratedAliveKeeper);
         $aliveKeeper->keepAlive($connectionMock, $connectionName);
     }
 
     public function testKeepAliveWithInitialisedConnectionDelegatesControl(): void
     {
-        /** @var $connectionProphecy VirtualProxyInterface|Connection|ObjectProphecy */
-        $connectionProphecy = $this->prophesize(ProxyConnectionMock::class);
-        $connectionProphecy->isProxyInitialized()
-            ->willReturn(true)
-            ->shouldBeCalled();
-        $connectionProphecy->isConnected()
-            ->willReturn(true)
-            ->shouldBeCalled();
-        $connectionProphecy->getDatabasePlatform()
-            ->shouldNotBeCalled();
-        $connectionMock = $connectionProphecy->reveal();
+        /** @var $connectionMock VirtualProxyInterface|Connection */
+        $connectionMock = $this->createMock(ProxyConnectionMock::class);
+        $connectionMock->expects(self::atLeast(1))
+            ->method('isProxyInitialized')
+            ->willReturn(true);
+        $connectionMock->expects(self::atLeast(1))
+            ->method('isConnected')
+            ->willReturn(true);
+        $connectionMock->expects(self::exactly(0))
+            ->method('getDatabasePlatform');
         $connectionName = 'default';
 
-        /** @var $decoratedAliveKeeper DBALAliveKeeper|ObjectProphecy */
-        $decoratedAliveKeeper = $this->prophesize(DBALAliveKeeper::class);
-        $decoratedAliveKeeper->keepAlive($connectionMock, $connectionName)
-            ->shouldBeCalled();
+        $decoratedAliveKeeper = $this->createMock(DBALAliveKeeper::class);
+        $decoratedAliveKeeper->expects(self::atLeast(1))
+            ->method('keepAlive')
+            ->with($connectionMock, $connectionName);
 
-        $aliveKeeper = new PassiveIgnoringDBALAliveKeeper($decoratedAliveKeeper->reveal());
+        $aliveKeeper = new PassiveIgnoringDBALAliveKeeper($decoratedAliveKeeper);
         $aliveKeeper->keepAlive($connectionMock, $connectionName);
     }
 }
