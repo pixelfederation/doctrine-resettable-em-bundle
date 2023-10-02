@@ -9460,16 +9460,16 @@
         },
         {
             "name": "symplify/config-transformer",
-            "version": "12.0.5",
+            "version": "12.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symplify/config-transformer.git",
-                "reference": "1b21a1ea429a378319d6313b4b024492b2f776c9"
+                "reference": "facd050901b8f71a0197001138b6f41bf34cbcae"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symplify/config-transformer/zipball/1b21a1ea429a378319d6313b4b024492b2f776c9",
-                "reference": "1b21a1ea429a378319d6313b4b024492b2f776c9",
+                "url": "https://api.github.com/repos/symplify/config-transformer/zipball/facd050901b8f71a0197001138b6f41bf34cbcae",
+                "reference": "facd050901b8f71a0197001138b6f41bf34cbcae",
                 "shasum": ""
             },
             "require": {
@@ -9479,11 +9479,6 @@
                 "bin/config-transformer"
             ],
             "type": "library",
-            "autoload": {
-                "files": [
-                    "bootstrap.php"
-                ]
-            },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
@@ -9491,7 +9486,7 @@
             "description": "Prefixed version of Symfony YAML/XML to PHP/YAML config converter",
             "support": {
                 "issues": "https://github.com/symplify/config-transformer/issues",
-                "source": "https://github.com/symplify/config-transformer/tree/12.0.5"
+                "source": "https://github.com/symplify/config-transformer/tree/12.1.1"
             },
             "funding": [
                 {
@@ -9503,7 +9498,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-02-22T19:32:35+00:00"
+            "time": "2023-10-02T07:22:40+00:00"
         },
         {
             "name": "theseer/tokenizer",
