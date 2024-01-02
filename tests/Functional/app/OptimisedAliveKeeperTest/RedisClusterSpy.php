@@ -23,9 +23,9 @@ class RedisClusterSpy extends RedisCluster
         return $this->constructorCalls;
     }
 
-    public function ping($nodeParams)
+    public function ping(array|string $key_or_address, ?string $message = null): mixed
     {
-        $this->pingCount++;
+        return $this->pingCount++;
     }
 
     public function getPingCount(): int

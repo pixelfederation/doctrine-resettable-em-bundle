@@ -8,6 +8,6 @@ export PATH="/usr/local/bin:$PATH"
 #
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-if [[ -z `docker-compose ps -q doctrine-resettable-em-bundle-php81` ]] || [[ -z `docker ps -q --no-trunc | grep $(docker-compose ps -q doctrine-resettable-em-bundle-php81)` ]]; then
+if [[ -z `docker-compose ps -q doctrine-resettable-em-bundle-php82` ]] || [[ -z `docker ps -q --no-trunc | grep $(docker-compose ps -q doctrine-resettable-em-bundle-php82)` ]]; then
   docker-compose up -d
 fi

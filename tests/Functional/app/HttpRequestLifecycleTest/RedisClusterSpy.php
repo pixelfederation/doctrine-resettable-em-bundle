@@ -48,7 +48,7 @@ class RedisClusterSpy extends RedisCluster implements VirtualProxyInterface
         return $this->constructorParametersSecond;
     }
 
-    public function ping($nodeParams)
+    public function ping(array|string $key_or_address, ?string $message = null): mixed
     {
         throw new RedisClusterException('Test exception');
     }
