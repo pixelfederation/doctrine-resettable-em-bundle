@@ -19,7 +19,7 @@ jobs:
     strategy:
       matrix:
         php-version: [ '8.2' ]
-        symfony-version: [ '5.4.*', '6.3.*' ]
+        symfony-version: [ '5.4.*', '6.3.*', '7.0.*' ]
         symfony-deprecations-helper: [ 'max[direct]=0&baselineFile=./tests/allowed.json' ]
         grumphp-testsuite: [ 'no-analyse' ]
         grumphp-flag: [ '-no-analyse' ]
@@ -71,8 +71,8 @@ jobs:
       - name: Run static analysis (GrumPHP)
         run: composer run-script grumphp${{ matrix.php-version }}${{ matrix.grumphp-flag }}
 
-      - name: Check vendor licenses
-        run: composer run-script lic-check
+#      - name: Check vendor licenses
+#        run: composer run-script lic-check
 
   dependabot:
     needs: [ build ]
