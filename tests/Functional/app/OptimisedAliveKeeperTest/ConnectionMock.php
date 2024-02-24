@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\OptimisedAliveKeeperTest;
 
+use Composer\InstalledVersions;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Result;
@@ -20,15 +21,36 @@ final class ConnectionMock extends Connection
         $args = func_get_args();
         $this->queries[] = $args[0];
 
+        if (version_compare(InstalledVersions::getVersion('doctrine/orm'), '3.0.0', '<')) {
+            return new class extends Result {
+                public function __construct()
+                {
+                }
+
+                /**
+                 * @return mixed
+                 */
+                public function fetchOne()
+                {
+                    return '1';
+                }
+
+                /**
+                 * @return mixed
+                 */
+                public function fetch($fetchMode = null, $cursorOrientation = PDO::FETCH_ORI_NEXT, $cursorOffset = 0)
+                {
+                    return 1;
+                }
+            };
+        }
+
         return new class extends Result {
             public function __construct()
             {
             }
 
-            /**
-             * @return mixed
-             */
-            public function fetchOne()
+            public function fetchOne(): mixed
             {
                 return '1';
             }

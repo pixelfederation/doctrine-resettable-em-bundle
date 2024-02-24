@@ -61,7 +61,7 @@ final class OptimisedAliveKeeperTest extends TestCase
 
         self::assertFalse($connection->isConnected());
         self::assertSame(1, $redisCluster->getConstructorCalls());
-        $connection->connect(); // simulates real connection usage
+        $connection->getNativeConnection(); // simulates real connection usage, calls connect() internally
         $client->request('GET', '/dummy'); // this action does nothing with the database
         self::assertTrue($connection->isConnected());
         self::assertSame(1, $connection->getQueriesCount());

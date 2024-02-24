@@ -58,8 +58,7 @@ final class FailoverAwareDBALAliveKeeper implements DBALAliveKeeper
     private function reconnect(Connection $connection): void
     {
         $connection->close();
-        /** @psalm-suppress InternalMethod */
-        $connection->connect();
+        $connection->getNativeConnection();
     }
 
     /**
