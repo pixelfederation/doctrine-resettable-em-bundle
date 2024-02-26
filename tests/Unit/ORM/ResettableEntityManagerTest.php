@@ -2,11 +2,12 @@
 declare(strict_types=1);
 namespace PixelFederation\DoctrineResettableEmBundle\Tests\Unit\ORM;
 
+use Composer\InstalledVersions;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Repository\RepositoryFactory;
 use Doctrine\Persistence\ObjectRepository;
-use Exception;
 use PixelFederation\DoctrineResettableEmBundle\ORM\ResettableEntityManager;
 use PHPUnit\Framework\TestCase;
 use PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\Entity\TestEntity;
@@ -16,7 +17,11 @@ class ResettableEntityManagerTest extends TestCase
 {
     public function testGetRepository(): void
     {
-        $repositoryMock = $this->createMock(ObjectRepository::class);
+        if (version_compare(InstalledVersions::getVersion('doctrine/orm') ?? '1.0.0', '3.0.0', '<')) {
+            $repositoryMock = $this->createMock(ObjectRepository::class);
+        } else {
+            $repositoryMock = $this->createMock(EntityRepository::class);
+        }
         $repositoryFactoryMock = $this->createMock(RepositoryFactory::class);
         $repositoryFactoryMock->expects(self::once())
             ->method('getRepository')

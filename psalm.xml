@@ -27,5 +27,6 @@
   <issueHandlers>
     <PossiblyUnusedMethod errorLevel="suppress"/>
     <UnusedClass errorLevel="suppress"/>
+    <DuplicateClass errorLevel="suppress"/>
   </issueHandlers>
 </psalm>

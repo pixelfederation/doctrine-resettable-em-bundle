@@ -31,7 +31,7 @@ class FailoverAwareDBALAliveKeeperTest extends TestCase
             ->withAnyParameters()
             ->willReturn($statementMock);
         $connectionMock->expects(self::exactly(0))->method('close');
-        $connectionMock->expects(self::exactly(0))->method('connect');
+        $connectionMock->expects(self::exactly(0))->method('getNativeConnection');
 
         $aliveKeeper = new FailoverAwareDBALAliveKeeper($loggerMock);
         $aliveKeeper->keepAlive($connectionMock, 'default');
@@ -54,7 +54,7 @@ class FailoverAwareDBALAliveKeeperTest extends TestCase
         $connectionMock->expects(self::exactly(0))
             ->method('close');
         $connectionMock->expects(self::exactly(0))
-            ->method('connect');
+            ->method('getNativeConnection');
 
         $aliveKeeper = new FailoverAwareDBALAliveKeeper($loggerMock, ConnectionType::READER);
         $aliveKeeper->keepAlive($connectionMock, 'default',);
@@ -80,7 +80,7 @@ class FailoverAwareDBALAliveKeeperTest extends TestCase
         $connectionMock->expects(self::once())
             ->method('close');
         $connectionMock->expects(self::atLeast(1))
-            ->method('connect');
+            ->method('getNativeConnection');
 
         $aliveKeeper = new FailoverAwareDBALAliveKeeper($loggerMock);
         $aliveKeeper->keepAlive($connectionMock, 'default');
@@ -109,7 +109,7 @@ class FailoverAwareDBALAliveKeeperTest extends TestCase
         $connectionMock->expects(self::once())
             ->method('close');
         $connectionMock->expects(self::atLeast(1))
-            ->method('connect');
+            ->method('getNativeConnection');
 
         $aliveKeeper = new FailoverAwareDBALAliveKeeper($loggerMock, ConnectionType::READER);
         $aliveKeeper->keepAlive($connectionMock, 'default');
@@ -134,7 +134,7 @@ class FailoverAwareDBALAliveKeeperTest extends TestCase
         $connectionMock->expects(self::once())
             ->method('close');
         $connectionMock->expects(self::atLeast(1))
-            ->method('connect');
+            ->method('getNativeConnection');
 
         $aliveKeeper = new FailoverAwareDBALAliveKeeper($loggerMock);
         $aliveKeeper->keepAlive($connectionMock, 'default');

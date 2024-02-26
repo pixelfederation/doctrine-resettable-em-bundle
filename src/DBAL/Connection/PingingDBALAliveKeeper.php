@@ -22,8 +22,7 @@ final class PingingDBALAliveKeeper implements DBALAliveKeeper
             $connection->executeQuery($query);
         } catch (ConnectionLost) {
             $connection->close();
-            /** @psalm-suppress InternalMethod */
-            $connection->connect();
+            $connection->getNativeConnection();
         }
     }
 }

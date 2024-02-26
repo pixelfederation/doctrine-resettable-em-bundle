@@ -50,7 +50,7 @@ final class FailoverAwareTest extends TestCase
         self::assertInstanceOf(ConnectionMock::class, $connection);
 
         self::assertFalse($connection->isConnected());
-        $connection->connect();
+        $connection->getNativeConnection(); // calls connect() internally
         $connection->beginTransaction();
         self::assertTrue($connection->isTransactionActive());
         $client->request('GET', '/dummy'); // this action does nothing with the database
