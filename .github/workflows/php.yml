@@ -19,26 +19,10 @@ jobs:
     strategy:
       matrix:
         php-version: [ '8.2' ]
-        symfony-version: [ '5.4.*', '6.3.*', '7.0.*' ]
+        symfony-version: [ '6.3.*', '7.0.*' ]
         symfony-deprecations-helper: [ 'max[direct]=0&baselineFile=./tests/allowed.json' ]
         grumphp-testsuite: [ 'no-analyse' ]
         grumphp-flag: [ '-no-analyse' ]
-        include:
-          - php-version: '8.1'
-            symfony-version: '5.4.*'
-            symfony-deprecations-helper: 'max[indirect]=99999&baselineFile=./tests/allowed.json'
-            composer-flag: '--prefer-lowest'
-            grumphp-flag: '-no-analyse'
-            grumphp-testsuite: 'no-analyse'
-          - php-version: '8.1'
-            symfony-version: '5.4.*'
-            symfony-deprecations-helper: 'max[direct]=0&max[indirect]=99999&baselineFile=./tests/allowed.json'
-            grumphp-testsuite: 'main'
-          - php-version: '8.1'
-            symfony-version: '6.3.*'
-            symfony-deprecations-helper: 'max[direct]=0&max[indirect]=99999'
-            grumphp-flag: '-no-analyse'
-            grumphp-testsuite: 'no-analyse'
 
     name: "PHP: ${{ matrix.php-version }}, Symfony: ${{ matrix.symfony-version }}, GrumPHP: ${{ matrix.grumphp-testsuite }}, Composer: ${{ matrix.composer-flag }}"
 
