@@ -28,6 +28,7 @@ final class FailoverAwareDBALAliveKeeper implements DBALAliveKeeper
     /**
      * @throws Exception
      */
+    //phpcs:ignore SlevomatCodingStandard.Complexity.Cognitive.ComplexityTooHigh
     public function keepAlive(Connection $connection, string $connectionName): void
     {
         try {
@@ -35,21 +36,19 @@ final class FailoverAwareDBALAliveKeeper implements DBALAliveKeeper
                 $logLevel = $this->connectionType->isWriter() ? LogLevel::ALERT : LogLevel::WARNING;
                 $this->logger->log(
                     $logLevel,
-                    sprintf("Failover reconnect for connection '%s'", $connectionName)
+                    sprintf("Failover reconnect for connection '%s'", $connectionName),
                 );
                 $this->reconnect($connection);
             }
         } catch (DriverException $e) {
             $this->logger->info(
                 sprintf("Exceptional reconnect for DBAL connection '%s'", $connectionName),
-                [
-                    'exception' => $e,
-                ]
+                ['exception' => $e],
             );
 
             try {
                 $this->reconnect($connection);
-            } catch (DriverException) {
+            } catch (DriverException) { //phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
                 // this is usual reconnect
             }
         }
@@ -58,8 +57,9 @@ final class FailoverAwareDBALAliveKeeper implements DBALAliveKeeper
     private function reconnect(Connection $connection): void
     {
         $connection->close();
-        /** @psalm-suppress InternalMethod */
-        $connection->connect();
+        // @psalm-suppress InternalMethod
+
+        $connection->getNativeConnection();
     }
 
     /**
@@ -72,7 +72,8 @@ final class FailoverAwareDBALAliveKeeper implements DBALAliveKeeper
     private function isProperConnection(Connection $connection): bool
     {
         $stmt = $connection->executeQuery('SELECT @@global.innodb_read_only;');
-        $currentConnectionIsWriter = (bool)$stmt->fetchOne() === false;
+        //phpcs:ignore Squiz.PHP.DisallowComparisonAssignment.AssignedComparison
+        $currentConnectionIsWriter = (bool) $stmt->fetchOne() === false;
 
         return $this->connectionType->isWriter() === $currentConnectionIsWriter;
     }

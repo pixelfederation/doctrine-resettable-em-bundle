@@ -41,7 +41,8 @@ final class OptimizedRedisClusterAliveKeeper implements RedisClusterAliveKeeper
     private function isPingNeeded(): bool
     {
         $lastPingAt = $this->lastPingAt;
-        $now = $this->lastPingAt = time();
+        $now = time();
+        $this->lastPingAt = $now;
 
         return $now - $lastPingAt >= $this->pingIntervalInSeconds;
     }

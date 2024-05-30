@@ -25,7 +25,7 @@ final class RedisClusterPlatformAliveKeeper implements GenericPlatformAliveKeepe
         foreach ($this->aliveKeepers as $connectionName => $aliveKeeper) {
             if (!isset($this->connections[$connectionName])) {
                 throw new RuntimeException(
-                    sprintf('Connection "%s" is missing.', $connectionName)
+                    sprintf('Connection "%s" is missing.', $connectionName),
                 );
             }
 

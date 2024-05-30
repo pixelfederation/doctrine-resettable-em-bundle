@@ -5,7 +5,7 @@ grumphp:
   process_timeout: 600
   ignore_unstaged_changes: true
   testsuites:
-    php8.1:
+    php8.2:
       tasks:
         - phpcs
         - phpmd
@@ -15,12 +15,12 @@ grumphp:
         - phpunit
         - phpstan
         - psalm
-    php8.1-no-analyse:
+    php8.2-no-analyse:
       tasks:
         - phpparser
         - phplint
         - phpunit
-    php8.2-no-analyse:
+    php8.3-no-analyse:
       tasks:
         - phpparser
         - phplint

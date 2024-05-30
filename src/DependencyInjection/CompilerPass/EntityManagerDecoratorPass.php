@@ -13,11 +13,14 @@ use Symfony\Component\DependencyInjection\Reference;
 
 final class EntityManagerDecoratorPass implements CompilerPassInterface
 {
+    //phpcs:ignore SlevomatCodingStandard.Functions.FunctionLength.FunctionLength
     public function process(ContainerBuilder $container): void
     {
-        /** @var array<string, string> $entityManagers */
+        // @var array<string, string> $entityManagers
+
         $entityManagers = $container->getParameter('doctrine.entity_managers');
-        /** @var array<string> $excluded */
+        // @var array<string> $excluded
+
         $excluded = $container->getParameter(Parameters::EXCLUDED_FROM_PROCESSING_ENTITY_MANAGERS);
         $resettableEntityManagers = [];
 
@@ -32,9 +35,9 @@ final class EntityManagerDecoratorPass implements CompilerPassInterface
 
             $decoratorDef = new Definition(ResettableEntityManager::class, [
                 '$configuration' => $configArg,
-                '$wrapped' => new Reference($newId),
-                '$doctrineRegistry' => new Reference('doctrine'),
                 '$decoratedName' => $name,
+                '$doctrineRegistry' => new Reference('doctrine'),
+                '$wrapped' => new Reference($newId),
             ]);
             $decoratorDef->setPublic(true);
 

@@ -41,9 +41,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
         ->abstract(true)
         ->arg('$decorated', null)
         ->arg('$logger', service('logger'))
-        ->tag('monolog.logger', [
-            'channel' => 'doctrine-resettable-em-bundle',
-        ]);
+        ->tag('monolog.logger', ['channel' => 'doctrine-resettable-em-bundle']);
 
     $services->set(PassiveIgnoringDBALAliveKeeper::class)
         ->abstract(true)
@@ -57,9 +55,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
         ->abstract(true)
         ->arg('$constructorArguments', null)
         ->arg('$logger', service('logger'))
-        ->tag('monolog.logger', [
-            'channel' => 'doctrine-resettable-em-bundle',
-        ]);
+        ->tag('monolog.logger', ['channel' => 'doctrine-resettable-em-bundle']);
 
     $services->set(PassiveIgnoringRedisClusterAliveKeeper::class)
         ->abstract(true)
@@ -69,9 +65,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
         ->abstract(true)
         ->arg('$logger', service('logger'))
         ->arg('$connectionType', null)
-        ->tag('monolog.logger', [
-            'channel' => 'doctrine-resettable-em-bundle',
-        ]);
+        ->tag('monolog.logger', ['channel' => 'doctrine-resettable-em-bundle']);
 
     $services->set(OptimizedRedisClusterAliveKeeper::class)
         ->abstract(true)
