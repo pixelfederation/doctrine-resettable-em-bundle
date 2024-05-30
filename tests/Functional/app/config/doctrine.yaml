@@ -14,6 +14,8 @@ doctrine:
         logging: true
   orm:
     default_entity_manager: default
+    controller_resolver:
+      auto_mapping: false
     entity_managers:
       default:
         connection: default

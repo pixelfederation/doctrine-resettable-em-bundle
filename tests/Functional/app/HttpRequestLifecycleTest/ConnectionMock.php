@@ -29,7 +29,7 @@ final class ConnectionMock extends Connection
             /**
              * @return mixed
              */
-            public function fetchOne()
+            public function fetchOne(): mixed
             {
                 return '1';
             }

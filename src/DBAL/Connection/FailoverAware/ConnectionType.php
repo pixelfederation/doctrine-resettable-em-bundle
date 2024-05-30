@@ -22,7 +22,7 @@ final class ConnectionType
     ) {
     }
 
-    public static function create(string $type): ConnectionType
+    public static function create(string $type): self
     {
         if (!in_array($type, self::ALLOWED_TYPES, true)) {
             throw new InvalidArgumentException(sprintf('Invalid connection type %s.', $type));

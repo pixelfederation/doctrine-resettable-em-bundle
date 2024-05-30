@@ -13,8 +13,6 @@ use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Repository\RepositoryFactory;
 use Doctrine\Persistence\ManagerRegistry;
-use Doctrine\Persistence\ObjectRepository;
-use Exception;
 use UnexpectedValueException;
 
 /**
@@ -37,18 +35,16 @@ class ResettableEntityManager extends EntityManagerDecorator
     }
 
     /**
-     * @template T as object
-     * @param class-string<T> $className
-     * @return ObjectRepository<T>
-     * @throws Exception
+     * {@inheritDoc}
+     *
      * @psalm-suppress LessSpecificImplementedReturnType
      * @psalm-suppress MoreSpecificImplementedParamType
      * @psalm-suppress MixedReturnTypeCoercion
+     * @psalm-suppress MoreSpecificReturnType, LessSpecificReturnStatement
      */
-    public function getRepository($className): ObjectRepository
+    public function getRepository($className)
     {
-        /** @psalm-suppress MixedReturnTypeCoercion */
-        return $this->repositoryFactory->getRepository($this, $className);
+        return $this->repositoryFactory->getRepository($this, $className); //@phpstan-ignore-line
     }
 
     /**
@@ -58,7 +54,7 @@ class ResettableEntityManager extends EntityManagerDecorator
     {
         $query = new Query($this);
 
-        if (! empty($dql)) {
+        if (! empty($dql)) { //phpcs:ignore SlevomatCodingStandard.ControlStructures.DisallowEmpty.DisallowedEmpty
             $query->setDQL($dql);
         }
 
@@ -95,7 +91,7 @@ class ResettableEntityManager extends EntityManagerDecorator
 
         if (!$newEntityManager instanceof EntityManagerInterface) {
             throw new UnexpectedValueException(
-                sprintf('Invalid entity manager class - %s', $newEntityManager::class)
+                sprintf('Invalid entity manager class - %s', $newEntityManager::class),
             );
         }
     }

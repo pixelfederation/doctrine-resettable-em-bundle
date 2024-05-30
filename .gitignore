@@ -8,3 +8,4 @@ tests/Functional/app/data/*
 !tests/Functional/app/data/.gitkeep
 mutagen.yml.lock
 /.idea/
+composer.lock

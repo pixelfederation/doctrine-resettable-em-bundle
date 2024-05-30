@@ -33,9 +33,7 @@ final class PingingRedisClusterAliveKeeper implements RedisClusterAliveKeeper
         } catch (RedisClusterException $e) {
             $this->logger->info(
                 sprintf("Exceptional reconnect for redis cluster connection '%s'", $connectionName),
-                [
-                    'exception' => $e,
-                ]
+                ['exception' => $e],
             );
             // redis cluster does not have a reconnect method and does not work with shard master to slave failover,
             // so this hack has to be used

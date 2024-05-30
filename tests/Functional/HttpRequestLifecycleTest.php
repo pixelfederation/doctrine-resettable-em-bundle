@@ -64,8 +64,8 @@ final class HttpRequestLifecycleTest extends TestCase
         self::assertFalse($connectionExcluded->isConnected());
         self::assertFalse($redisCluster->wasConstructorCalled());
         self::assertFalse($redisClusterExcluded->wasConstructorCalled());
-        $connection->connect(); // simulates real connection usage
-        $connectionExcluded->connect(); // simulates real connection usage
+        $connection->getNativeConnection(); // simulates real connection usage
+        $connectionExcluded->getNativeConnection(); // simulates real connection usage
         $client->request('GET', '/dummy'); // this action does nothing with the database
         self::assertTrue($connection->isConnected());
         self::assertSame('SELECT 1', $connection->getQuery());
@@ -93,9 +93,7 @@ final class HttpRequestLifecycleTest extends TestCase
 
         self::assertFalse($connection->isConnected());
         self::assertFalse($connectionExcluded->isConnected());
-        $connection->connect(); // simulates real connection usage
         $connection->beginTransaction();
-        $connectionExcluded->connect(); // simulates real connection usage
         $connectionExcluded->beginTransaction();
         self::assertTrue($connection->isTransactionActive());
         self::assertTrue($connectionExcluded->isTransactionActive());

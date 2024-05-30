@@ -34,15 +34,15 @@ final class PixelFederationDoctrineResettableEmExtension extends ConfigurableExt
         $loader->load('services.php');
         $this->registerNotResettableEntityManagers(
             $container,
-            $mergedConfig['exclude_from_processing']['entity_managers']
+            $mergedConfig['exclude_from_processing']['entity_managers'],
         );
         $this->registerNotPingableDbalConnections(
             $container,
-            $mergedConfig['exclude_from_processing']['connections']['dbal']
+            $mergedConfig['exclude_from_processing']['connections']['dbal'],
         );
         $this->registerNotPingableRedisClusterConnections(
             $container,
-            $mergedConfig['exclude_from_processing']['connections']['redis_cluster']
+            $mergedConfig['exclude_from_processing']['connections']['redis_cluster'],
         );
         $this->tryToOptimizeAliveKeeper($container, $mergedConfig);
         $this->tryToActivateTransactionChecks($container, $mergedConfig);
@@ -123,7 +123,7 @@ final class PixelFederationDoctrineResettableEmExtension extends ConfigurableExt
 
         $container->setParameter(
             AliveKeeperPass::REDIS_CLUSTER_CONNECTIONS_PARAM_NAME,
-            $config['redis_cluster_connections']
+            $config['redis_cluster_connections'],
         );
     }
 }

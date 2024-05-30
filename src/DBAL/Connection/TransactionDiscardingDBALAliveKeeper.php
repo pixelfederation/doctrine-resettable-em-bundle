@@ -28,19 +28,17 @@ final class TransactionDiscardingDBALAliveKeeper implements DBALAliveKeeper
                 $this->logger->error(
                     sprintf(
                         'Connection "%s" needed to discard active transaction while running keep-alive routine.',
-                        $connectionName
-                    )
+                        $connectionName,
+                    ),
                 );
                 $connection->rollBack();
             } catch (Throwable $e) {
                 $this->logger->error(
                     sprintf(
                         'An error occurred while discarding active transaction in connection "%s".',
-                        $connectionName
+                        $connectionName,
                     ),
-                    [
-                        'exception' => $e,
-                    ]
+                    ['exception' => $e],
                 );
             }
         }

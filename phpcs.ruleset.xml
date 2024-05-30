@@ -5,18 +5,11 @@
 
   <!-- Show progress, show the error codes for each message (source). -->
   <arg value="ps"/>
+  <file>src/</file>
+  <exlude-pattern>src/DependencyInjection/*</exlude-pattern>
 
-  <config name="testVersion" value="8.1"/>
-  <rule ref="vendor/pixelfederation/coding-standards/phpcs.ruleset.xml">
-    <exclude name="SlevomatCodingStandard.ControlStructures.DisallowEmpty"/>
-    <exclude name="SlevomatCodingStandard.Operators.DisallowIncrementAndDecrementOperators"/>
-    <exclude name="SlevomatCodingStandard.Files.FunctionLength.FunctionLength"/>
-    <exclude name="SlevomatCodingStandard.Namespaces.UseSpacing.IncorrectLinesCountBetweenDifferentTypeOfUse"/>
-    <exclude name="SlevomatCodingStandard.Classes.RequireSingleLineMethodSignature.RequiredSingleLineSignature"/>
-    <exclude name="SlevomatCodingStandard.Classes.DisallowConstructorPropertyPromotion.DisallowedConstructorPropertyPromotion"/>
-    <exclude name="SlevomatCodingStandard.Functions.DisallowTrailingCommaInDeclaration.DisallowedTrailingComma"/>
-    <exclude name="SlevomatCodingStandard.Exceptions.DisallowNonCapturingCatch.DisallowedNonCapturingCatch"/>
-  </rule>
+  <config name="testVersion" value="8.2"/>
+  <rule ref="vendor/pixelfederation/coding-standards/phpcs.ruleset.82.xml"/>
 
   <rule ref="SlevomatCodingStandard.Files.TypeNameMatchesFileName">
     <properties>

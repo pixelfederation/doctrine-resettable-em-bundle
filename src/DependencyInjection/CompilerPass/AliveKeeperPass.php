@@ -22,6 +22,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 
+//phpcs:disable
 final class AliveKeeperPass implements CompilerPassInterface
 {
     public const FAILOVER_CONNECTIONS_PARAM_NAME = 'pixelfederation_doctrine_resettable_em_bundle.failover_connections';
@@ -70,7 +71,7 @@ final class AliveKeeperPass implements CompilerPassInterface
             return null;
         }
 
-        /** @var array<string, string> $connections */
+        // @var array<string, string> $connections
         $connections = $container->getParameter('doctrine.connections');
         $connectionRefs = [];
 
@@ -111,15 +112,19 @@ final class AliveKeeperPass implements CompilerPassInterface
      */
     private function createDBALAliveKeepers(ContainerBuilder $container): array
     {
-        /** @var array<string, string> $connections */
+        // @var array<string, string> $connections
         $connections = $container->getParameter('doctrine.connections');
-        /** @var array<string, string> $failoverConnections */
+        // @var array<string, string> $failoverConnections
+
         $failoverConnections = $container->getParameter(self::FAILOVER_CONNECTIONS_PARAM_NAME);
-        $pingInterval = (int) $container->hasParameter(Parameters::PING_INTERVAL) ?
-            $container->getParameter(Parameters::PING_INTERVAL) : 0;
-        $checkActiveTransactions = (bool) $container->hasParameter(Parameters::CHECK_ACTIVE_TRANSACTIONS) ?
-            $container->getParameter(Parameters::CHECK_ACTIVE_TRANSACTIONS) : false;
-        /** @var array<string> $excluded */
+        $pingInterval = (int) $container->hasParameter(Parameters::PING_INTERVAL)
+            ? $container->getParameter(Parameters::PING_INTERVAL)
+            : 0;
+        $checkActiveTransactions = (bool) $container->hasParameter(Parameters::CHECK_ACTIVE_TRANSACTIONS)
+            ? $container->getParameter(Parameters::CHECK_ACTIVE_TRANSACTIONS)
+            : false;
+        // @var array<string> $excluded
+
         $excluded = $container->getParameter(Parameters::EXCLUDED_FROM_PROCESSING_DBAL_CONNECTIONS);
         $aliveKeepers = [];
 
@@ -130,18 +135,18 @@ final class AliveKeeperPass implements CompilerPassInterface
 
             $aliveKeeperSvcId = sprintf(
                 'pixel_federation_doctrine_resettable_em.alive_keeper.dbal.%s',
-                $connectionName
+                $connectionName,
             );
             $container->setDefinition(
                 $aliveKeeperSvcId,
-                $this->getAliveKeeperDefinition($container, $connectionName, $failoverConnections)
+                $this->getAliveKeeperDefinition($container, $connectionName, $failoverConnections),
             );
 
             if ($checkActiveTransactions) {
                 $decoratorAliveKeeperSvcId = sprintf(
                     '%s_%s',
                     TransactionDiscardingDBALAliveKeeper::class,
-                    $connectionName
+                    $connectionName,
                 );
                 $decoratedAliveKeeperSvcId = sprintf('%s.inner', $decoratorAliveKeeperSvcId);
                 $transDiscardingDef = new ChildDefinition(TransactionDiscardingDBALAliveKeeper::class);
@@ -153,7 +158,7 @@ final class AliveKeeperPass implements CompilerPassInterface
             $passiveDecoratorAliveKeeperSvcId = sprintf(
                 '%s_%s',
                 PassiveIgnoringDBALAliveKeeper::class,
-                $connectionName
+                $connectionName,
             );
 
             $ignorePassiveAliveKeeperSvcId = sprintf('%s.inner', $passiveDecoratorAliveKeeperSvcId);
@@ -187,7 +192,7 @@ final class AliveKeeperPass implements CompilerPassInterface
         ContainerBuilder $container,
         string $connectionName,
         array $failoverConnections,
-    ): Reference|Definition {
+    ): Reference | Definition {
         if (!isset($failoverConnections[$connectionName])) {
             return $container->findDefinition(PingingDBALAliveKeeper::class);
         }
@@ -203,12 +208,13 @@ final class AliveKeeperPass implements CompilerPassInterface
      */
     private function createRedisClusterConnectionReferences(ContainerBuilder $container): array
     {
-        /** @var array<string, string> $clusterConnections */
+        // @var array<string, string> $clusterConnections
+
         $clusterConnections = $container->getParameter(self::REDIS_CLUSTER_CONNECTIONS_PARAM_NAME);
 
         return array_map(
-            static fn (string $connectionSvcId): Reference => new Reference($connectionSvcId),
-            $clusterConnections
+            static fn(string $connectionSvcId): Reference => new Reference($connectionSvcId),
+            $clusterConnections,
         );
     }
 
@@ -217,11 +223,14 @@ final class AliveKeeperPass implements CompilerPassInterface
      */
     private function createRedisClusterAliveKeepers(ContainerBuilder $container): array
     {
-        /** @var array<string, string> $clusterConnections */
+        // @var array<string, string> $clusterConnections
+
         $clusterConnections = $container->getParameter(self::REDIS_CLUSTER_CONNECTIONS_PARAM_NAME);
-        $pingInterval = (int) $container->hasParameter(Parameters::PING_INTERVAL) ?
-            $container->getParameter(Parameters::PING_INTERVAL) : 0;
-        /** @var array<string> $excluded */
+        $pingInterval = (int) $container->hasParameter(Parameters::PING_INTERVAL)
+            ? $container->getParameter(Parameters::PING_INTERVAL)
+            : 0;
+        // @var array<string> $excluded
+
         $excluded = $container->getParameter(Parameters::EXCLUDED_FROM_PROCESSING_REDIS_CLUSTER_CONNECTIONS);
         $aliveKeepers = [];
 
@@ -235,14 +244,14 @@ final class AliveKeeperPass implements CompilerPassInterface
             $aliveKeeper->setArgument('$constructorArguments', array_values($clusterDef->getArguments()));
             $aliveKeeperSvcId = sprintf(
                 'pixel_federation_doctrine_resettable_em.alive_keeper.redis_cluster.%s',
-                $connectionName
+                $connectionName,
             );
             $container->setDefinition($aliveKeeperSvcId, $aliveKeeper);
 
             $passiveDecoratorAliveKeeperSvcId = sprintf(
                 '%s_%s',
                 PassiveIgnoringRedisClusterAliveKeeper::class,
-                $connectionName
+                $connectionName,
             );
 
             $ignorePassiveAliveKeeperSvcId = sprintf('%s.inner', $passiveDecoratorAliveKeeperSvcId);

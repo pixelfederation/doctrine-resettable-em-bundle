@@ -35,7 +35,7 @@ class PingingDBALAliveKeeperTest extends TestCase
         $connectionMock->expects(self::exactly(0))
             ->method('close');
         $connectionMock->expects(self::exactly(0))
-            ->method('connect');
+            ->method('getNativeConnection');
 
         $aliveKeeper = new PingingDBALAliveKeeper();
         $aliveKeeper->keepAlive($connectionMock, 'default');
@@ -64,7 +64,7 @@ class PingingDBALAliveKeeperTest extends TestCase
         $connectionMock->expects(self::atLeast(1))
             ->method('close');
         $connectionMock->expects(self::atLeast(1))
-            ->method('connect')
+            ->method('getNativeConnection')
             ->willReturn(true);
 
         $aliveKeeper = new PingingDBALAliveKeeper();

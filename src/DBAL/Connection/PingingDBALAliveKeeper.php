@@ -18,12 +18,14 @@ final class PingingDBALAliveKeeper implements DBALAliveKeeper
     public function keepAlive(Connection $connection, string $connectionName): void
     {
         $query = $connection->getDatabasePlatform()->getDummySelectSQL();
+
         try {
             $connection->executeQuery($query);
         } catch (ConnectionLost) {
             $connection->close();
-            /** @psalm-suppress InternalMethod */
-            $connection->connect();
+            // @psalm-suppress InternalMethod
+
+            $connection->getNativeConnection();
         }
     }
 }
