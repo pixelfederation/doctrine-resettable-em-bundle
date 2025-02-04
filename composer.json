@@ -36,7 +36,7 @@
     "phpro/grumphp-shim": "^2.10",
     "phpstan/phpstan": "^1.0",
     "phpstan/phpstan-webmozart-assert": "^1.0",
-    "phpunit/phpunit": "^10.2",
+    "phpunit/phpunit": "^11.5",
     "pixelfederation/coding-standards": "^3.0",
     "psalm/phar": "^5.26",
     "roave/security-advisories": "dev-master",
