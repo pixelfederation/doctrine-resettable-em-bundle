@@ -15,7 +15,7 @@
   "require": {
     "php": ">= 8.2",
     "doctrine/doctrine-bundle": "^2.10",
-    "doctrine/orm": "^2.0",
+    "doctrine/orm": "^3.3",
     "symfony/config": "^6.4 || ^7.0",
     "symfony/dependency-injection": "^6.4 || ^7.0",
     "symfony/proxy-manager-bridge": "^6.4",
