@@ -1,7 +1,5 @@
 parameters:
   level: max
   ignoreErrors:
-
   excludePaths:
-    - src/DependencyInjection/*
     - tests/*

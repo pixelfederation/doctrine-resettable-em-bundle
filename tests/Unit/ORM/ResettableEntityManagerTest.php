@@ -1,19 +1,19 @@
 <?php
+
 declare(strict_types=1);
+
 namespace PixelFederation\DoctrineResettableEmBundle\Tests\Unit\ORM;
 
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Repository\RepositoryFactory;
-use Doctrine\Persistence\ObjectRepository;
-use Exception;
-use PixelFederation\DoctrineResettableEmBundle\ORM\ResettableEntityManager;
-use PHPUnit\Framework\TestCase;
-use PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\Entity\TestEntity;
 use Doctrine\Persistence\ManagerRegistry as RegistryInterface;
+use PHPUnit\Framework\TestCase;
+use PixelFederation\DoctrineResettableEmBundle\ORM\ResettableEntityManager;
+use PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\Entity\TestEntity;
 
-class ResettableEntityManagerTest extends TestCase
+final class ResettableEntityManagerTest extends TestCase
 {
     public function testGetRepository(): void
     {
@@ -21,7 +21,7 @@ class ResettableEntityManagerTest extends TestCase
         $repositoryFactoryMock = $this->createMock(RepositoryFactory::class);
         $repositoryFactoryMock->expects(self::once())
             ->method('getRepository')
-            ->with($this->callback(function ($value) {
+            ->with($this->callback(static function ($value) {
                 self::assertInstanceOf(ResettableEntityManager::class, $value);
 
                 return true;
@@ -38,7 +38,7 @@ class ResettableEntityManagerTest extends TestCase
             $configurationMock,
             $emMock,
             $registryMock,
-            'default'
+            'default',
         );
 
         $em->getRepository(TestEntity::class);
@@ -63,7 +63,7 @@ class ResettableEntityManagerTest extends TestCase
             $configurationMock,
             $emMock,
             $registryMock,
-            'default'
+            'default',
         );
 
         $em->clearOrResetIfNeeded();
@@ -90,7 +90,7 @@ class ResettableEntityManagerTest extends TestCase
             $configurationMock,
             $emMock,
             $registryMock,
-            $decoratedName
+            $decoratedName,
         );
 
         $em->clearOrResetIfNeeded();

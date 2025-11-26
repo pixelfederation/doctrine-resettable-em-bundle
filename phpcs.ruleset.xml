@@ -5,18 +5,36 @@
 
   <!-- Show progress, show the error codes for each message (source). -->
   <arg value="ps"/>
-  <file>src/</file>
-  <exlude-pattern>src/DependencyInjection/*</exlude-pattern>
+  <arg name="basepath" value="."/>
+  <arg name="colors"/>
+  <arg name="extensions" value="php"/>
 
-  <config name="testVersion" value="8.2"/>
-  <rule ref="vendor/pixelfederation/coding-standards/phpcs.ruleset.82.xml"/>
+  <file>bin/</file>
+  <file>src/</file>
+  <file>tests/</file>
+
+  <config name="testVersion" value="8.3"/>
+  <config name="cache" value="false" />
+
+  <rule ref="vendor/pixelfederation/coding-standards/phpcs.ruleset.83.xml">
+    <exclude name="Generic.Files.LineLength.TooLong" />
+  </rule>
 
   <rule ref="SlevomatCodingStandard.Files.TypeNameMatchesFileName">
     <properties>
       <property name="rootNamespaces" type="array">
         <element key="src" value="PixelFederation\DoctrineResettableEmBundle"/>
+        <element key="tests" value="PixelFederation\DoctrineResettableEmBundle\Tests"/>
       </property>
     </properties>
+  </rule>
+
+  <rule ref="SlevomatCodingStandard.Functions.FunctionLength.FunctionLength">
+    <exclude-pattern>tests/</exclude-pattern>
+  </rule>
+
+  <rule ref="SlevomatCodingStandard.Files.LineLength.LineTooLong">
+    <exclude-pattern>tests/</exclude-pattern>
   </rule>
 
 </ruleset>

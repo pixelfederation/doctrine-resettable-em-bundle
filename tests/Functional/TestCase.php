@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace PixelFederation\DoctrineResettableEmBundle\Tests\Functional;
 
 use Exception;
@@ -33,24 +35,15 @@ abstract class TestCase extends KernelTestCase
         static::deleteTmpDir();
     }
 
-    /**
-     * @throws Exception
-     */
-    protected function tearDown():void
-    {
-        parent::tearDown();
-
-        if (self::$application !== null) {
-            self::$application = null;
-        }
-    }
+    abstract protected static function getTestCase(): string;
 
     /**
      * @throws IOException
      */
     protected static function deleteTmpDir(): void
     {
-        if (!file_exists($dir = sys_get_temp_dir() . '/' . static::getVarDir())) {
+        $dir = sys_get_temp_dir() . '/' . static::getVarDir();
+        if (!file_exists($dir)) {
             return;
         }
 
@@ -58,9 +51,6 @@ abstract class TestCase extends KernelTestCase
         $filesystem->remove($dir);
     }
 
-    /**
-     * @inheritdoc
-     */
     protected static function getKernelClass(): string
     {
         require_once __DIR__ . '/app/AppKernel.php';
@@ -85,17 +75,19 @@ abstract class TestCase extends KernelTestCase
             $options['test_case'],
             $options['root_config'] ?? 'config.yml',
             $options['environment'] ?? strtolower(static::getVarDir() . $options['test_case']),
-            $options['debug'] ?? true
+            $options['debug'] ?? true,
         );
     }
 
     /**
      * Creates a Client.
      *
-     * @param array $server An array of server parameters
+     * @param array<string, mixed> $server An array of server parameters
      */
-    protected static function createClient(array $server = [], string $rootConfig = 'configs/config.yaml'): KernelBrowser
-    {
+    protected static function createClient(
+        array $server = [],
+        string $rootConfig = 'configs/config.yaml',
+    ): KernelBrowser {
         static::bootTestKernel($rootConfig);
 
         $client = self::getContainer()->get('test.client');
@@ -118,8 +110,6 @@ abstract class TestCase extends KernelTestCase
         self::bootKernel(['test_case' => static::getTestCase(), 'root_config' => $rootConfig]);
     }
 
-    abstract protected static function getTestCase(): string;
-
     protected static function getApplication(): Application
     {
         if (self::$application === null) {
@@ -133,5 +123,19 @@ abstract class TestCase extends KernelTestCase
     protected static function getVarDir(): string
     {
         return 'PFCBB' . substr(strrchr(static::class, '\\'), 1);
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+
+        if (self::$application === null) {
+            return;
+        }
+
+        self::$application = null;
     }
 }

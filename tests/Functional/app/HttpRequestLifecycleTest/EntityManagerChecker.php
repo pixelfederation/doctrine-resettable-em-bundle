@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Override;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 
@@ -19,11 +20,22 @@ final class EntityManagerChecker implements EventSubscriberInterface
     ) {
     }
 
+    /**
+     * @inheritDoc
+     */
+    #[Override]
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            KernelEvents::REQUEST => 'checkEntityManager',
+        ];
+    }
+
     public function checkEntityManager(): void
     {
         $this->numberOfChecks++;
         $uow = $this->entityManager->getUnitOfWork();
-        $this->wasEmptyOnLastCheck = empty($uow->getIdentityMap());
+        $this->wasEmptyOnLastCheck = $uow->getIdentityMap() === [];
     }
 
     public function getNumberOfChecks(): int
@@ -34,12 +46,5 @@ final class EntityManagerChecker implements EventSubscriberInterface
     public function wasEmptyOnLastCheck(): bool
     {
         return $this->wasEmptyOnLastCheck;
-    }
-
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            KernelEvents::REQUEST => 'checkEntityManager',
-        ];
     }
 }

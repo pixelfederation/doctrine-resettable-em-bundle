@@ -1,9 +1,11 @@
 <?php
+
 declare(strict_types=1);
+
 namespace PixelFederation\DoctrineResettableEmBundle\Tests\Functional;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
+use Override;
 use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\OptimizedDBALAliveKeeper;
 use PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection\OptimizedRedisClusterAliveKeeper;
 use PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\OptimisedAliveKeeperTest\ConnectionMock;
@@ -13,25 +15,11 @@ use ReflectionClass;
 
 final class OptimisedAliveKeeperTest extends TestCase
 {
-    /**
-     * @throws Exception
-     * @throws Exception
-     */
-    protected function setUp(): void
-    {
-        self::bootTestKernel();
-    }
-
-    protected static function getTestCase(): string
-    {
-        return 'OptimisedAliveKeeperTest';
-    }
-
     public function testPingIntervalInjectionFromConfiguration(): void
     {
         $doctrineHandlerSvcId = sprintf('%s_%s', OptimizedDBALAliveKeeper::class, 'default');
-        /* @var $handler OptimizedDBALAliveKeeper */
         $handler = self::getContainer()->get($doctrineHandlerSvcId);
+        self::assertInstanceOf(OptimizedDBALAliveKeeper::class, $handler);
         $refl = new ReflectionClass(OptimizedDBALAliveKeeper::class);
         $intervalParam = $refl->getProperty('pingIntervalInSeconds');
         $intervalParam->setAccessible(true);
@@ -39,8 +27,8 @@ final class OptimisedAliveKeeperTest extends TestCase
         self::assertSame(10, $intervalParam->getValue($handler));
 
         $redisHandlerSvcId = sprintf('%s_%s', OptimizedRedisClusterAliveKeeper::class, 'default');
-        /* @var $handler OptimizedRedisClusterAliveKeeper */
         $handler = self::getContainer()->get($redisHandlerSvcId);
+        self::assertInstanceOf(OptimizedRedisClusterAliveKeeper::class, $handler);
         $refl2 = new ReflectionClass(OptimizedRedisClusterAliveKeeper::class);
         $intervalParam2 = $refl2->getProperty('pingIntervalInSeconds');
         $intervalParam2->setAccessible(true);
@@ -52,12 +40,12 @@ final class OptimisedAliveKeeperTest extends TestCase
     {
         $client = self::createClient();
 
-        /* @var $em EntityManagerInterface */
         $em = self::getContainer()->get('doctrine.orm.default_entity_manager');
-        /** @var ConnectionMock $connection */
+        self::assertInstanceOf(EntityManagerInterface::class, $em);
         $connection = $em->getConnection();
-        /** @var RedisClusterSpy $redisCluster */
+        self::assertInstanceOf(ConnectionMock::class, $connection);
         $redisCluster = self::getContainer()->get(RedisCluster::class);
+        self::assertInstanceOf(RedisClusterSpy::class, $redisCluster);
 
         self::assertFalse($connection->isConnected());
         self::assertSame(1, $redisCluster->getConstructorCalls());
@@ -72,5 +60,17 @@ final class OptimisedAliveKeeperTest extends TestCase
         self::assertSame(1, $connection->getQueriesCount());
         self::assertSame(1, $redisCluster->getConstructorCalls());
         self::assertSame(1, $redisCluster->getPingCount());
+    }
+
+    #[Override]
+    protected static function getTestCase(): string
+    {
+        return 'OptimisedAliveKeeperTest';
+    }
+
+    #[Override]
+    protected function setUp(): void
+    {
+        self::bootTestKernel();
     }
 }

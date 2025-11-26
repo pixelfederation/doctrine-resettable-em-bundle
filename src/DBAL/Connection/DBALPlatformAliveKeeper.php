@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PixelFederation\DoctrineResettableEmBundle\DBAL\Connection;
 
 use Doctrine\DBAL\Connection;
+use Override;
 use PixelFederation\DoctrineResettableEmBundle\Connection\PlatformAliveKeeper as GenericPlatformAliveKeeper;
 use RuntimeException;
 
@@ -20,6 +21,7 @@ final class DBALPlatformAliveKeeper implements GenericPlatformAliveKeeper
     ) {
     }
 
+    #[Override]
     public function keepAlive(): void
     {
         foreach ($this->aliveKeepers as $connectionName => $aliveKeeper) {

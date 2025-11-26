@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace PixelFederation\DoctrineResettableEmBundle\Tests\Unit\Redis\Cluster\Connection;
 
 use PHPUnit\Framework\TestCase;
-use PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection\RedisClusterAliveKeeper;
 use PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection\PassiveIgnoringRedisClusterAliveKeeper;
+use PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection\RedisClusterAliveKeeper;
 
-class PassiveIgnoringRedisClusterAliveKeeperTest extends TestCase
+final class PassiveIgnoringRedisClusterAliveKeeperTest extends TestCase
 {
     public function testKeepAliveWithoutInitialisedConnectionProxyDoesNotDoAnything(): void
     {

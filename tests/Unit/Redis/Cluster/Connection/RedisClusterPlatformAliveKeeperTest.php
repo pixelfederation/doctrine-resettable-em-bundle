@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace PixelFederation\DoctrineResettableEmBundle\Tests\Unit\Redis\Cluster\Connection;
 
+use PHPUnit\Framework\TestCase;
 use PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection\RedisClusterAliveKeeper;
 use PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection\RedisClusterPlatformAliveKeeper;
-use PHPUnit\Framework\TestCase;
 use RedisCluster;
 
-class RedisClusterPlatformAliveKeeperTest extends TestCase
+final class RedisClusterPlatformAliveKeeperTest extends TestCase
 {
-    public function testKeepAlive()
+    public function testKeepAlive(): void
     {
         $cName1 = 'default';
         $cMock1 = $this->createMock(RedisCluster::class);
@@ -34,7 +34,7 @@ class RedisClusterPlatformAliveKeeperTest extends TestCase
             [
                 $cName1 => $keeper1,
                 $cName2 => $keeper2,
-            ]
+            ],
         );
         $platformKeeper->keepAlive();
     }

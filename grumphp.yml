@@ -1,11 +1,15 @@
 grumphp:
+  ascii:
+    failed: vendor/pixelfederation/coding-standards/assets/grumphp/pixel-bad.txt
+    succeeded: vendor/pixelfederation/coding-standards/assets/grumphp/pixel-good.txt
   git_hook_variables:
-    EXEC_GRUMPHP_COMMAND: './bin/grumphp_hooks/environment_spinup && docker exec -t doctrine-resettable-em-bundle-php82'
-  stop_on_failure: true
+    EXEC_GRUMPHP_COMMAND: './bin/grumphp_hooks/environment_spinup && docker exec -t doctrine-resettable-em-bundle-php-min'
+  stop_on_failure: false
   process_timeout: 600
-  ignore_unstaged_changes: true
+  fixer:
+    enabled: false
   testsuites:
-    php8.2:
+    php8.3:
       tasks:
         - phpcs
         - phpmd
@@ -15,16 +19,26 @@ grumphp:
         - phpunit
         - phpstan
         - psalm
-    php8.2-no-analyse:
+    php8.4:
       tasks:
+        - phpcs
+        - phpmd
+        - phpcsfixer2
         - phpparser
         - phplint
         - phpunit
-    php8.3-no-analyse:
+        - phpstan
+        - psalm
+    php8.5:
       tasks:
+        - phpcs
+        - phpmd
+        - phpcsfixer2
         - phpparser
         - phplint
         - phpunit
+        - phpstan
+        - psalm
   tasks:
     phpcs:
       standard: 'phpcs.ruleset.xml'
@@ -47,9 +61,7 @@ grumphp:
       triggered_by: ['php']
     phpparser:
       ignore_patterns:
-        - DependencyInjection/
         - tests/
-      kind: php7
       visitors:
         declare_strict_types: ~
         no_exit_statements: ~
@@ -66,15 +78,13 @@ grumphp:
     phpstan:
       autoload_file: ~
       configuration: 'phpstan.neon'
-      level: 7
+      level: max
       ignore_patterns:
         - tests/
-        - DependencyInjection
       triggered_by: ['php']
     psalm:
       config: psalm.xml
       ignore_patterns:
-        - src/DependencyInjection
         - tests
       no_cache: false
       report: ~

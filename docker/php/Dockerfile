@@ -1,4 +1,6 @@
-FROM php:8.2-fpm
+ARG PHP_VERSION
+
+FROM php:${PHP_VERSION}-cli
 
 RUN apt-get update && apt-get install -y git-core zlib1g-dev libzip-dev zip unzip
 RUN docker-php-ext-install zip pdo_mysql
@@ -17,4 +19,8 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" &&
     mv composer.phar /usr/local/bin/composer && \
     unlink composer-setup.php
 
+RUN echo "memory_limit=512M" > /usr/local/etc/php/conf.d/php-memory-limit.ini
+
 WORKDIR /srv/www
+
+CMD ["tail", "-f", "/dev/null"]

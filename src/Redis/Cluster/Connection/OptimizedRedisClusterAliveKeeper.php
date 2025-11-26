@@ -4,15 +4,12 @@ declare(strict_types=1);
 
 namespace PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection;
 
-use Exception;
+use Override;
 use RedisCluster;
 
 final class OptimizedRedisClusterAliveKeeper implements RedisClusterAliveKeeper
 {
-    /**
-     * @const int
-     */
-    private const DEFAULT_PING_INTERVAL = 0;
+    private const int DEFAULT_PING_INTERVAL = 0;
 
     private int $lastPingAt;
 
@@ -23,9 +20,7 @@ final class OptimizedRedisClusterAliveKeeper implements RedisClusterAliveKeeper
         $this->lastPingAt = 0;
     }
 
-    /**
-     * @throws Exception
-     */
+    #[Override]
     public function keepAlive(RedisCluster $redis, string $connectionName): void
     {
         if (!$this->isPingNeeded()) {
@@ -35,9 +30,6 @@ final class OptimizedRedisClusterAliveKeeper implements RedisClusterAliveKeeper
         $this->decorated->keepAlive($redis, $connectionName);
     }
 
-    /**
-     * @throws Exception
-     */
     private function isPingNeeded(): bool
     {
         $lastPingAt = $this->lastPingAt;

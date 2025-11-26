@@ -13,7 +13,9 @@
   <exclude-pattern>tests/</exclude-pattern>
   <exclude-pattern>DependencyInjection/</exclude-pattern>
 
-  <rule ref="rulesets/cleancode.xml"/>
+  <rule ref="rulesets/cleancode.xml">
+    <exclude name="StaticAccess"/>
+  </rule>
 
   <rule ref="rulesets/codesize.xml"/>
 
@@ -63,6 +65,8 @@
     </properties>
   </rule>
 
-  <rule ref="rulesets/unusedcode.xml"/>
+  <rule ref="rulesets/unusedcode.xml">
+    <exclude name="UnusedFormalParameter"/>
+  </rule>
 
 </ruleset>

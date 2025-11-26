@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection;
 
+use Override;
 use Psr\Log\LoggerInterface;
 use RedisCluster;
 use RedisClusterException;
@@ -26,6 +27,7 @@ final class PingingRedisClusterAliveKeeper implements RedisClusterAliveKeeper
     ) {
     }
 
+    #[Override]
     public function keepAlive(RedisCluster $redis, string $connectionName): void
     {
         try {

@@ -18,13 +18,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php-version: [ '8.2', '8.3' ]
-        symfony-version: ['6.4.*', '7.0.*' ]
-        symfony-deprecations-helper: [ 'max[direct]=0&baselineFile=./tests/allowed.json' ]
-        grumphp-testsuite: [ 'no-analyse' ]
-        grumphp-flag: [ '-no-analyse' ]
+        php-version: [ '8.3', '8.4', '8.5' ]
+        symfony-version: ['7.3.*' ]
 
-    name: "PHP: ${{ matrix.php-version }}, Symfony: ${{ matrix.symfony-version }}, GrumPHP: ${{ matrix.grumphp-testsuite }}, Composer: ${{ matrix.composer-flag }}"
+    name: "PHP: ${{ matrix.php-version }}, Symfony: ${{ matrix.symfony-version }}"
 
     steps:
       - uses: actions/checkout@v2
@@ -35,25 +32,19 @@ jobs:
           php-version: ${{ matrix.php-version }}
 
       - name: Validate composer.json and composer.lock
-        run: composer validate --strict
+        run: composer validate --strict --no-check-lock
 
       - name: Check PHP Version
         run: php -v
 
-      - name: Symfony version # run every time except for dependencies with SF 5.4 (locked in composer)
-        if: ${{ matrix.grumphp-testsuite == 'no-analyse' }}
+      - name: Symfony version
         run: composer config extra.symfony.require ${{ matrix.symfony-version }}
 
-      - name: Composer update # run for everything except php 8.1 or SF 5.4 locked in composer.lock
-        if: ${{ matrix.grumphp-testsuite == 'no-analyse' }}
-        run: composer update ${{ matrix.composer-flag }} --prefer-dist --no-interaction
-
-      - name: Composer install # only run for locked dependencies with php 8.1 or SF 5.4 (locked in composer)
-        if: ${{ matrix.grumphp-testsuite == 'main' }}
-        run: composer install --prefer-dist --no-interaction
+      - name: Composer update
+        run: composer update --prefer-dist --no-interaction
 
       - name: Run static analysis (GrumPHP)
-        run: composer run-script grumphp${{ matrix.php-version }}${{ matrix.grumphp-flag }}
+        run: php vendor/bin/grumphp run --testsuite=php${{ matrix.php-version }}
 
 #      - name: Check vendor licenses
 #        run: composer run-script lic-check

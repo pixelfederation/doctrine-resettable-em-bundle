@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace PixelFederation\DoctrineResettableEmBundle\Connection;
 
-use Exception;
+use Override;
 use PixelFederation\DoctrineResettableEmBundle\RequestCycle\Initializer;
 
 final class ConnectionsHandler implements Initializer
@@ -17,9 +17,7 @@ final class ConnectionsHandler implements Initializer
     ) {
     }
 
-    /**
-     * @throws Exception
-     */
+    #[Override]
     public function initialize(): void
     {
         foreach ($this->aliveKeepers as $aliveKeeper) {

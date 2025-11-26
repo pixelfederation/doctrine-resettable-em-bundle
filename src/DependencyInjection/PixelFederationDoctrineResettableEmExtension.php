@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace PixelFederation\DoctrineResettableEmBundle\DependencyInjection;
 
 use Exception;
-use PixelFederation\DoctrineResettableEmBundle\DependencyInjection\CompilerPass\AliveKeeperPass;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
@@ -13,6 +12,26 @@ use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
 
 final class PixelFederationDoctrineResettableEmExtension extends ConfigurableExtension
 {
+    public const string EXCLUDED_FROM_PROCESSING_ENTITY_MANAGERS =
+        'pixelfederation_doctrine_resettable_em_bundle.excluded_from_processing.entity_managers';
+
+    public const string EXCLUDED_FROM_PROCESSING_DBAL_CONNECTIONS =
+        'pixelfederation_doctrine_resettable_em_bundle.excluded_from_processing.connections.dbal';
+
+    public const string EXCLUDED_FROM_PROCESSING_REDIS_CLUSTER_CONNECTIONS =
+        'pixelfederation_doctrine_resettable_em_bundle.excluded_from_processing.connections.redis_cluster';
+
+    public const string PING_INTERVAL = 'pixelfederation_doctrine_resettable_em_bundle.ping_interval';
+
+    public const string CHECK_ACTIVE_TRANSACTIONS =
+        'pixelfederation_doctrine_resettable_em_bundle.check_active_transactions';
+
+    public const string FAILOVER_CONNECTIONS_PARAM_NAME =
+        'pixelfederation_doctrine_resettable_em_bundle.failover_connections';
+
+    public const string REDIS_CLUSTER_CONNECTIONS_PARAM_NAME =
+        'pixelfederation_doctrine_resettable_em_bundle.redis_cluster_connections';
+
     /**
      * @param array{
      *     exclude_from_processing: array{
@@ -23,7 +42,7 @@ final class PixelFederationDoctrineResettableEmExtension extends ConfigurableExt
      *         }
      *     },
      *     redis_cluster_connections?: array<string, string>,
-     *     ping_interval?: int|false,
+     *     ping_interval?: string|int|false,
      *     check_active_transactions?: bool
      * } $mergedConfig
      * @throws Exception
@@ -55,7 +74,7 @@ final class PixelFederationDoctrineResettableEmExtension extends ConfigurableExt
      */
     private function registerNotResettableEntityManagers(ContainerBuilder $container, array $config): void
     {
-        $container->setParameter(Parameters::EXCLUDED_FROM_PROCESSING_ENTITY_MANAGERS, array_unique($config));
+        $container->setParameter(self::EXCLUDED_FROM_PROCESSING_ENTITY_MANAGERS, array_unique($config));
     }
 
     /**
@@ -63,7 +82,7 @@ final class PixelFederationDoctrineResettableEmExtension extends ConfigurableExt
      */
     private function registerNotPingableDbalConnections(ContainerBuilder $container, array $config): void
     {
-        $container->setParameter(Parameters::EXCLUDED_FROM_PROCESSING_DBAL_CONNECTIONS, array_unique($config));
+        $container->setParameter(self::EXCLUDED_FROM_PROCESSING_DBAL_CONNECTIONS, array_unique($config));
     }
 
     /**
@@ -71,11 +90,11 @@ final class PixelFederationDoctrineResettableEmExtension extends ConfigurableExt
      */
     private function registerNotPingableRedisClusterConnections(ContainerBuilder $container, array $config): void
     {
-        $container->setParameter(Parameters::EXCLUDED_FROM_PROCESSING_REDIS_CLUSTER_CONNECTIONS, array_unique($config));
+        $container->setParameter(self::EXCLUDED_FROM_PROCESSING_REDIS_CLUSTER_CONNECTIONS, array_unique($config));
     }
 
     /**
-     * @param array{ping_interval?: int|false} $config
+     * @param array{ping_interval?: string|int|false} $config
      */
     private function tryToOptimizeAliveKeeper(ContainerBuilder $container, array $config): void
     {
@@ -83,8 +102,8 @@ final class PixelFederationDoctrineResettableEmExtension extends ConfigurableExt
             return;
         }
 
-        $pingInterval = intval($config['ping_interval']);
-        $container->setParameter(Parameters::PING_INTERVAL, $pingInterval);
+        $pingInterval = (int) $config['ping_interval'];
+        $container->setParameter(self::PING_INTERVAL, $pingInterval);
     }
 
     /**
@@ -97,7 +116,7 @@ final class PixelFederationDoctrineResettableEmExtension extends ConfigurableExt
         }
 
         $checkActiveTransactions = $config['check_active_transactions'];
-        $container->setParameter(Parameters::CHECK_ACTIVE_TRANSACTIONS, $checkActiveTransactions);
+        $container->setParameter(self::CHECK_ACTIVE_TRANSACTIONS, $checkActiveTransactions);
     }
 
     /**
@@ -105,11 +124,8 @@ final class PixelFederationDoctrineResettableEmExtension extends ConfigurableExt
      */
     private function registerReaderWriterConnections(ContainerBuilder $container, array $config): void
     {
-        if (!isset($config['failover_connections'])) {
-            return;
-        }
-
-        $container->setParameter(AliveKeeperPass::FAILOVER_CONNECTIONS_PARAM_NAME, $config['failover_connections']);
+        $failoverConnections = $config['failover_connections'] ?? [];
+        $container->setParameter(self::FAILOVER_CONNECTIONS_PARAM_NAME, $failoverConnections);
     }
 
     /**
@@ -122,7 +138,7 @@ final class PixelFederationDoctrineResettableEmExtension extends ConfigurableExt
         }
 
         $container->setParameter(
-            AliveKeeperPass::REDIS_CLUSTER_CONNECTIONS_PARAM_NAME,
+            self::REDIS_CLUSTER_CONNECTIONS_PARAM_NAME,
             $config['redis_cluster_connections'],
         );
     }

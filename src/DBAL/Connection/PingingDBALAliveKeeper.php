@@ -6,15 +6,11 @@ namespace PixelFederation\DoctrineResettableEmBundle\DBAL\Connection;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception\ConnectionLost;
-use Exception;
+use Override;
 
 final class PingingDBALAliveKeeper implements DBALAliveKeeper
 {
-    /**
-     * @throws Exception
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    // phpcs:ignore SlevomatCodingStandard.Functions.UnusedParameter.UnusedParameter
+    #[Override]
     public function keepAlive(Connection $connection, string $connectionName): void
     {
         $query = $connection->getDatabasePlatform()->getDummySelectSQL();
@@ -23,8 +19,6 @@ final class PingingDBALAliveKeeper implements DBALAliveKeeper
             $connection->executeQuery($query);
         } catch (ConnectionLost) {
             $connection->close();
-            // @psalm-suppress InternalMethod
-
             $connection->getNativeConnection();
         }
     }

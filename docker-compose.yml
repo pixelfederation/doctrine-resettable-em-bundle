@@ -1,19 +1,42 @@
-version: '3.5'
+x-php-common: &php_common
+  volumes:
+    - .gitconfig:/root/.gitconfig
+    - .:/srv/www:delegated
+  environment:
+    COMPOSER_MEMORY_LIMIT: -1
+    XDEBUG_CONFIG: idekey=PHPSTORM
+
+x-php-build: &php_build
+  context: ./
+  dockerfile: ./docker/php/Dockerfile
 
 services:
   # PHP
-  doctrine-resettable-em-bundle-php82:
-    container_name: doctrine-resettable-em-bundle-php82
-    build: ./docker/php82
-    volumes:
-      - .:/srv/www:delegated
-    environment:
-      - XDEBUG_CONFIG=idekey=PHPSTORM
-
   doctrine-resettable-em-bundle-php83:
+    <<: *php_common
     container_name: doctrine-resettable-em-bundle-php83
-    build: ./docker/php83
-    volumes:
-      - .:/srv/www:delegated
-    environment:
-      - XDEBUG_CONFIG=idekey=PHPSTORM
+    build:
+      <<: *php_build
+      args:
+        PHP_VERSION: 8.3
+
+  doctrine-resettable-em-bundle-php84:
+    container_name: doctrine-resettable-em-bundle-php84
+    <<: *php_common
+    build:
+      <<: *php_build
+      args:
+        PHP_VERSION: 8.4
+
+  doctrine-resettable-em-bundle-php85:
+    container_name: doctrine-resettable-em-bundle-php85
+    <<: *php_common
+    build:
+      <<: *php_build
+      args:
+        PHP_VERSION: 8.5
+
+  doctrine-resettable-em-bundle-php-min:
+    extends:
+      service: doctrine-resettable-em-bundle-php83
+    container_name: doctrine-resettable-em-bundle-php-min

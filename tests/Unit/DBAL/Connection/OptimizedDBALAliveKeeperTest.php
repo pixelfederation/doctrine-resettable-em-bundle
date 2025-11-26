@@ -10,7 +10,7 @@ use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\DBALAliveKeeper;
 use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\OptimizedDBALAliveKeeper;
 use Symfony\Bridge\PhpUnit\ClockMock;
 
-class OptimizedDBALAliveKeeperTest extends TestCase
+final class OptimizedDBALAliveKeeperTest extends TestCase
 {
     /**
      * @group time-sensitive
@@ -22,7 +22,7 @@ class OptimizedDBALAliveKeeperTest extends TestCase
         $connectionMock = $this->createMock(Connection::class);
         $connectionName = 'default';
         $decoratedAliveKeepr = $this->createMock(DBALAliveKeeper::class);
-        $decoratedAliveKeepr->expects(self::once())
+        $decoratedAliveKeepr->expects($this->once())
             ->method('keepAlive')
             ->with($connectionMock, $connectionName);
 

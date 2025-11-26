@@ -56,7 +56,3 @@ pixel_federation_doctrine_resettable_em:
   redis_cluster_connections:
     default: 'RedisCluster' # connection name (can be literally anything) => redis cluster service id
 ```
-
-## Migration from v5 to v6
-
-Change all usages of `PixelFederation\DoctrineResettableEmBundle\RequestCycle\InitializerInterface` to `PixelFederation\DoctrineResettableEmBundle\RequestCycle\Initializer` 

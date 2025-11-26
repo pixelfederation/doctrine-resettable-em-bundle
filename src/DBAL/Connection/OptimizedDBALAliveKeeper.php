@@ -5,14 +5,11 @@ declare(strict_types=1);
 namespace PixelFederation\DoctrineResettableEmBundle\DBAL\Connection;
 
 use Doctrine\DBAL\Connection;
-use Exception;
+use Override;
 
 final class OptimizedDBALAliveKeeper implements DBALAliveKeeper
 {
-    /**
-     * @const int
-     */
-    private const DEFAULT_PING_INTERVAL = 0;
+    private const int DEFAULT_PING_INTERVAL = 0;
 
     private int $lastPingAt;
 
@@ -23,9 +20,7 @@ final class OptimizedDBALAliveKeeper implements DBALAliveKeeper
         $this->lastPingAt = 0;
     }
 
-    /**
-     * @throws Exception
-     */
+    #[Override]
     public function keepAlive(Connection $connection, string $connectionName): void
     {
         if (!$this->isPingNeeded()) {
@@ -35,9 +30,6 @@ final class OptimizedDBALAliveKeeper implements DBALAliveKeeper
         $this->decorated->keepAlive($connection, $connectionName);
     }
 
-    /**
-     * @throws Exception
-     */
     private function isPingNeeded(): bool
     {
         $lastPingAt = $this->lastPingAt;

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace PixelFederation\DoctrineResettableEmBundle\DBAL\Connection;
 
 use Doctrine\DBAL\Connection;
-use Exception;
+use Override;
 use ProxyManager\Proxy\VirtualProxyInterface;
 
 final class PassiveIgnoringDBALAliveKeeper implements DBALAliveKeeper
@@ -15,9 +15,7 @@ final class PassiveIgnoringDBALAliveKeeper implements DBALAliveKeeper
     ) {
     }
 
-    /**
-     * @throws Exception
-     */
+    #[Override]
     public function keepAlive(Connection $connection, string $connectionName): void
     {
         if ($connection instanceof VirtualProxyInterface && !$connection->isProxyInitialized()) {
