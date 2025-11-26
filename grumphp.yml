@@ -41,7 +41,7 @@ grumphp:
         - phplint
         - phpunit
         - phpstan
-        - psalm
+#        - psalm # psalm do not yet support PHP 8.5
   tasks:
     phpcs:
       standard: 'phpcs.ruleset.xml'
