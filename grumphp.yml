@@ -5,6 +5,9 @@ grumphp:
   git_hook_variables:
     EXEC_GRUMPHP_COMMAND: './bin/grumphp_hooks/environment_spinup && docker exec -t doctrine-resettable-em-bundle-php-min'
   stop_on_failure: false
+  environment:
+    variables:
+      PHP_CS_FIXER_IGNORE_ENV: 1 # PHP CS Fixer currently supports PHP syntax only up to PHP 8.4
   process_timeout: 600
   fixer:
     enabled: false
