@@ -4,12 +4,31 @@ declare(strict_types=1);
 
 namespace PixelFederation\DoctrineResettableEmBundle\DependencyInjection;
 
-use Exception;
+use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\FailoverAware\ConnectionType;
+use PixelFederation\DoctrineResettableEmBundle\RequestCycle\Initializers;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\Argument\TaggedIteratorArgument;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
 
+/**
+ * @psalm-type ConfigType = array{
+ *     exclude_from_processing: array{
+ *         entity_managers: array<string>,
+ *         connections: array{
+ *             dbal: array<string>,
+ *             redis_cluster: array<string>
+ *         }
+ *     },
+ *     redis_cluster_connections?: array<string, string>,
+ *     ping_interval?: string|int|false,
+ *     check_active_transactions?: bool,
+ *     disable_request_initializers?: bool,
+ *     failover_connections?: array<string, ConnectionType>,
+ *  }
+ */
 final class PixelFederationDoctrineResettableEmExtension extends ConfigurableExtension
 {
     public const string EXCLUDED_FROM_PROCESSING_ENTITY_MANAGERS =
@@ -33,19 +52,7 @@ final class PixelFederationDoctrineResettableEmExtension extends ConfigurableExt
         'pixelfederation_doctrine_resettable_em_bundle.redis_cluster_connections';
 
     /**
-     * @param array{
-     *     exclude_from_processing: array{
-     *         entity_managers: array<string>,
-     *         connections: array{
-     *             dbal: array<string>,
-     *             redis_cluster: array<string>
-     *         }
-     *     },
-     *     redis_cluster_connections?: array<string, string>,
-     *     ping_interval?: string|int|false,
-     *     check_active_transactions?: bool
-     * } $mergedConfig
-     * @throws Exception
+     * @param ConfigType $mergedConfig
      */
     protected function loadInternal(array $mergedConfig, ContainerBuilder $container): void
     {
@@ -67,6 +74,7 @@ final class PixelFederationDoctrineResettableEmExtension extends ConfigurableExt
         $this->tryToActivateTransactionChecks($container, $mergedConfig);
         $this->registerReaderWriterConnections($container, $mergedConfig);
         $this->registerRedisClusterConnections($container, $mergedConfig);
+        $this->registerInitializers($container, $mergedConfig);
     }
 
     /**
@@ -94,7 +102,7 @@ final class PixelFederationDoctrineResettableEmExtension extends ConfigurableExt
     }
 
     /**
-     * @param array{ping_interval?: string|int|false} $config
+     * @param ConfigType $config
      */
     private function tryToOptimizeAliveKeeper(ContainerBuilder $container, array $config): void
     {
@@ -107,7 +115,7 @@ final class PixelFederationDoctrineResettableEmExtension extends ConfigurableExt
     }
 
     /**
-     * @param array{check_active_transactions?: bool} $config
+     * @param ConfigType $config
      */
     private function tryToActivateTransactionChecks(ContainerBuilder $container, array $config): void
     {
@@ -120,7 +128,7 @@ final class PixelFederationDoctrineResettableEmExtension extends ConfigurableExt
     }
 
     /**
-     * @param array{failover_connections?: array<string, string>} $config
+     * @param ConfigType $config
      */
     private function registerReaderWriterConnections(ContainerBuilder $container, array $config): void
     {
@@ -129,7 +137,7 @@ final class PixelFederationDoctrineResettableEmExtension extends ConfigurableExt
     }
 
     /**
-     * @param array{redis_cluster_connections?: array<string, string>} $config
+     * @param ConfigType $config
      */
     private function registerRedisClusterConnections(ContainerBuilder $container, array $config): void
     {
@@ -141,5 +149,28 @@ final class PixelFederationDoctrineResettableEmExtension extends ConfigurableExt
             self::REDIS_CLUSTER_CONNECTIONS_PARAM_NAME,
             $config['redis_cluster_connections'],
         );
+    }
+
+    /**
+     * @param ConfigType $config
+     */
+    private function registerInitializers(ContainerBuilder $container, array $config): void
+    {
+        $disable = $config['disable_request_initializers'] ?? false;
+        if ($disable) {
+            return;
+        }
+
+        $initializers = new Definition(Initializers::class, [
+            '$initializers' => new TaggedIteratorArgument(
+                'pixelfederation_doctrine_resettable_em_bundle.app_initializer',
+            ),
+        ]);
+        $initializers->addTag('kernel.event_listener', [
+            'event' => 'kernel.request',
+            'method' => 'initialize',
+            'priority' => 1000000,
+        ]);
+        $container->setDefinition(Initializers::class, $initializers);
     }
 }

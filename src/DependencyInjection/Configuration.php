@@ -6,16 +6,19 @@ namespace PixelFederation\DoctrineResettableEmBundle\DependencyInjection;
 
 use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\FailoverAware\ConnectionType;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
+use Symfony\Component\Config\Definition\Builder\NodeBuilder;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 final class Configuration implements ConfigurationInterface
 {
+    /**
+     * @return TreeBuilder<'array'>
+     */
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder('pixel_federation_doctrine_resettable_em');
         $rootNode = $treeBuilder->getRootNode();
-        assert($rootNode instanceof ArrayNodeDefinition);
 
         $this->addExcludeFromProcessing($rootNode);
         $rootNode->children()
@@ -26,20 +29,27 @@ final class Configuration implements ConfigurationInterface
                 ->defaultFalse();
         $this->addFailoverConnections($rootNode);
         $this->addRedisClusterConnections($rootNode);
+        $rootNode->children()
+            ->booleanNode('disable_request_initializers')
+                ->defaultFalse();
 
         return $treeBuilder;
     }
 
+    /**
+     * @param ArrayNodeDefinition<TreeBuilder<'array'>> $rootNode
+     */
     private function addExcludeFromProcessing(ArrayNodeDefinition $rootNode): void
     {
-        $excludeFromProcessing = $rootNode->children()
-            ->arrayNode('exclude_from_processing')
-                ->addDefaultsIfNotSet();
-
+        $excludeFromProcessing = $rootNode->children()->arrayNode('exclude_from_processing');
+        $excludeFromProcessing->addDefaultsIfNotSet();
         $this->addExcludeFromProcessingEntityManagers($excludeFromProcessing);
         $this->addExcludeFromProcessingConnections($excludeFromProcessing);
     }
 
+    /**
+     * @param ArrayNodeDefinition<NodeBuilder<ArrayNodeDefinition<TreeBuilder<'array'>>>> $parentNode
+     */
     private function addExcludeFromProcessingConnections(ArrayNodeDefinition $parentNode): void
     {
         $connections = $parentNode->children()
@@ -81,6 +91,9 @@ final class Configuration implements ConfigurationInterface
             });
     }
 
+    /**
+     * @param ArrayNodeDefinition<NodeBuilder<ArrayNodeDefinition<TreeBuilder<'array'>>>> $parentNode
+     */
     private function addExcludeFromProcessingEntityManagers(ArrayNodeDefinition $parentNode): void
     {
         $entityManagers = $parentNode->children()
@@ -101,6 +114,9 @@ final class Configuration implements ConfigurationInterface
             });
     }
 
+    /**
+     * @param ArrayNodeDefinition<TreeBuilder<'array'>> $rootNode
+     */
     private function addFailoverConnections(ArrayNodeDefinition $rootNode): void
     {
         $failoverConnections = $rootNode->children()
@@ -124,6 +140,9 @@ final class Configuration implements ConfigurationInterface
             });
     }
 
+    /**
+     * @param ArrayNodeDefinition<TreeBuilder<'array'>> $rootNode
+     */
     // phpcs:ignore SlevomatCodingStandard.Complexity.Cognitive.ComplexityTooHigh
     private function addRedisClusterConnections(ArrayNodeDefinition $rootNode): void
     {
