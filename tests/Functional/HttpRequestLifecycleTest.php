@@ -13,6 +13,7 @@ use PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestL
 use PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\RedisClusterSpy;
 use RedisCluster;
 use ReflectionClass;
+use Symfony\Component\HttpKernel\Kernel;
 
 final class HttpRequestLifecycleTest extends TestCase
 {
@@ -132,6 +133,7 @@ final class HttpRequestLifecycleTest extends TestCase
 
         $client = self::createClient();
         $checker = $client->getContainer()->get(EntityManagerChecker::class . '.default');
+        self::assertInstanceOf(EntityManagerChecker::class, $checker);
         $client->disableReboot();
         $client->request('GET', '/persist-error');
 
@@ -157,7 +159,12 @@ final class HttpRequestLifecycleTest extends TestCase
 
         self::assertSame(4, $checker->getNumberOfChecks());
         self::assertTrue($checker->wasEmptyOnLastCheck());
-        self::assertSame(0, $response->count()); // this means that there was an empty response
+        if (Kernel::VERSION_ID < 74000) {
+            self::assertSame(0, $response->count()); // this means that there was an empty response
+
+            return;
+        }
+        self::assertSame('<head></head><body></body>', $response->html());
     }
 
     public function testExcludedEmWontBeWrappedAndWillBeResetWithDefaultDoctrineServicesResetter(): void

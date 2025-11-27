@@ -1,5 +1,17 @@
 parameters:
   level: max
   ignoreErrors:
+    # for sf7.3
+    - identifier: method.nonObject
+      path: src/DependencyInjection/Configuration.php
+    # for sf7.3
+    - identifier: generics.notGeneric
+      path: src/DependencyInjection/Configuration.php
+    # for sf7.3
+    - identifier: method.notFound
+      path: src/DependencyInjection/Configuration.php
+    # for sf7.3
+    - identifier: argument.type
+      path: src/DependencyInjection/Configuration.php
   excludePaths:
     - tests/*
