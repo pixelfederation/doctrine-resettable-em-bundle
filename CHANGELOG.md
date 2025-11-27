@@ -11,6 +11,7 @@
 - rm `PixelFederation\DoctrineResettableEmBundle\DependencyInjection\Parameters` and move constants to `PixelFederation\DoctrineResettableEmBundle\DependencyInjection\PixelFederationDoctrineResettableEmExtension`
 - move constants from `PixelFederation\DoctrineResettableEmBundle\DependencyInjection\CompilerPass\AliveKeeperPass` to `PixelFederation\DoctrineResettableEmBundle\DependencyInjection\PixelFederationDoctrineResettableEmExtension`
 - `PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\FailoverAware\ConnectionType` was changed from value object to enum
+- add `disable_request_initializers` option to disable request initializers
 
 # 6.0.0
 
