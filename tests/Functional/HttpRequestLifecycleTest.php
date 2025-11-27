@@ -159,7 +159,7 @@ final class HttpRequestLifecycleTest extends TestCase
 
         self::assertSame(4, $checker->getNumberOfChecks());
         self::assertTrue($checker->wasEmptyOnLastCheck());
-        if (Kernel::VERSION_ID < 74000) {
+        if (Kernel::VERSION_ID < 70400) {
             self::assertSame(0, $response->count()); // this means that there was an empty response
 
             return;
