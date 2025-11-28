@@ -43,6 +43,8 @@ grumphp:
         - phpstan
 #        - psalm # psalm do not yet support PHP 8.5
   tasks:
+    composer: ~
+    composer_normalize: ~
     phpcs:
       standard: 'phpcs.ruleset.xml'
       tab_width: 4
