@@ -64,9 +64,10 @@ So you need to disable Initializers and disable processing for all dbal connecti
 pixel_federation_doctrine_resettable_em:
   disable_request_initializers: true
   exclude_from_processing:
-      dbal:
-        - default
-        - definition
+      connections:
+          dbal:
+            - default
+            - definition
 ```
 
 To enable ping on entity managers during message queue consuming, you can add `doctrine_ping_connection` middleware: https://symfony.com/doc/current/messenger.html#middleware-for-doctrine
