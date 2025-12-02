@@ -13,7 +13,7 @@
   "require": {
     "php": "^8.3",
     "doctrine/doctrine-bundle": "^2.10",
-    "doctrine/orm": "^2.0",
+    "doctrine/orm": "^3.5",
     "symfony/config": "^7.3",
     "symfony/dependency-injection": "^7.3",
     "symfony/proxy-manager-bridge": "^6.4",
