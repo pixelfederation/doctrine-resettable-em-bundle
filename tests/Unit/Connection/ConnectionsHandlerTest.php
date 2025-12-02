@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 use PixelFederation\DoctrineResettableEmBundle\Connection\ConnectionsHandler;
 use PixelFederation\DoctrineResettableEmBundle\Connection\PlatformAliveKeeper;
 
-class ConnectionsHandlerTest extends TestCase
+final class ConnectionsHandlerTest extends TestCase
 {
     public function testKeepAliveAllConnections(): void
     {

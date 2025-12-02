@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest;
 
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
@@ -37,7 +39,8 @@ final class TestController
         try {
             $this->entityManager->persist(new TestEntity2(10));
             $this->entityManager->flush();
-        } catch (UniqueConstraintViolationException) {}
+        } catch (UniqueConstraintViolationException) {
+        }
 
         return new Response();
     }

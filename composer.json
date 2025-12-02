@@ -1,52 +1,51 @@
 {
   "name": "pixelfederation/doctrine-resettable-em-bundle",
-  "homepage": "https://github.com/pixelfederation/doctrine-resettable-em-bundle",
-  "type": "symfony-bundle",
   "description": "Symfony bundle for decorating default entity managers using a resettable decorator.",
   "license": "MIT",
+  "type": "symfony-bundle",
   "authors": [
     {
       "name": "Martin Fris",
       "email": "mfris@pixelfederation.com"
     }
   ],
-  "minimum-stability": "dev",
-  "prefer-stable": true,
+  "homepage": "https://github.com/pixelfederation/doctrine-resettable-em-bundle",
   "require": {
-    "php": ">= 8.2",
+    "php": "^8.3",
     "doctrine/doctrine-bundle": "^2.10",
     "doctrine/orm": "^2.0",
-    "symfony/config": "^6.4 || ^7.0",
-    "symfony/dependency-injection": "^6.4 || ^7.0",
+    "symfony/config": "^7.3",
+    "symfony/dependency-injection": "^7.3",
     "symfony/proxy-manager-bridge": "^6.4",
-    "symfony/yaml": "^6.4 || ^7.0"
+    "symfony/yaml": "^7.3"
   },
+  "require-dev": {
+    "ergebnis/composer-normalize": "^2.48",
+    "friendsofphp/php-cs-fixer": "^3.13.2",
+    "nikic/php-parser": "^5.0",
+    "php-parallel-lint/php-parallel-lint": "^1.3",
+    "phpmd/phpmd": "^2.8",
+    "phpro/grumphp-shim": "^2.10",
+    "phpstan/phpstan": "^2.1",
+    "phpstan/phpstan-webmozart-assert": "^2.0",
+    "phpunit/phpunit": "^12.4",
+    "pixelfederation/coding-standards": "^5.2",
+    "psalm/phar": "^6.13",
+    "roave/security-advisories": "dev-master",
+    "squizlabs/php_codesniffer": "^4.0",
+    "symfony/browser-kit": "^7.3",
+    "symfony/flex": "^2.3",
+    "symfony/framework-bundle": "^7.3",
+    "symfony/http-kernel": "^7.3",
+    "symfony/phpunit-bridge": "^7.3",
+    "symplify/config-transformer": "^12.0"
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true,
   "autoload": {
     "psr-4": {
       "PixelFederation\\DoctrineResettableEmBundle\\": "src/"
     }
-  },
-  "require-dev": {
-    "doctrine/annotations": "^2.0",
-    "friendsofphp/php-cs-fixer": "^3.13.2",
-    "nikic/php-parser": "^5.0",
-    "php-parallel-lint/php-parallel-lint": "^1.3",
-    "phpcompatibility/php-compatibility": "^9.1",
-    "phpmd/phpmd": "^2.8",
-    "phpro/grumphp-shim": "^2.10",
-    "phpstan/phpstan": "^1.0",
-    "phpstan/phpstan-webmozart-assert": "^1.0",
-    "phpunit/phpunit": "^10.2",
-    "pixelfederation/coding-standards": "^3.0",
-    "psalm/phar": "^5.26",
-    "roave/security-advisories": "dev-master",
-    "squizlabs/php_codesniffer": "^3.4",
-    "symfony/browser-kit": "^6.4|^7.0",
-    "symfony/flex": "^2.3",
-    "symfony/framework-bundle": "^6.4 || ^7.0",
-    "symfony/http-kernel": "^6.4 || ^7.0",
-    "symfony/phpunit-bridge": "^6.4 || ^7.0",
-    "symplify/config-transformer": "^12.0"
   },
   "autoload-dev": {
     "psr-4": {
@@ -54,28 +53,12 @@
     }
   },
   "config": {
-    "sort-packages": true,
     "allow-plugins": {
       "dealerdirect/phpcodesniffer-composer-installer": true,
+      "ergebnis/composer-normalize": true,
       "phpro/grumphp-shim": true,
       "symfony/flex": true
-    }
-  },
-  "scripts": {
-    "grumphp8.2": "grumphp run --testsuite=php8.2",
-    "grumphp8.2-no-analyse": "grumphp run --testsuite=php8.2-no-analyse",
-    "grumphp8.3-no-analyse": "grumphp run --testsuite=php8.3-no-analyse",
-    "phpcs": "phpcs --standard=phpcs.ruleset.xml",
-    "phpcbf": "phpcbf --standard=phpcs.ruleset.xml --extensions=php --tab-width=4 -sp src tests",
-    "php-cs-fixer": "php-cs-fixer --config=./.php-cs-fixer.php fix src",
-    "phpmd": "phpmd src text phpmd.ruleset.xml",
-    "phpstan": "phpstan analyse src --level=7",
-    "phpunit": "phpunit",
-    "psalm": "psalm.phar"
-  },
-  "extra": {
-    "symfony": {
-      "require": "6.4.*"
-    }
+    },
+    "sort-packages": true
   }
 }

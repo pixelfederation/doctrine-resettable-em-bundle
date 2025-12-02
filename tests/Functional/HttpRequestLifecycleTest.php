@@ -1,39 +1,32 @@
 <?php
+
 declare(strict_types=1);
+
 namespace PixelFederation\DoctrineResettableEmBundle\Tests\Functional;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
+use Override;
 use PixelFederation\DoctrineResettableEmBundle\ORM\ResettableEntityManager;
 use PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\ConnectionMock;
 use PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\EntityManagerChecker;
+use PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRequestLifecycleTest\RedisClusterSpy;
 use RedisCluster;
 use ReflectionClass;
 use Symfony\Component\HttpKernel\Kernel;
 
 final class HttpRequestLifecycleTest extends TestCase
 {
-    protected function tearDown(): void
-    {
-        parent::tearDown();
-        self::deleteTmpDir();
-    }
-
-    protected static function getTestCase(): string
-    {
-        return 'HttpRequestLifecycleTest';
-    }
-
     public function testDoNotPingConnectionsOnRequestStartIfConnectionIsNotOpen(): void
     {
         $this->setUpInternal();
         $client = self::createClient();
 
-        /* @var $em EntityManagerInterface */
         $em = self::getContainer()->get('doctrine.orm.default_entity_manager');
+        self::assertInstanceOf(EntityManagerInterface::class, $em);
         $connection = $em->getConnection();
         $redisCluster = self::getContainer()->get(RedisCluster::class);
+        self::assertInstanceOf(RedisClusterSpy::class, $redisCluster);
         $redisCluster->setIsProxyInitialized(false);
 
         self::assertFalse($connection->isConnected());
@@ -49,16 +42,18 @@ final class HttpRequestLifecycleTest extends TestCase
         $this->setUpInternal('configs/config-conn-mock.yaml');
         $client = self::createClient([], 'configs/config-conn-mock.yaml');
 
-        /* @var $em EntityManagerInterface */
         $em = self::getContainer()->get('doctrine.orm.default_entity_manager');
-        /** @var ConnectionMock $connection */
+        self::assertInstanceOf(EntityManagerInterface::class, $em);
         $connection = $em->getConnection();
-        /* @var $emExcluded EntityManagerInterface */
+        self::assertInstanceOf(ConnectionMock::class, $connection);
         $emExcluded = self::getContainer()->get('doctrine.orm.excluded_entity_manager');
-        /** @var ConnectionMock $connectionExcluded */
+        self::assertInstanceOf(EntityManagerInterface::class, $emExcluded);
         $connectionExcluded = $emExcluded->getConnection();
+        self::assertInstanceOf(ConnectionMock::class, $connectionExcluded);
         $redisCluster = self::getContainer()->get(RedisCluster::class);
+        self::assertInstanceOf(RedisClusterSpy::class, $redisCluster);
         $redisClusterExcluded = self::getContainer()->get(RedisCluster::class . '2');
+        self::assertInstanceOf(RedisClusterSpy::class, $redisClusterExcluded);
 
         self::assertFalse($connection->isConnected());
         self::assertFalse($connectionExcluded->isConnected());
@@ -74,7 +69,7 @@ final class HttpRequestLifecycleTest extends TestCase
         self::assertTrue($redisCluster->wasConstructorCalled());
         self::assertSame(
             $redisCluster->getConstructorParametersFirst(),
-            $redisCluster->getConstructorParametersSecond()
+            $redisCluster->getConstructorParametersSecond(),
         );
         self::assertFalse($redisClusterExcluded->wasConstructorCalled());
     }
@@ -84,11 +79,11 @@ final class HttpRequestLifecycleTest extends TestCase
         $this->setUpInternal('configs/config-trans-check.yaml');
         $client = self::createClient([], 'configs/config-trans-check.yaml');
 
-        /* @var $em EntityManagerInterface */
         $em = self::getContainer()->get('doctrine.orm.default_entity_manager');
+        self::assertInstanceOf(EntityManagerInterface::class, $em);
         $connection = $em->getConnection();
-        /* @var $emExcluded EntityManagerInterface */
         $emExcluded = self::getContainer()->get('doctrine.orm.excluded_entity_manager');
+        self::assertInstanceOf(EntityManagerInterface::class, $emExcluded);
         $connectionExcluded = $emExcluded->getConnection();
 
         self::assertFalse($connection->isConnected());
@@ -104,14 +99,11 @@ final class HttpRequestLifecycleTest extends TestCase
         self::assertTrue($connectionExcluded->isTransactionActive());
     }
 
-    /**
-     * @throws Exception
-     */
     public function testEmWillBeResetWithServicesResetter(): void
     {
         $this->setUpInternal();
-        /* @var $em EntityManagerInterface */
         $em = self::getContainer()->get('doctrine.orm.default_entity_manager');
+        self::assertInstanceOf(EntityManagerInterface::class, $em);
         self::assertInstanceOf(ResettableEntityManager::class, $em);
 
         $client = self::createClient();
@@ -128,14 +120,11 @@ final class HttpRequestLifecycleTest extends TestCase
         self::assertTrue($checker->wasEmptyOnLastCheck());
     }
 
-    /**
-     * @throws Exception
-     */
     public function testEmWillBeResetOnErrorWithServicesResetter(): void
     {
         $this->setUpInternal();
-        /* @var $em EntityManagerInterface */
         $em = self::getContainer()->get('doctrine.orm.default_entity_manager');
+        self::assertInstanceOf(EntityManagerInterface::class, $em);
         self::assertInstanceOf(ResettableEntityManager::class, $em);
         $refl = new ReflectionClass(ResettableEntityManager::class);
         $wrappedProperty = $refl->getProperty('wrapped');
@@ -144,6 +133,7 @@ final class HttpRequestLifecycleTest extends TestCase
 
         $client = self::createClient();
         $checker = $client->getContainer()->get(EntityManagerChecker::class . '.default');
+        self::assertInstanceOf(EntityManagerChecker::class, $checker);
         $client->disableReboot();
         $client->request('GET', '/persist-error');
 
@@ -160,8 +150,8 @@ final class HttpRequestLifecycleTest extends TestCase
         self::assertSame(3, $checker->getNumberOfChecks());
         self::assertTrue($checker->wasEmptyOnLastCheck());
 
-        /** @var EntityManagerInterface $wrapped2 */
         $wrapped2 = $wrappedProperty->getValue($em);
+        self::assertInstanceOf(EntityManagerInterface::class, $wrapped2);
         self::assertSame($wrapped, $wrapped2);
         self::assertTrue($wrapped2->isOpen());
 
@@ -169,58 +159,20 @@ final class HttpRequestLifecycleTest extends TestCase
 
         self::assertSame(4, $checker->getNumberOfChecks());
         self::assertTrue($checker->wasEmptyOnLastCheck());
-        self::assertSame(0, $response->count()); // this means that there was an empty response
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function testExcludedEmWillBeResetOnErrorWithServicesResetterButRepositoryWontBeResetted(): void
-    {
-        if (version_compare(Kernel::VERSION, '6.2.0') >= 0) {
-            $this->markTestSkipped('This test is not needed with Symfony 6.2');
+        if (Kernel::VERSION_ID < 70400 || PHP_VERSION_ID < 80400) {
+            self::assertSame(0, $response->count()); // this means that there was an empty response
 
             return;
         }
-
-        $this->setUpInternal();
-
-        /* @var $em EntityManagerInterface */
-        $em = self::getContainer()->get('doctrine.orm.excluded_entity_manager');
-        self::assertNotInstanceOf(ResettableEntityManager::class, $em);
-
-        $client = self::createClient();
-        $checker = $client->getContainer()->get(EntityManagerChecker::class . '.excluded');
-        $client->disableReboot();
-        $client->request('GET', '/persist-error-excluded');
-
-        self::assertSame(1, $checker->getNumberOfChecks());
-        self::assertTrue($checker->wasEmptyOnLastCheck());
-
-        $client->request('GET', '/persist-error-excluded');
-
-        self::assertSame(2, $checker->getNumberOfChecks());
-        self::assertTrue($checker->wasEmptyOnLastCheck());
-
-        $response = $client->request('GET', '/remove-all-excluded');
-
-        self::assertTrue($checker->wasEmptyOnLastCheck());
-        self::assertNotSame(0, $response->count());
-        self::assertStringContainsString(
-            'Detached entity PixelFederation\\DoctrineResettableEmBundle\\Tests\\Functional\\app\\HttpRequestLifecycleTest\\ExcludedEntity\\ExcludedTestEntity2',
-            $response->html()
-        );
+        self::assertSame('<head></head><body></body>', $response->html());
     }
 
-    /**
-     * @throws Exception
-     */
     public function testExcludedEmWontBeWrappedAndWillBeResetWithDefaultDoctrineServicesResetter(): void
     {
         $this->setUpInternal();
 
-        /* @var $em EntityManagerInterface */
         $em = self::getContainer()->get('doctrine.orm.excluded_entity_manager');
+        self::assertInstanceOf(EntityManagerInterface::class, $em);
         self::assertInstanceOf(EntityManager::class, $em);
 
         $client = self::createClient();
@@ -235,6 +187,20 @@ final class HttpRequestLifecycleTest extends TestCase
 
         self::assertSame(2, $checker->getNumberOfChecks());
         self::assertTrue($checker->wasEmptyOnLastCheck());
+    }
+
+    #[Override]
+    protected static function getTestCase(): string
+    {
+        return 'HttpRequestLifecycleTest';
+    }
+
+    #[Override]
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+
+        self::deleteTmpDir();
     }
 
     private function setUpInternal(string $rootConfig = 'configs/config.yaml'): void

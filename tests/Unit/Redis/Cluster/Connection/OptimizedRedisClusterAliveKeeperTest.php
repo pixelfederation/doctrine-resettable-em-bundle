@@ -1,16 +1,16 @@
 <?php
+
 declare(strict_types=1);
 
 namespace PixelFederation\DoctrineResettableEmBundle\Tests\Unit\Redis\Cluster\Connection;
 
-use Exception;
 use PHPUnit\Framework\TestCase;
-use PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection\RedisClusterAliveKeeper;
 use PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection\OptimizedRedisClusterAliveKeeper;
+use PixelFederation\DoctrineResettableEmBundle\Redis\Cluster\Connection\RedisClusterAliveKeeper;
 use RedisCluster;
 use Symfony\Bridge\PhpUnit\ClockMock;
 
-class OptimizedRedisClusterAliveKeeperTest extends TestCase
+final class OptimizedRedisClusterAliveKeeperTest extends TestCase
 {
     /**
      * @group time-sensitive

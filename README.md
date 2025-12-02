@@ -11,7 +11,7 @@ into a `ResettableEntityManager` instance, which
 is able to reset the entity manager when it gets stuck on an exception.
 After each request the entity manager gets cleared or reset, if an exception occurred during request handling.
 
-Also another feature is, that on each request start the entity manager connection gets pinged, so the connection
+Also, another feature is that on each request start the entity manager connection gets pinged, so the connection
 won't get closed after some period of time.
 
 ## Instalation
@@ -35,12 +35,13 @@ pixel_federation_doctrine_resettable_em:
     # these entity managers won't be wrapped by the resettable entity manager:
     entity_managers:
         - readonly
-    # these dbal connections won't be assigned to the keep alive handler
-    dbal:
-      - readonly
-    # these redis cluster connections won't be assigned to the keep alive handler
-    redis_cluster:
-        - default
+    connections:
+        # these dbal connections won't be assigned to the keep alive handler
+        dbal:
+            - readonly
+        # these redis cluster connections won't be assigned to the keep alive handler
+        redis_cluster:
+            - default
   # default 0 - if set, the connection ping operation will be executed each X seconds 
   # (instead of at the beginning of each request) 
   ping_interval: 10 
@@ -57,6 +58,17 @@ pixel_federation_doctrine_resettable_em:
     default: 'RedisCluster' # connection name (can be literally anything) => redis cluster service id
 ```
 
-## Migration from v5 to v6
+If you have `php-fpm` you need only handle RedisCluster on message queue consuming.
+So you need to disable Initializers and disable processing for all dbal connections.
 
-Change all usages of `PixelFederation\DoctrineResettableEmBundle\RequestCycle\InitializerInterface` to `PixelFederation\DoctrineResettableEmBundle\RequestCycle\Initializer` 
+```yaml
+pixel_federation_doctrine_resettable_em:
+  disable_request_initializers: true
+  exclude_from_processing:
+      connections:
+          dbal:
+            - default
+            - definition
+```
+
+To enable ping on entity managers during message queue consuming, you can add `doctrine_ping_connection` middleware: https://symfony.com/doc/current/messenger.html#middleware-for-doctrine

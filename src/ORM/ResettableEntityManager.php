@@ -7,12 +7,14 @@ namespace PixelFederation\DoctrineResettableEmBundle\ORM;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Decorator\EntityManagerDecorator;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NativeQuery;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Repository\RepositoryFactory;
 use Doctrine\Persistence\ManagerRegistry;
+use Override;
 use UnexpectedValueException;
 
 /**
@@ -35,26 +37,29 @@ class ResettableEntityManager extends EntityManagerDecorator
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * @psalm-suppress LessSpecificImplementedReturnType
+     * @inheritDoc
+     * @template T of object
+     * @param class-string<T> $className
+     * @return EntityRepository<T>
      * @psalm-suppress MoreSpecificImplementedParamType
-     * @psalm-suppress MixedReturnTypeCoercion
-     * @psalm-suppress MoreSpecificReturnType, LessSpecificReturnStatement
      */
-    public function getRepository($className)
+    #[Override]
+    public function getRepository($className): EntityRepository
     {
-        return $this->repositoryFactory->getRepository($this, $className); //@phpstan-ignore-line
+        $result = $this->repositoryFactory->getRepository($this, $className);
+        assert($result instanceof EntityRepository);
+
+        return $result;
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
+    #[Override]
     public function createQuery($dql = ''): Query
     {
         $query = new Query($this);
-
-        if (! empty($dql)) { //phpcs:ignore SlevomatCodingStandard.ControlStructures.DisallowEmpty.DisallowedEmpty
+        if (trim($dql) !== '') {
             $query->setDQL($dql);
         }
 
@@ -62,8 +67,9 @@ class ResettableEntityManager extends EntityManagerDecorator
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
+    #[Override]
     public function createNativeQuery($sql, ResultSetMapping $rsm): NativeQuery
     {
         $query = new NativeQuery($this);
@@ -74,6 +80,7 @@ class ResettableEntityManager extends EntityManagerDecorator
         return $query;
     }
 
+    #[Override]
     public function createQueryBuilder(): QueryBuilder
     {
         return new QueryBuilder($this);

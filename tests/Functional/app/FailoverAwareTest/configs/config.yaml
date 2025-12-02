@@ -1,6 +1,7 @@
 imports:
-  - {resource: ../../config/framework.yaml}
-  - {resource: ../../config/doctrine.yaml}
+  - { resource: ../../config/framework.yaml }
+  - { resource: ../../config/doctrine.yaml }
+  - { resource: ../../config/services.yaml }
 
 doctrine:
   dbal:

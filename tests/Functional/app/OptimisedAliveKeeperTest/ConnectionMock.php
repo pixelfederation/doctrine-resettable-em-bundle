@@ -1,21 +1,28 @@
 <?php
+
 declare(strict_types=1);
+
 namespace PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\OptimisedAliveKeeperTest;
 
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Result;
-use PDO;
 
 final class ConnectionMock extends Connection
 {
+    /**
+     * @var array<string>
+     */
     private array $queries = [];
 
+    /**
+     * @inheritDoc
+     */
     public function executeQuery(
         string $sql,
         array $params = [],
-               $types = [],
-        ?QueryCacheProfile $qcp = null
+        $types = [],
+        ?QueryCacheProfile $qcp = null,
     ): Result {
         $args = func_get_args();
         $this->queries[] = $args[0];
@@ -25,24 +32,21 @@ final class ConnectionMock extends Connection
             {
             }
 
-            /**
-             * @return mixed
-             */
-            public function fetchOne(): mixed
+            public function fetchOne(): string
             {
                 return '1';
             }
 
-            /**
-             * @return mixed
-             */
-            public function fetch($fetchMode = null, $cursorOrientation = PDO::FETCH_ORI_NEXT, $cursorOffset = 0)
+            public function fetchNumeric(): int
             {
                 return 1;
             }
         };
     }
 
+    /**
+     * @return array<string>
+     */
     public function getQueries(): array
     {
         return $this->queries;
@@ -50,6 +54,6 @@ final class ConnectionMock extends Connection
 
     public function getQueriesCount(): int
     {
-        return count ($this->queries);
+        return count($this->queries);
     }
 }
