@@ -13,10 +13,10 @@
   <file>src/</file>
   <file>tests/</file>
 
-  <config name="testVersion" value="8.3"/>
+  <config name="testVersion" value="8.4"/>
   <config name="cache" value="false" />
 
-  <rule ref="vendor/pixelfederation/coding-standards/phpcs.ruleset.83.xml">
+  <rule ref="vendor/pixelfederation/coding-standards/phpcs.ruleset.84.xml">
     <exclude name="Generic.Files.LineLength.TooLong" />
   </rule>
 
@@ -36,5 +36,9 @@
   <rule ref="SlevomatCodingStandard.Files.LineLength.LineTooLong">
     <exclude-pattern>tests/</exclude-pattern>
   </rule>
-
+  <rule ref="SlevomatCodingStandard.PHP.UselessParentheses">
+    <properties>
+      <property name="enableCheckAroundNew" value="false"/>
+    </properties>
+  </rule>
 </ruleset>

@@ -12,16 +12,6 @@ grumphp:
   fixer:
     enabled: false
   testsuites:
-    php8.3:
-      tasks:
-        - phpcs
-        - phpmd
-        - phpcsfixer2
-        - phpparser
-        - phplint
-        - phpunit
-        - phpstan
-        - psalm
     php8.4:
       tasks:
         - phpcs
