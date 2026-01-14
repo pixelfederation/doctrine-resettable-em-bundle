@@ -6,16 +6,16 @@ namespace PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\HttpRe
 
 use Closure;
 use Override;
-use ProxyManager\Proxy\VirtualProxyInterface;
 use RedisCluster;
 use RedisClusterException;
 use SensitiveParameter;
+use Symfony\Component\VarExporter\LazyObjectInterface;
 
+//phpcs:disable
 /**
  * @final
  */
-// phpcs:ignore SlevomatCodingStandard.Classes.RequireAbstractOrFinal.ClassNeitherAbstractNorFinal
-class RedisClusterSpy extends RedisCluster implements VirtualProxyInterface
+class RedisClusterSpy extends RedisCluster implements LazyObjectInterface
 {
     private int $constructorCalls = 0;
 
@@ -54,7 +54,6 @@ class RedisClusterSpy extends RedisCluster implements VirtualProxyInterface
             $this->wasConstructorCalled = true;
             $this->constructorParametersSecond = [$name, $seeds, $timeout, $readTimeout];
         }
-
 //        parent::__construct($name, $seeds, $timeout, $readTimeout, $persistent, $auth, $context);
     }
 
@@ -80,30 +79,27 @@ class RedisClusterSpy extends RedisCluster implements VirtualProxyInterface
     }
 
     #[Override]
-    // phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-    public function ping(array|string $key_or_address, ?string $message = null): mixed
-    {
+    public function ping(
+        array|string $key_or_address,
+        ?string $message = null,
+    ): mixed {
         throw new RedisClusterException('Test exception');
     }
 
-    #[Override]
     public function setProxyInitializer(?Closure $initializer = null): void
     {
     }
 
-    #[Override]
     public function getProxyInitializer(): ?Closure
     {
         return null;
     }
 
-    #[Override]
     public function initializeProxy(): bool
     {
         return true;
     }
 
-    #[Override]
     public function isProxyInitialized(): bool
     {
         return $this->initialized;
@@ -114,9 +110,23 @@ class RedisClusterSpy extends RedisCluster implements VirtualProxyInterface
         $this->initialized = $initialised;
     }
 
-    #[Override]
     public function getWrappedValueHolderValue(): ?object
     {
         return null;
+    }
+
+    public function isLazyObjectInitialized(bool $partial = false): bool
+    {
+        return $this->initialized;
+    }
+
+    public function initializeLazyObject(): object
+    {
+        return $this;
+    }
+
+    public function resetLazyObject(): bool
+    {
+        return false;
     }
 }

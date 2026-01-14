@@ -37,19 +37,15 @@ class ResettableEntityManager extends EntityManagerDecorator
     }
 
     /**
-     * @inheritDoc
      * @template T of object
      * @param class-string<T> $className
      * @return EntityRepository<T>
      * @psalm-suppress MoreSpecificImplementedParamType
      */
     #[Override]
-    public function getRepository($className): EntityRepository
+    public function getRepository(string $className): EntityRepository
     {
-        $result = $this->repositoryFactory->getRepository($this, $className);
-        assert($result instanceof EntityRepository);
-
-        return $result;
+        return $this->repositoryFactory->getRepository($this, $className);
     }
 
     /**
@@ -66,11 +62,8 @@ class ResettableEntityManager extends EntityManagerDecorator
         return $query;
     }
 
-    /**
-     * @inheritDoc
-     */
     #[Override]
-    public function createNativeQuery($sql, ResultSetMapping $rsm): NativeQuery
+    public function createNativeQuery(string $sql, ResultSetMapping $rsm): NativeQuery
     {
         $query = new NativeQuery($this);
 

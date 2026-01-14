@@ -50,7 +50,8 @@ final class TransactionDiscardingDBALAliveKeeperTest extends TestCase
                     match ($matcher->numberOfInvocations()) {
                         1 => $this->assertEquals(
                             sprintf(
-                                'Connection "%s" needed to discard active transaction while running keep-alive routine.',
+                                'Connection "%s" needed to discard active ' .
+                                'transaction while running keep-alive routine.',
                                 $connectionName,
                             ),
                             $value,

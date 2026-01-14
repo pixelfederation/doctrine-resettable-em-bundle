@@ -1,23 +1,16 @@
-<?xml version="1.0"?>
-<ruleset name="PixelFederation">
-
-  <description>PixelFederation rule set.</description>
-
-  <!-- Show progress, show the error codes for each message (source). -->
-  <arg value="ps"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="PixelFederation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/squizlabs/php_codesniffer/phpcs.xsd">
   <arg name="basepath" value="."/>
+  <arg name="cache" value=".php-cs-fixer.cache"/>
   <arg name="colors"/>
   <arg name="extensions" value="php"/>
-
-  <file>bin/</file>
-  <file>src/</file>
-  <file>tests/</file>
-
-  <config name="testVersion" value="8.3"/>
-  <config name="cache" value="false" />
-
-  <rule ref="vendor/pixelfederation/coding-standards/phpcs.ruleset.83.xml">
-    <exclude name="Generic.Files.LineLength.TooLong" />
+  <!-- Show progress, show the error codes for each message (source). -->
+  <arg value="ps"/>
+  <description>PixelFederation rule set.</description>
+  <config name="testVersion" value="8.4"/>
+  <rule ref="vendor/pixelfederation/coding-standards/phpcs.ruleset.84.non-ddd.xml">
+    <exclude name="SlevomatCodingStandard.Functions.FunctionLength.FunctionLength"/>
   </rule>
 
   <rule ref="SlevomatCodingStandard.Files.TypeNameMatchesFileName">
@@ -28,13 +21,9 @@
       </property>
     </properties>
   </rule>
-
-  <rule ref="SlevomatCodingStandard.Functions.FunctionLength.FunctionLength">
-    <exclude-pattern>tests/</exclude-pattern>
+  <rule ref="SlevomatCodingStandard.PHP.UselessParentheses">
+    <properties>
+      <property name="enableCheckAroundNew" value="false"/>
+    </properties>
   </rule>
-
-  <rule ref="SlevomatCodingStandard.Files.LineLength.LineTooLong">
-    <exclude-pattern>tests/</exclude-pattern>
-  </rule>
-
 </ruleset>
