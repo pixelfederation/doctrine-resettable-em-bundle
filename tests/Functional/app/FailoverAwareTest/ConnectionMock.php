@@ -34,9 +34,9 @@ final class ConnectionMock extends Connection
                 return '1';
             }
 
-            public function fetchNumeric(): int
+            public function fetchNumeric(): array|false
             {
-                return 1;
+                return [1];
             }
         };
     }

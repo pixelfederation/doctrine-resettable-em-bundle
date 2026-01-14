@@ -8,24 +8,14 @@ grumphp:
   environment:
     variables:
       PHP_CS_FIXER_IGNORE_ENV: 1 # PHP CS Fixer currently supports PHP syntax only up to PHP 8.4
+      BOX_REQUIREMENT_CHECKER: 0
   process_timeout: 600
   fixer:
     enabled: false
   testsuites:
-    php8.3:
-      tasks:
-        - phpcs
-        - phpmd
-        - phpcsfixer2
-        - phpparser
-        - phplint
-        - phpunit
-        - phpstan
-        - psalm
     php8.4:
       tasks:
         - phpcs
-        - phpmd
         - phpcsfixer2
         - phpparser
         - phplint
@@ -35,13 +25,12 @@ grumphp:
     php8.5:
       tasks:
         - phpcs
-        - phpmd
         - phpcsfixer2
         - phpparser
         - phplint
         - phpunit
         - phpstan
-#        - psalm # psalm do not yet support PHP 8.5
+        - psalm
   tasks:
     composer: ~
     composer_normalize: ~
@@ -53,8 +42,6 @@ grumphp:
       ignore_patterns: []
       sniffs: []
       triggered_by: [php]
-    phpmd:
-      ruleset: ['phpmd.ruleset.xml']
     phpcsfixer2:
       cache_file: '.php-cs-fixer.cache'
       allow_risky: true

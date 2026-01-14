@@ -12,14 +12,6 @@ x-php-build: &php_build
 
 services:
   # PHP
-  doctrine-resettable-em-bundle-php83:
-    <<: *php_common
-    container_name: doctrine-resettable-em-bundle-php83
-    build:
-      <<: *php_build
-      args:
-        PHP_VERSION: 8.3
-
   doctrine-resettable-em-bundle-php84:
     container_name: doctrine-resettable-em-bundle-php84
     <<: *php_common
@@ -38,5 +30,5 @@ services:
 
   doctrine-resettable-em-bundle-php-min:
     extends:
-      service: doctrine-resettable-em-bundle-php83
+      service: doctrine-resettable-em-bundle-php84
     container_name: doctrine-resettable-em-bundle-php-min

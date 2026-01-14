@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\DBALAliveKeeper;
 use PixelFederation\DoctrineResettableEmBundle\DBAL\Connection\PassiveIgnoringDBALAliveKeeper;
 use PixelFederation\DoctrineResettableEmBundle\Tests\Unit\Helper\ProxyConnectionMock;
-use ProxyManager\Proxy\VirtualProxyInterface;
+use Symfony\Component\VarExporter\LazyObjectInterface;
 
 final class PassiveIgnoringDBALAliveKeeperTest extends TestCase
 {
@@ -17,9 +17,9 @@ final class PassiveIgnoringDBALAliveKeeperTest extends TestCase
     {
         $connectionMock = $this->createMock(ProxyConnectionMock::class);
         self::assertInstanceOf(Connection::class, $connectionMock);
-        self::assertInstanceOf(VirtualProxyInterface::class, $connectionMock);
+        self::assertInstanceOf(LazyObjectInterface::class, $connectionMock);
         $connectionMock->expects($this->atLeast(1))
-            ->method('isProxyInitialized')
+            ->method('isLazyObjectInitialized')
             ->willReturn(false);
         $connectionMock->expects($this->exactly(0))
             ->method('getDatabasePlatform');
@@ -60,10 +60,10 @@ final class PassiveIgnoringDBALAliveKeeperTest extends TestCase
     public function testKeepAliveWithInitialisedConnectionDelegatesControl(): void
     {
         $connectionMock = $this->createMock(ProxyConnectionMock::class);
-        self::assertInstanceOf(VirtualProxyInterface::class, $connectionMock);
+        self::assertInstanceOf(LazyObjectInterface::class, $connectionMock);
         self::assertInstanceOf(Connection::class, $connectionMock);
         $connectionMock->expects($this->atLeast(1))
-            ->method('isProxyInitialized')
+            ->method('isLazyObjectInitialized')
             ->willReturn(true);
         $connectionMock->expects($this->atLeast(1))
             ->method('isConnected')

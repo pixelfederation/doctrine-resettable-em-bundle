@@ -14,7 +14,7 @@ final class PassiveIgnoringRedisClusterAliveKeeperTest extends TestCase
     {
         $clusterMock = $this->createMock(RedisClusterSpy::class);
         $clusterMock->expects(self::atLeast(1))
-            ->method('isProxyInitialized')
+            ->method('isLazyObjectInitialized')
             ->willReturn(false);
         $connectionName = 'default';
         $decoratedAliveKeeper = $this->createMock(RedisClusterAliveKeeper::class);
@@ -30,7 +30,7 @@ final class PassiveIgnoringRedisClusterAliveKeeperTest extends TestCase
     {
         $clusterMock = $this->createMock(RedisClusterSpy::class);
         $clusterMock->expects(self::atLeast(1))
-            ->method('isProxyInitialized')
+            ->method('isLazyObjectInitialized')
             ->willReturn(true);
         $connectionName = 'default';
         $decoratedAliveKeeper = $this->createMock(RedisClusterAliveKeeper::class);

@@ -4,38 +4,31 @@ declare(strict_types=1);
 
 namespace PixelFederation\DoctrineResettableEmBundle\Tests\Unit\Helper;
 
-use Closure;
 use Doctrine\DBAL\Connection;
-use ProxyManager\Proxy\VirtualProxyInterface;
+use Symfony\Component\VarExporter\LazyObjectInterface;
 
 /**
  * @final
  */
 // phpcs:ignore SlevomatCodingStandard.Classes.RequireAbstractOrFinal.ClassNeitherAbstractNorFinal
-class ProxyConnectionMock extends Connection implements VirtualProxyInterface
+class ProxyConnectionMock extends Connection implements LazyObjectInterface
 {
-    public function setProxyInitializer(?Closure $initializer = null): void
-    {
-    }
-
-    public function getProxyInitializer(): ?Closure
-    {
-        return null;
-    }
-
-    public function initializeProxy(): bool
+    public function isLazyObjectInitialized(bool $partial = false): bool
     {
         return false;
     }
 
-    public function isProxyInitialized(): bool
+    /**
+     * Forces initialization of a lazy object and returns it.
+     */
+    public function initializeLazyObject(): object
     {
-        return false;
+        return $this;
     }
 
-    public function getWrappedValueHolderValue(): ?object
+    public function resetLazyObject(): bool
     {
-        return null;
+        return false;
     }
 
     public function isTransactionActive(): bool
