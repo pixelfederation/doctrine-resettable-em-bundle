@@ -2,9 +2,8 @@
 
 declare(strict_types=1);
 
-// phpcs:disable SlevomatCodingStandard.Namespaces.ReferenceUsedNamesOnly.ReferenceViaFullyQualifiedName
 return [
-    new \Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
-    new \Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
-    new \PixelFederation\DoctrineResettableEmBundle\PixelFederationDoctrineResettableEmBundle(),
+    \Symfony\Bundle\FrameworkBundle\FrameworkBundle::class => ['all' => true],
+    \Doctrine\Bundle\DoctrineBundle\DoctrineBundle::class => ['all' => true],
+    \PixelFederation\DoctrineResettableEmBundle\PixelFederationDoctrineResettableEmBundle::class => ['all' => true],
 ];

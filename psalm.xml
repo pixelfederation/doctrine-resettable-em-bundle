@@ -2,17 +2,8 @@
 <psalm
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns="https://getpsalm.org/schema/config"
-  name="Psalm for CommandBus"
-  useDocblockTypes="true"
+  xsi:schemaLocation="https://getpsalm.org/schema/config https://psalm.dev/schema/config"
   errorLevel="1"
-  reportMixedIssues="true"
-  strictBinaryOperands="false"
-  rememberPropertyAssignmentsAfterCall="true"
-  checkForThrowsDocblock="false"
-  throwExceptionOnError="0"
-  findUnusedCode="true"
-  findUnusedBaselineEntry="true"
-  xsi:schemaLocation="https://getpsalm.org/schema/config config.xsd"
 >
   <projectFiles>
     <directory name="src"/>

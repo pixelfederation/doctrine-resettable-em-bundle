@@ -51,9 +51,9 @@ final class FailoverAwareTest extends TestCase
     protected function setUp(): void
     {
         self::bootTestKernel();
-        self::runCommand('cache:clear --no-warmup');
+        self::runCommand('cache:clear', ['--no-warmup' => true]);
         self::runCommand('cache:warmup');
-        self::runCommand('doctrine:database:drop --force --connection default');
-        self::runCommand('doctrine:schema:create --em default');
+        self::runCommand('doctrine:database:drop', ['--force' => true, '--connection' => 'default']);
+        self::runCommand('doctrine:schema:create', ['--em' => 'default']);
     }
 }

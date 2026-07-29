@@ -14,9 +14,9 @@ final class DBALPlatformAliveKeeperTest extends TestCase
     public function testKeepAlive(): void
     {
         $cName1 = 'default';
-        $cMock1 = $this->createMock(Connection::class);
+        $cMock1 = $this->createStub(Connection::class);
         $cName2 = 'other';
-        $cMock2 = $this->createMock(Connection::class);
+        $cMock2 = $this->createStub(Connection::class);
 
         $keeper1 = $this->createMock(DBALAliveKeeper::class);
         $keeper1->expects($this->once())->method('keepAlive')->with($cMock1, $cName1);

@@ -23,4 +23,6 @@ RUN echo "memory_limit=512M" > /usr/local/etc/php/conf.d/php-memory-limit.ini
 
 WORKDIR /srv/www
 
+RUN git config --global --add safe.directory /srv/www
+
 CMD ["tail", "-f", "/dev/null"]

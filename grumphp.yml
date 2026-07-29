@@ -14,23 +14,18 @@ grumphp:
     enabled: false
   testsuites:
     php8.4:
-      tasks:
+      tasks: &tasks
         - phpcs
         - phpcsfixer2
-        - phpparser
         - phplint
-        - phpunit
+        - phpparser
         - phpstan
+        - phpunit
         - psalm
+        - xmllint_extended
+        - yamllint
     php8.5:
-      tasks:
-        - phpcs
-        - phpcsfixer2
-        - phpparser
-        - phplint
-        - phpunit
-        - phpstan
-        - psalm
+      tasks: *tasks
   tasks:
     composer: ~
     composer_normalize: ~
@@ -39,7 +34,8 @@ grumphp:
       tab_width: 4
       whitelist_patterns: []
       encoding: utf-8
-      ignore_patterns: []
+      ignore_patterns:
+        - tests/
       sniffs: []
       triggered_by: [php]
     phpcsfixer2:
@@ -51,6 +47,7 @@ grumphp:
       verbose: false
       diff: true
       triggered_by: ['php']
+    phplint: ~
     phpparser:
       ignore_patterns:
         - tests/
@@ -65,8 +62,6 @@ grumphp:
           blacklist:
             - 'Dumper::dump'
       triggered_by: [php]
-    phplint: ~
-    phpunit: ~
     phpstan:
       autoload_file: ~
       configuration: 'phpstan.neon'
@@ -74,6 +69,7 @@ grumphp:
       ignore_patterns:
         - tests/
       triggered_by: ['php']
+    phpunit: ~
     psalm:
       config: psalm.xml
       ignore_patterns:
@@ -82,3 +78,15 @@ grumphp:
       report: ~
       triggered_by: ['php']
       show_info: true
+    xmllint_extended:
+      ignore_patterns: [ ]
+      load_from_net: true
+      x_include: true
+      dtd_validation: true
+      scheme_validation: true
+      triggered_by: [ 'xml' ]
+    yamllint:
+      parse_constant: true
+      parse_custom_tags: true
+  extensions:
+    - PixelFederation\CodingStandards\GrumPHP\ExtensionLoader

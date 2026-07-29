@@ -13,7 +13,7 @@ final class PingingRedisClusterAliveKeeperTest extends TestCase
 {
     public function testKeepAliveWriterWithoutReconnect(): void
     {
-        $loggerMock = $this->createMock(LoggerInterface::class);
+        $loggerMock = $this->createStub(LoggerInterface::class);
         $clusterMock = $this->createMock(RedisCluster::class);
         $clusterMock->expects($this->atLeast(1))
             ->method('ping')

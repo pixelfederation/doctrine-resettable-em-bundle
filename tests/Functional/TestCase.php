@@ -9,13 +9,11 @@ use InvalidArgumentException;
 use PixelFederation\DoctrineResettableEmBundle\Tests\Functional\app\AppKernel;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\KernelInterface;
 
-abstract class TestCase extends KernelTestCase
+abstract class TestCase extends CompatibleKernelTestCase
 {
     private static ?Application $application = null;
 
@@ -94,15 +92,6 @@ abstract class TestCase extends KernelTestCase
         $client->setServerParameters($server);
 
         return $client;
-    }
-
-    /**
-     * @throws Exception
-     */
-    protected static function runCommand(string $command): void
-    {
-        $command = sprintf('%s --quiet', $command);
-        self::getApplication()->run(new StringInput($command));
     }
 
     protected static function bootTestKernel(string $rootConfig = 'configs/config.yaml'): void

@@ -13,9 +13,9 @@ final class ConnectionsHandlerTest extends TestCase
     public function testKeepAliveAllConnections(): void
     {
         $keeper1 = $this->createMock(PlatformAliveKeeper::class);
-        $keeper1->expects(self::once())->method('keepAlive');
+        $keeper1->expects($this->once())->method('keepAlive');
         $keeper2 = $this->createMock(PlatformAliveKeeper::class);
-        $keeper2->expects(self::once())->method('keepAlive');
+        $keeper2->expects($this->once())->method('keepAlive');
 
         $handler = new ConnectionsHandler([$keeper1, $keeper2]);
         $handler->initialize();
