@@ -5,7 +5,7 @@ declare(strict_types=1);
 use PhpCsFixer\Config;
 use PhpCsFixer\Finder;
 
-return (new Config())
+return new Config()
     ->setRiskyAllowed(true)
     ->setRules([
         'array_syntax' => [
@@ -20,6 +20,6 @@ return (new Config())
     ->setFinder(
         Finder::create()
             ->exclude('vendor')
-            ->in(__DIR__ . '/src')
-            ->in(__DIR__ . '/tests'),
+            ->exclude('tests')
+            ->in(__DIR__),
     );

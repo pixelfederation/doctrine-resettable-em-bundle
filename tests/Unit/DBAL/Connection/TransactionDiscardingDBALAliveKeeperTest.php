@@ -39,7 +39,7 @@ final class TransactionDiscardingDBALAliveKeeperTest extends TestCase
     public function testRollbackConnectionIfItIsInTransactionAndLogRollbackException(): void
     {
         $connectionName = 'default';
-        $exceptionMock = $this->createMock(Throwable::class);
+        $exceptionMock = $this->createStub(Throwable::class);
 
         $matcher = $this->exactly(2);
         $loggerMock = $this->createMock(LoggerInterface::class);

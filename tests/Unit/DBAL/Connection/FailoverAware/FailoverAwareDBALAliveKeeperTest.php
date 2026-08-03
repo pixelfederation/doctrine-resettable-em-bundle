@@ -17,7 +17,7 @@ final class FailoverAwareDBALAliveKeeperTest extends TestCase
 {
     public function testKeepAliveWriterWithoutReconnect(): void
     {
-        $loggerMock = $this->createMock(LoggerInterface::class);
+        $loggerMock = $this->createStub(LoggerInterface::class);
         $statementMock = $this->createMock(Result::class);
         $statementMock->expects($this->atLeast(1))
             ->method('fetchOne')
@@ -38,7 +38,7 @@ final class FailoverAwareDBALAliveKeeperTest extends TestCase
 
     public function testKeepAliveReaderWithoutReconnect(): void
     {
-        $loggerMock = $this->createMock(LoggerInterface::class);
+        $loggerMock = $this->createStub(LoggerInterface::class);
         $statementMock = $this->createMock(Result::class);
         $statementMock->expects($this->atLeast(1))
             ->method('fetchOne')
@@ -119,7 +119,7 @@ final class FailoverAwareDBALAliveKeeperTest extends TestCase
         $statementMock = $this->createMock(Result::class);
         $statementMock->expects($this->atLeast(1))
             ->method('fetchOne')
-            ->willThrowException($this->createMock(DriverException::class));
+            ->willThrowException($this->createStub(DriverException::class));
 
         $connectionMock = $this->createMock(Connection::class);
         $connectionMock->expects($this->atLeast(1))

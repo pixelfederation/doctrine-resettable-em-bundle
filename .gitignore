@@ -10,3 +10,4 @@ mutagen.yml.lock
 composer.lock
 *.override.yaml
 .codex.yml
+/tests/Functional/app/config/reference.php

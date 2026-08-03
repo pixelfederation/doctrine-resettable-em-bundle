@@ -19,35 +19,49 @@ jobs:
     strategy:
       matrix:
         php-version: [ '8.4', '8.5' ]
-        symfony-version: [ '7.4.*', '8.0.*' ]
+        symfony-version: [ '7.4.*', '8.0.*', '8.1.*' ]
 
     name: "PHP: ${{ matrix.php-version }}, Symfony: ${{ matrix.symfony-version }}"
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - name: Install PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php-version }}
+      - name: Setup .env file
+        run: |
+          echo "php-container=doctrine-resettable-em-bundle-php$(echo "${{ matrix.php-version }}" | tr -d '.')" >> $GITHUB_ENV
 
-      - name: Validate composer.json and composer.lock
-        run: composer validate --strict --no-check-lock
+      - name: Start containers
+        run: docker compose -f "docker-compose.yml" up ${{ env.php-container }} -d
 
       - name: Check PHP Version
-        run: php -v
+        run: docker exec ${{ env.php-container }} php -v
+
+      - name: Validate composer.json and composer.lock
+        run: docker exec ${{ env.php-container }} composer validate --strict
 
       - name: Symfony version
-        run: composer config extra.symfony.require ${{ matrix.symfony-version }}
+        run: docker exec ${{ env.php-container }} composer config extra.symfony.require ${{ matrix.symfony-version }}
 
       - name: Composer update
-        run: composer update --prefer-dist --no-interaction
+        run: docker exec ${{ env.php-container }} composer update --prefer-dist --no-interaction
 
       - name: Run static analysis (GrumPHP)
-        run: php vendor/bin/grumphp run --testsuite=php${{ matrix.php-version }}
+        run: docker exec ${{ env.php-container }} vendor/bin/grumphp run --testsuite=php${{ matrix.php-version }}
 
-#      - name: Check vendor licenses
-#        run: composer run-script lic-check
+      - name: Stop containers
+        if: always()
+        run: docker compose -f "docker-compose.yml" down -v
+
+  auto-rebase:
+    name: rebase dependabot PRs
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' || github.event == 'release'
+    timeout-minutes: 5
+    steps:
+      - name: rebase
+        uses: bbeesley/gha-auto-dependabot-rebase@613e88f74cd43f750c7a3a70ee051225dfa13fe8 # v1.5.225
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   dependabot:
     needs: [ build ]
@@ -56,7 +70,7 @@ jobs:
     steps:
       - name: Dependabot metadata
         id: metadata
-        uses: dependabot/fetch-metadata@v1.1.1
+        uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v3.1.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Approve a dependabot PR

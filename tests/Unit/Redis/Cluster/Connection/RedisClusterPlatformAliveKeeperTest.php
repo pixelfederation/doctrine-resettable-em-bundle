@@ -14,16 +14,17 @@ final class RedisClusterPlatformAliveKeeperTest extends TestCase
     public function testKeepAlive(): void
     {
         $cName1 = 'default';
-        $cMock1 = $this->createMock(RedisCluster::class);
+        $cMock1 = $this->createStub(RedisCluster::class);
         $cName2 = 'other';
-        $cMock2 = $this->createMock(RedisCluster::class);
+        $cMock2 = $this->createStub(RedisCluster::class);
 
         $keeper1 = $this->createMock(RedisClusterAliveKeeper::class);
-        $keeper1->expects(self::once())
+        $keeper1->expects($this->once())
             ->method('keepAlive')
             ->with($cMock1, $cName1);
         $keeper2 = $this->createMock(RedisClusterAliveKeeper::class);
-        $keeper2->method('keepAlive')
+        $keeper2->expects($this->once())
+            ->method('keepAlive')
             ->with($cMock2, $cName2);
 
         $platformKeeper = new RedisClusterPlatformAliveKeeper(

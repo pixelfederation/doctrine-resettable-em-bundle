@@ -10,6 +10,9 @@ use PixelFederation\DoctrineResettableEmBundle\DependencyInjection\CompilerPass\
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
+/**
+ * @psalm-suppress DeprecatedInterface
+ */
 final class PixelFederationDoctrineResettableEmBundle extends Bundle
 {
     #[Override]

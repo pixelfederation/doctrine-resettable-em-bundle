@@ -1,3 +1,20 @@
+# 11.1.0
+
+- add support for Symfony 8.1
+- upgrade the test suite to PHPUnit 13 and make the functional test infrastructure compatible with Symfony 7.4 through 8.1
+- upgrade and extend the CI and code-quality tooling
+
+# 11.0.0
+
+- remove support for PHP 8.3
+- require PHP 8.4 or newer
+- remove support for Symfony 7.3
+- add support for Symfony 7.4 and 8.0
+- require Doctrine Bundle 3.2 or newer and Doctrine ORM 3.6 or newer
+- replace ProxyManager's `VirtualProxyInterface` with Symfony's `LazyObjectInterface` when detecting uninitialized lazy DBAL and Redis connections
+- update `ResettableEntityManager` method signatures for Doctrine ORM 3.6
+- remove the `symfony/proxy-manager-bridge` dependency
+
 # 10.0.0
 
 - rm support for PHP 8.2
