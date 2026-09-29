@@ -27,7 +27,7 @@
     "phpstan/phpstan": "^2.1",
     "phpstan/phpstan-webmozart-assert": "^2.0",
     "phpunit/phpunit": "^13.2",
-    "pixelfederation/coding-standards": "^5.2",
+    "pixelfederation/coding-standards": "^6.2",
     "psalm/phar": "^6.14",
     "roave/security-advisories": "dev-master",
     "squizlabs/php_codesniffer": "^4.0",
