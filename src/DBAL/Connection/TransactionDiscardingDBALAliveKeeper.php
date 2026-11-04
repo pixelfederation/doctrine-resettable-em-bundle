@@ -74,12 +74,16 @@ final class TransactionDiscardingDBALAliveKeeper implements DBALAliveKeeper
     /**
      * close() lowers the nesting level but leaves a rollback-only mark in place, and only a rollback at the
      * outermost level clears it: without this, the next transaction's commit would fail once.
+     * With auto-commit off, reconnecting already begins the outer transaction, so beginTransaction() opens a
+     * nested one and every level has to be rolled back to reach the outermost.
      */
     private function clearRollbackOnly(Connection $connection, string $connectionName): void
     {
         try {
             $connection->beginTransaction();
-            $connection->rollBack();
+            for ($level = $connection->getTransactionNestingLevel(); $level > 0; --$level) {
+                $connection->rollBack();
+            }
         } catch (Throwable $e) {
             $this->logger->error(
                 sprintf('An error occurred while discarding active transaction in connection "%s".', $connectionName),

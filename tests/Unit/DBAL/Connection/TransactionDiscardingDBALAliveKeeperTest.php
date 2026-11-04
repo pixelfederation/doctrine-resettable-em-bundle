@@ -84,7 +84,8 @@ final class TransactionDiscardingDBALAliveKeeperTest extends TestCase
                 $calls->append(['error', $message, $context]);
             });
 
-        $connectionMock = $this->connectionInTransaction(autoCommit: true, nestingLevels: [2, 2]);
+        // leaked at 2 after the failed rollback, then 1 after reconnecting with beginTransaction()
+        $connectionMock = $this->connectionInTransaction(autoCommit: true, nestingLevels: [2, 2, 1]);
         $connectionMock->expects($this->exactly(2))
             ->method('rollBack')
             ->willReturnCallback(static function () use ($calls, $failure): void {
@@ -138,7 +139,7 @@ final class TransactionDiscardingDBALAliveKeeperTest extends TestCase
     }
 
     /**
-     * @param list<int> $nestingLevels nesting level before discarding, then after discarding
+     * @param list<int> $nestingLevels nesting levels in the order the keeper reads them
      */
     private function connectionInTransaction(bool $autoCommit, array $nestingLevels): ProxyConnectionMock&MockObject
     {
