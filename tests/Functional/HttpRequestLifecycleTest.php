@@ -128,7 +128,6 @@ final class HttpRequestLifecycleTest extends TestCase
         self::assertInstanceOf(ResettableEntityManager::class, $em);
         $refl = new ReflectionClass(ResettableEntityManager::class);
         $wrappedProperty = $refl->getProperty('wrapped');
-        $wrappedProperty->setAccessible(true);
         $wrapped = $wrappedProperty->getValue($em);
 
         $client = self::createClient();

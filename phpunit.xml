@@ -7,18 +7,18 @@
          beStrictAboutCoverageMetadata="true"
          beStrictAboutOutputDuringTests="true"
          cacheDirectory=".phpunit.cache"
-         cacheResult="false"
          colors="true"
          displayDetailsOnTestsThatTriggerDeprecations="true"
          displayDetailsOnTestsThatTriggerErrors="true"
          displayDetailsOnTestsThatTriggerNotices="true"
          displayDetailsOnTestsThatTriggerWarnings="true"
          displayDetailsOnPhpunitDeprecations="true"
-         executionOrder="depends,defects"
          failOnPhpunitDeprecation="true"
          failOnRisky="true"
          failOnWarning="true"
+         recordTestRunHistory="false"
          requireCoverageMetadata="false"
+         resolveDependencies="true"
 >
   <php>
     <ini name="display_errors" value="1"/>
