@@ -1,3 +1,12 @@
+# 11.1.1
+
+- `TransactionDiscardingDBALAliveKeeper` rolls back all transaction nesting levels instead of only the innermost one
+- `TransactionDiscardingDBALAliveKeeper` closes the connection when it still believes it is in a transaction after
+  discarding it (e.g. MySQL dropped all savepoints on a deadlock and DBAL leaked its nesting level), so the next request
+  starts a real transaction instead of autocommitting under a phantom one; the rollback-only mark is cleared afterwards,
+  also with auto-commit turned off
+- connections with auto-commit turned off are not closed after a clean discard
+
 # 11.1.0
 
 - add support for Symfony 8.1
